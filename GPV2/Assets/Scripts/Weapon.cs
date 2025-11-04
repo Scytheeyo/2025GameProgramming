@@ -1,29 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+
+public enum WeaponType { Melee, Ranged, Hybrid }
 
 public class Weapon : MonoBehaviour
 {
-    public int Damage = 5;
-    public int atteackSpeed = 1; 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [Header("무기 기본 정보")]
+    public string weaponName = "기본 지팡이";
+    public int damage = 10;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [Header("근접 스윙")]
+    public float swingDuration = 0.25f;
+    public float swingStartAngle = 45f;
+    public float swingEndAngle = -45f;
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Enemy")
-        {
-            return;
-        }
-    }
+    [Header("발사체 설정")]
+    public GameObject projectilePrefab;
+    public float projectileSpeed = 10f;
+    public float fireRate = 0.5f;
+    public int ManaCost = 5;
+
+    [Header("타입")]
+    public WeaponType weaponType = WeaponType.Melee;   // ★ 추가
+
+    [HideInInspector] public bool isSwinging = false;
 }

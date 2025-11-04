@@ -3,7 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Exit
+  - Entrance
+  - RedPotion
+  - Enemy
+  - Chest
+  - Weapon
+  - BluePotion
   layers:
   - Default
   - TransparentFX
