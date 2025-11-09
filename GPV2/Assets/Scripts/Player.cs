@@ -30,11 +30,26 @@ public class Player : MonoBehaviour
     private bool isAtEvent = false;
     public bool Interaction = false;
 
+    // 카드 목록, 현재 덱, 아이템 목록
+    public List<CardData> collectedCards = new List<CardData>();
+    public List<CardData> activeDeck = new List<CardData>();
+    public Dictionary<string, int> inventory = new Dictionary<string, int>();
+    public Dictionary<string, Sprite> knownItemSprites = new Dictionary<string, Sprite>();
+
+    // 인벤토리, 카드 UI
+    public InventoryUI inventoryUIManager;
+    public GameObject cardListWindow;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         attackHitbox.SetActive(false);
+        collectedCards.Add(new CardData(CardSuit.Spade, 1));
+        collectedCards.Add(new CardData(CardSuit.Spade, 2));
+        collectedCards.Add(new CardData(CardSuit.Spade, 3));
+        collectedCards.Add(new CardData(CardSuit.Spade, 4));
+        collectedCards.Add(new CardData(CardSuit.Spade, 5));
     }
 
     void Update()
@@ -67,6 +82,18 @@ public class Player : MonoBehaviour
             if (isAtEvent)
                 Interaction = true;
         }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            inventoryUIManager.gameObject.SetActive(!inventoryUIManager.gameObject.activeSelf);
+            UpdateGamePauseState();
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            cardListWindow.SetActive(!cardListWindow.activeSelf);
+            UpdateGamePauseState();
+        }
     }
     void FixedUpdate()
     {
@@ -78,7 +105,7 @@ public class Player : MonoBehaviour
     void Shoot()
     {
         GameObject projectileObject = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
+        Vector2 shootDirection = isRight ? Vector2.left : Vector2.right;
         projectileObject.GetComponent<Projectile>().Setup(shootDirection);
     }
 
@@ -95,7 +122,7 @@ public class Player : MonoBehaviour
 
     private void Flip(float h)
     {
-        if ((h < 0 && isRight) || (h > 0 && !isRight))
+        if ((h < 0 && !isRight) || (h > 0 && isRight))
         {
             isRight = !isRight;
             Vector3 theScale = transform.localScale;
@@ -128,29 +155,19 @@ public class Player : MonoBehaviour
         }
 
 
-        if (other.tag == "RedPotion")
+        if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
-            if (health < 100)
+            string itemTag = other.tag;
+            if (!knownItemSprites.ContainsKey(itemTag))
             {
-                health += 20;
-                if (health > 100)
+                SpriteRenderer sr = other.GetComponent<SpriteRenderer>();
+                if (sr != null && sr.sprite != null)
                 {
-                    health = 100;
+                    knownItemSprites.Add(itemTag, sr.sprite);
+                    Debug.Log("새 아이템 스프라이트 학습: " + itemTag);
                 }
             }
-            Destroy(other.gameObject);
-        }
-
-        if (other.tag == "BluePotion")
-        {
-            if (mana < 100)
-            {
-                mana += 20;
-                if (mana > 100)
-                {
-                    mana = 100;
-                }
-            }
+            AddItemToInventory(itemTag, 1);
             Destroy(other.gameObject);
         }
 
@@ -188,5 +205,75 @@ public class Player : MonoBehaviour
     public void VelocityZero()
     {
         rb.velocity = Vector2.zero;
+    }
+    public void AddItemToInventory(string itemName, int amount)
+    {
+        // 인벤토리에 이미 해당 아이템이 있는지 확인
+        if (inventory.ContainsKey(itemName))
+        {
+            // 있으면 개수 증가
+            inventory[itemName] += amount;
+        }
+        else
+        {
+            // 없으면 새로 추가
+            inventory.Add(itemName, amount);
+        }
+    }
+    void UpdateGamePauseState()
+    {
+        // 인벤토리 창이나 카드 덱 창이 *하나라도* 활성화되어 있다면
+        if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
+        {
+            // 게임 시간을 멈춥니다.
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            // 두 창이 모두 닫혀있다면 게임 시간을 다시 1배속으로 설정합니다.
+            Time.timeScale = 1f;
+        }
+    }
+    public void UseItem(string itemTag)
+    {
+        // 1. 인벤토리에 해당 아이템이 있는지 확인
+        if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
+
+        bool itemUsed = false; // 아이템 사용에 성공했는지 여부
+
+        // 2. 태그(문자열)에 따라 아이템 효과 적용
+        switch (itemTag)
+        {
+            case "RedPotion":
+                if (health < 100)
+                {
+                    health += 20; // 기획서의 값 혹은 원하는 값
+                    if (health > 100) health = 100;
+                    Debug.Log("HP 물약 사용. 현재 체력: " + health);
+                    itemUsed = true;
+                }
+                break;
+            case "BluePotion":
+                if (mana < 100)
+                {
+                    mana += 20;
+                    if (mana > 100) mana = 100;
+                    Debug.Log("MP 물약 사용. 현재 마나: " + mana);
+                    itemUsed = true;
+                }
+                break;
+                // (나중에 다른 아이템 태그 추가)
+        }
+
+        // 3. 아이템 사용에 성공한 경우에만 개수 차감
+        if (itemUsed)
+        {
+            inventory[itemTag]--;
+            // 만약 아이템이 0개가 되면 인벤토리에서 제거
+            if (inventory[itemTag] <= 0)
+            {
+                inventory.Remove(itemTag);
+            }
+        }
     }
 }
