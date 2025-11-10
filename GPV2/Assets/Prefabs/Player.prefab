@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3989535346665826268}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.5, z: 0}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,9 +45,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.104926966, y: 0}
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.14507303
 --- !u!1 &3989535347171507335
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,8 +116,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 1, y: 0}
-  m_Size: {x: 3, y: 3.5}
+  m_Offset: {x: 0.241111, y: 0.010567093}
+  m_Size: {x: 0.7700359, y: 0.7886543}
   m_Direction: 0
 --- !u!114 &3989535347171507354
 MonoBehaviour:
@@ -162,7 +162,7 @@ Transform:
   m_GameObject: {fileID: 3989535347563536464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.36, y: -3.76, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3989535347171507334}
@@ -211,7 +211,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2023418783, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
+  m_Sprite: {fileID: -55478420, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -256,18 +256,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.001518786, y: 0.01767379}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.52, y: 3.2}
+    oldSize: {x: 0.64, y: 0.64}
     newSize: {x: 2.885267, y: 4.2799997}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.52, y: 3.2}
+  m_Size: {x: 0.35486466, y: 0.6046524}
   m_EdgeRadius: 0
 --- !u!50 &3989535347563536490
 Rigidbody2D:
@@ -310,6 +310,10 @@ MonoBehaviour:
   projectilePrefab: {fileID: 5768103149254272704, guid: 12da7ce437a74f2489badca13ca0ab6c, type: 3}
   firePoint: {fileID: 3989535346665826259}
   fireRate: 0.5
+  health: 100
+  mana: 100
+  gameManager: {fileID: 0}
+  Interaction: 0
 --- !u!1 &3989535347859282009
 GameObject:
   m_ObjectHideFlags: 0
