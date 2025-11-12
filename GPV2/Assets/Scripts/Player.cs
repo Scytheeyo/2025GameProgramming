@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -16,27 +17,31 @@ public class Player : MonoBehaviour
 
     public GameObject projectilePrefab;
     public Transform firePoint;
-    public float fireRate = 0.5f;
+    public float fireRate = 0.1f;
     private float nextFireTime = 0f;
 
     private float hMove = 0f;
     private bool isGrounded = false;
     private bool isRight = true;
 
-    //Enemy ÆÄÆ®
-    public int health = 100;
-    public int mana = 100;
+    public const int Max_Health = 100;
+    public int health;
+    public const int Max_Mana = 100;
+    public int mana;
     public GameManager gameManager;
     private bool isAtEvent = false;
     public bool Interaction = false;
 
-    // Ä«µå ¸ñ·Ï, ÇöÀç µ¦, ¾ÆÀÌÅÛ ¸ñ·Ï
+    public Transform staffSlot;            // â˜… ì§€íŒ¡ì´ê°€ ë¶™ì„ ìœ„ì¹˜
+    private Weapon equippedWeapon = null;  // â˜… í˜„ì¬ ì¥ì°©ëœ ë¬´ê¸°
+
+    // Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public List<CardData> collectedCards = new List<CardData>();
     public List<CardData> activeDeck = new List<CardData>();
     public Dictionary<string, int> inventory = new Dictionary<string, int>();
     public Dictionary<string, Sprite> knownItemSprites = new Dictionary<string, Sprite>();
 
-    // ÀÎº¥Åä¸®, Ä«µå UI
+    // ï¿½Îºï¿½ï¿½ä¸®, Ä«ï¿½ï¿½ UI
     public InventoryUI inventoryUIManager;
     public GameObject cardListWindow;
 
@@ -45,6 +50,9 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         attackHitbox.SetActive(false);
+
+        health = Max_Health;
+        mana = Max_Mana;
         collectedCards.Add(new CardData(CardSuit.Spade, 1));
         collectedCards.Add(new CardData(CardSuit.Spade, 2));
         collectedCards.Add(new CardData(CardSuit.Spade, 3));
@@ -66,11 +74,13 @@ public class Player : MonoBehaviour
         {
             anim.SetTrigger("doAttack");
             Invoke("ActivateHitbox", attackDelay);
+            
         }
 
-        if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime)
+        if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime && HasRangedWeaponReady())
         {
-            nextFireTime = Time.time + 1f / fireRate;
+            float rate = Mathf.Max(0.0001f, GetCurrentFireRate()); // ì´ˆë‹¹ ë°œì‚¬ ìˆ˜
+            nextFireTime = Time.time + (1f / rate);                // â† 0.1f/fireRate ëŒ€ì‹  'ì´ˆë‹¹ në°œ' í‘œì¤€ì‹
             Shoot();
             // anim.SetTrigger("doShoot");
         }
@@ -104,9 +114,22 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        GameObject projectileObject = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        Vector2 shootDirection = isRight ? Vector2.left : Vector2.right;
-        projectileObject.GetComponent<Projectile>().Setup(shootDirection);
+        int manaCost = GetCurrentProjectileManaCost();
+        if (mana <= manaCost) return;
+
+        GameObject prefab = GetCurrentProjectilePrefab();
+        if (prefab == null) return;
+
+        GameObject projectileObject = Instantiate(prefab, firePoint.position, Quaternion.identity);
+
+        Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
+        
+
+        var proj = projectileObject.GetComponent<Projectile>();
+        if (proj != null)
+            proj.Setup(shootDirection);
+
+        mana -= manaCost;
     }
 
     private void ActivateHitbox()
@@ -155,6 +178,25 @@ public class Player : MonoBehaviour
         }
 
 
+        if (other.tag == "RedPotion")
+        {
+            TakeRedPotion();
+            Destroy(other.gameObject);
+        }
+
+        if (other.tag == "BluePotion")
+        {
+            TakeBluePotion();
+            Destroy(other.gameObject);
+        }
+
+        if (other.CompareTag("Weapon"))
+        {
+            Weapon w = other.GetComponent<Weapon>();
+            if (w != null)
+            {
+                EquipWeapon(w);
+            }
         if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
             string itemTag = other.tag;
@@ -164,7 +206,7 @@ public class Player : MonoBehaviour
                 if (sr != null && sr.sprite != null)
                 {
                     knownItemSprites.Add(itemTag, sr.sprite);
-                    Debug.Log("»õ ¾ÆÀÌÅÛ ½ºÇÁ¶óÀÌÆ® ÇĞ½À: " + itemTag);
+                    Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ğ½ï¿½: " + itemTag);
                 }
             }
             AddItemToInventory(itemTag, 1);
@@ -206,50 +248,127 @@ public class Player : MonoBehaviour
     {
         rb.velocity = Vector2.zero;
     }
+
+    private void EquipWeapon(Weapon w)
+    {
+        if (equippedWeapon != null)
+            Destroy(equippedWeapon.gameObject);
+
+        equippedWeapon = w;
+
+        w.transform.SetParent(staffSlot);
+        w.transform.localPosition = Vector3.zero;
+
+        // â˜… íƒ€ì…ë³„ ì¥ì°© ê°ë„
+        if (w.weaponType == WeaponType.Ranged)
+            w.transform.localRotation = Quaternion.identity;              // ì›ê±°ë¦¬: ê·¸ëŒ€ë¡œ
+        else
+            w.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);   // ê·¼ê±°ë¦¬/í•˜ì´ë¸Œë¦¬ë“œ: Z 180Â°
+
+        Collider2D col = w.GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        Rigidbody2D rb2 = w.GetComponent<Rigidbody2D>();
+        if (rb2 != null) rb2.simulated = false;
+    }
+
+    private bool HasRangedWeaponReady()
+    {
+        // ì¥ì°© ë¬´ê¸°ê°€ ìˆê³ , ì›ê±°ë¦¬ ë˜ëŠ” í•˜ì´ë¸Œë¦¬ë“œì´ë©°, í”„ë¦¬íŒ¹ì´ ì¡´ì¬
+        if (equippedWeapon == null) return projectilePrefab != null; // ë¬´ê¸° ì—†ìœ¼ë©´ Player ê¸°ë³¸ê°’ ì‚¬ìš©
+        if (equippedWeapon.weaponType == WeaponType.Ranged || equippedWeapon.weaponType == WeaponType.Hybrid)
+            return equippedWeapon.projectilePrefab != null;
+        return false;
+    }
+
+    private float GetCurrentFireRate()
+    {
+        // ë¬´ê¸° ìˆìœ¼ë©´ ë¬´ê¸° ì—°ì‚¬ì†ë„, ì—†ìœ¼ë©´ Player ê¸°ë³¸ê°’
+        return (equippedWeapon != null) ? equippedWeapon.fireRate : fireRate;
+    }
+
+    private GameObject GetCurrentProjectilePrefab()
+    {
+        return (equippedWeapon != null && equippedWeapon.projectilePrefab != null)
+            ? equippedWeapon.projectilePrefab
+            : projectilePrefab;
+    }
+
+    private int GetCurrentProjectileManaCost()
+    {
+        return (equippedWeapon != null && equippedWeapon.projectilePrefab != null) ? equippedWeapon.ManaCost : 10; // ê¸°ë³¸ ì†Œëª¨ë§ˆë‚˜(í•„ìš”ì‹œ Player í•„ë“œë¡œ ìŠ¹ê²©)
+    }
+
+    public void TakeRedPotion()
+    {
+        if (health < Max_Health)
+        {
+            health += Max_Health / 2;
+            if (health > Max_Health)
+            {
+                health = Max_Health;
+            }
+        }
+    }
+
+    public void TakeBluePotion()
+    {
+        if (mana < Max_Mana)
+        {
+            mana += Max_Mana / 2;
+            if (mana > Max_Mana)
+            {
+                mana = Max_Mana;
+            }
+        }
+    }
+}
+
+
     public void AddItemToInventory(string itemName, int amount)
     {
-        // ÀÎº¥Åä¸®¿¡ ÀÌ¹Ì ÇØ´ç ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö È®ÀÎ
+        // ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (inventory.ContainsKey(itemName))
         {
-            // ÀÖÀ¸¸é °³¼ö Áõ°¡
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             inventory[itemName] += amount;
         }
         else
         {
-            // ¾øÀ¸¸é »õ·Î Ãß°¡
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
             inventory.Add(itemName, amount);
         }
     }
     void UpdateGamePauseState()
     {
-        // ÀÎº¥Åä¸® Ã¢ÀÌ³ª Ä«µå µ¦ Ã¢ÀÌ *ÇÏ³ª¶óµµ* È°¼ºÈ­µÇ¾î ÀÖ´Ù¸é
+        // ï¿½Îºï¿½ï¿½ä¸® Ã¢ï¿½Ì³ï¿½ Ä«ï¿½ï¿½ ï¿½ï¿½ Ã¢ï¿½ï¿½ *ï¿½Ï³ï¿½ï¿½ï¿½* È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö´Ù¸ï¿½
         if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
         {
-            // °ÔÀÓ ½Ã°£À» ¸ØÃä´Ï´Ù.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
             Time.timeScale = 0f;
         }
         else
         {
-            // µÎ Ã¢ÀÌ ¸ğµÎ ´İÇôÀÖ´Ù¸é °ÔÀÓ ½Ã°£À» ´Ù½Ã 1¹è¼ÓÀ¸·Î ¼³Á¤ÇÕ´Ï´Ù.
+            // ï¿½ï¿½ Ã¢ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
             Time.timeScale = 1f;
         }
     }
     public void UseItem(string itemTag)
     {
-        // 1. ÀÎº¥Åä¸®¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö È®ÀÎ
+        // 1. ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
 
-        bool itemUsed = false; // ¾ÆÀÌÅÛ »ç¿ë¿¡ ¼º°øÇß´ÂÁö ¿©ºÎ
+        bool itemUsed = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-        // 2. ÅÂ±×(¹®ÀÚ¿­)¿¡ µû¶ó ¾ÆÀÌÅÛ È¿°ú Àû¿ë
+        // 2. ï¿½Â±ï¿½(ï¿½ï¿½ï¿½Ú¿ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         switch (itemTag)
         {
             case "RedPotion":
                 if (health < 100)
                 {
-                    health += 20; // ±âÈ¹¼­ÀÇ °ª È¤Àº ¿øÇÏ´Â °ª
+                    health += 20; // ï¿½ï¿½È¹ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È¤ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½
                     if (health > 100) health = 100;
-                    Debug.Log("HP ¹°¾à »ç¿ë. ÇöÀç Ã¼·Â: " + health);
+                    Debug.Log("HP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: " + health);
                     itemUsed = true;
                 }
                 break;
@@ -258,18 +377,18 @@ public class Player : MonoBehaviour
                 {
                     mana += 20;
                     if (mana > 100) mana = 100;
-                    Debug.Log("MP ¹°¾à »ç¿ë. ÇöÀç ¸¶³ª: " + mana);
+                    Debug.Log("MP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: " + mana);
                     itemUsed = true;
                 }
                 break;
-                // (³ªÁß¿¡ ´Ù¸¥ ¾ÆÀÌÅÛ ÅÂ±× Ãß°¡)
+                // (ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Â±ï¿½ ï¿½ß°ï¿½)
         }
 
-        // 3. ¾ÆÀÌÅÛ »ç¿ë¿¡ ¼º°øÇÑ °æ¿ì¿¡¸¸ °³¼ö Â÷°¨
+        // 3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (itemUsed)
         {
             inventory[itemTag]--;
-            // ¸¸¾à ¾ÆÀÌÅÛÀÌ 0°³°¡ µÇ¸é ÀÎº¥Åä¸®¿¡¼­ Á¦°Å
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¸ï¿½ ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (inventory[itemTag] <= 0)
             {
                 inventory.Remove(itemTag);
