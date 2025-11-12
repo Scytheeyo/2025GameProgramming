@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -35,13 +34,13 @@ public class Player : MonoBehaviour
     public Transform staffSlot;            // ★ 지팡이가 붙을 위치
     private Weapon equippedWeapon = null;  // ★ 현재 장착된 무기
 
-    // ī�� ���, ���� ��, ������ ���
+    // ī ,  ,  
     public List<CardData> collectedCards = new List<CardData>();
     public List<CardData> activeDeck = new List<CardData>();
     public Dictionary<string, int> inventory = new Dictionary<string, int>();
     public Dictionary<string, Sprite> knownItemSprites = new Dictionary<string, Sprite>();
 
-    // �κ��丮, ī�� UI
+    // κ丮, ī UI
     public InventoryUI inventoryUIManager;
     public GameObject cardListWindow;
 
@@ -74,7 +73,7 @@ public class Player : MonoBehaviour
         {
             anim.SetTrigger("doAttack");
             Invoke("ActivateHitbox", attackDelay);
-            
+
         }
 
         if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime && HasRangedWeaponReady())
@@ -123,7 +122,7 @@ public class Player : MonoBehaviour
         GameObject projectileObject = Instantiate(prefab, firePoint.position, Quaternion.identity);
 
         Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
-        
+
 
         var proj = projectileObject.GetComponent<Projectile>();
         if (proj != null)
@@ -177,19 +176,6 @@ public class Player : MonoBehaviour
             isAtEvent = true;
         }
 
-
-        if (other.tag == "RedPotion")
-        {
-            TakeRedPotion();
-            Destroy(other.gameObject);
-        }
-
-        if (other.tag == "BluePotion")
-        {
-            TakeBluePotion();
-            Destroy(other.gameObject);
-        }
-
         if (other.CompareTag("Weapon"))
         {
             Weapon w = other.GetComponent<Weapon>();
@@ -197,22 +183,34 @@ public class Player : MonoBehaviour
             {
                 EquipWeapon(w);
             }
+        }
+
         if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
             string itemTag = other.tag;
+
+            if (itemTag == "RedPotion")
+            {
+                TakeRedPotion();
+            }
+            else if (itemTag == "BluePotion")
+            {
+                TakeBluePotion();
+            }
+
             if (!knownItemSprites.ContainsKey(itemTag))
             {
                 SpriteRenderer sr = other.GetComponent<SpriteRenderer>();
                 if (sr != null && sr.sprite != null)
                 {
                     knownItemSprites.Add(itemTag, sr.sprite);
-                    Debug.Log("�� ������ ��������Ʈ �н�: " + itemTag);
+                    Debug.Log("  Ʈ н: " + itemTag);
                 }
             }
             AddItemToInventory(itemTag, 1);
+
             Destroy(other.gameObject);
         }
-
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -322,53 +320,51 @@ public class Player : MonoBehaviour
             }
         }
     }
-}
-
 
     public void AddItemToInventory(string itemName, int amount)
     {
-        // �κ��丮�� �̹� �ش� �������� �ִ��� Ȯ��
+        // κ丮 ̹ ش  ִ Ȯ
         if (inventory.ContainsKey(itemName))
         {
-            // ������ ���� ����
+            //   
             inventory[itemName] += amount;
         }
         else
         {
-            // ������ ���� �߰�
+            //   ߰
             inventory.Add(itemName, amount);
         }
     }
     void UpdateGamePauseState()
     {
-        // �κ��丮 â�̳� ī�� �� â�� *�ϳ���* Ȱ��ȭ�Ǿ� �ִٸ�
+        // κ丮 â̳ ī  â *ϳ* ȰȭǾ ִٸ
         if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
         {
-            // ���� �ð��� ����ϴ�.
+            //  ð ϴ.
             Time.timeScale = 0f;
         }
         else
         {
-            // �� â�� ��� �����ִٸ� ���� �ð��� �ٽ� 1������� �����մϴ�.
+            //  â  ִٸ  ð ٽ 1 մϴ.
             Time.timeScale = 1f;
         }
     }
     public void UseItem(string itemTag)
     {
-        // 1. �κ��丮�� �ش� �������� �ִ��� Ȯ��
+        // 1. κ丮 ش  ִ Ȯ
         if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
 
-        bool itemUsed = false; // ������ ��뿡 �����ߴ��� ����
+        bool itemUsed = false; //  뿡 ߴ 
 
-        // 2. �±�(���ڿ�)�� ���� ������ ȿ�� ����
+        // 2. ±(ڿ)   ȿ 
         switch (itemTag)
         {
             case "RedPotion":
                 if (health < 100)
                 {
-                    health += 20; // ��ȹ���� �� Ȥ�� ���ϴ� ��
+                    health += 20; // ȹ  Ȥ ϴ 
                     if (health > 100) health = 100;
-                    Debug.Log("HP ���� ���. ���� ü��: " + health);
+                    Debug.Log("HP  .  ü: " + health);
                     itemUsed = true;
                 }
                 break;
@@ -377,18 +373,18 @@ public class Player : MonoBehaviour
                 {
                     mana += 20;
                     if (mana > 100) mana = 100;
-                    Debug.Log("MP ���� ���. ���� ����: " + mana);
+                    Debug.Log("MP  .  : " + mana);
                     itemUsed = true;
                 }
                 break;
-                // (���߿� �ٸ� ������ �±� �߰�)
+                // (߿ ٸ  ± ߰)
         }
 
-        // 3. ������ ��뿡 ������ ��쿡�� ���� ����
+        // 3.  뿡  쿡  
         if (itemUsed)
         {
             inventory[itemTag]--;
-            // ���� �������� 0���� �Ǹ� �κ��丮���� ����
+            //   0 Ǹ κ丮 
             if (inventory[itemTag] <= 0)
             {
                 inventory.Remove(itemTag);
