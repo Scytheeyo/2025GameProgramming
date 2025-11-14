@@ -4,11 +4,11 @@ public class EnemyController_2D : MonoBehaviour
 {
     [Header("Stats")]
     public int maxHealth = 100;
-    public int currentHealth;
+    private int currentHealth;
 
     [Header("Settings")]
     public float moveSpeed = 3f;
-    public float chaseRange = 10f;
+    public float chaseRange = 6f;
     public float attackCooldown = 1f;
     public int damage = 10;
 
@@ -17,31 +17,30 @@ public class EnemyController_2D : MonoBehaviour
     public Transform attackPoint;
     public GameObject dropItemPrefab; // Inspector에서 아이템 프리팹 연결
 
-    protected Rigidbody2D rb;
-    protected Animator animator;
-    protected SpriteRenderer sr;
-    protected Collider2D myCollider;
+    private Rigidbody2D rb;
+    private Animator animator;
+    private SpriteRenderer sr;
+    private Collider2D myCollider;
 
-    public bool isDead = false;
-    protected bool isAttacking = false;
-    protected bool playerInAttackRange = false;
-    protected float lastAttackTime = 0f;
+    private bool isDead = false;
+    private bool isAttacking = false;
+    private bool playerInAttackRange = false;
+    private float lastAttackTime = 0f;
 
-    protected virtual void Start()
+    void Start()
     {
         if (player == null)
         {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
+            Player playerComponent = FindObjectOfType<Player>();
+            if (playerComponent != null)
             {
-                player = p.transform;
+                player = playerComponent.transform;
             }
             else
             {
-                Debug.LogError("씬에 'Player' 태그를 가진 오브젝트가 없습니다!");
+                Debug.LogError("씬에 Player 오브젝트가 없습니다!");
             }
         }
-
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -50,19 +49,19 @@ public class EnemyController_2D : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    protected virtual void Update()
+    void Update()
     {
         if (isDead || player == null) return;
-        
+
         float distance = Vector2.Distance(transform.position, player.position);
         sr.flipX = (player.position.x < transform.position.x);
         UpdateAttackPointDirection();
 
-        /*if (isAttacking)
+        if (isAttacking)
         {
             rb.velocity = Vector2.zero;
             return;
-        }*/
+        }
 
         if (playerInAttackRange)
         {
@@ -92,21 +91,12 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
         animator.SetFloat("Speed", 1);
-        Debug.Log($"[Enemy] Speed 파라미터 값: {animator.GetFloat("Speed")}");
 
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
     }
 
-    // === 회복 전용 함수 (최대 체력 초과 방지) ===
-    public void Heal(int amount)
-    {
-        if (isDead) return;
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        Debug.Log($"{name}이(가) {amount} 회복됨. 현재 체력: {currentHealth}/{maxHealth}");
-    }
-
-    protected void UpdateAttackPointDirection()
+    void UpdateAttackPointDirection()
     {
         if (attackPoint == null) return;
         float xOffset = Mathf.Abs(attackPoint.localPosition.x);
