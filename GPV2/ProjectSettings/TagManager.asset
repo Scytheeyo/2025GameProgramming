@@ -10,6 +10,7 @@ TagManager:
   - RedPotion
   - Enemy
   - Chest
+  - Weapon
   - BluePotion
   layers:
   - Default
