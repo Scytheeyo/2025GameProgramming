@@ -3,22 +3,22 @@ using UnityEngine;
 public class Enemy_Heart : EnemyController_2D
 {
     [Header("Heal Settings")]
-    public int healAmount = 30;          // 1È¸ Èú·®
-    public float healInterval = 5f;      // Èú ÁÖ±â
+    public int healAmount = 30;          // 1È¸ ï¿½ï¿½ï¿½ï¿½
+    public float healInterval = 5f;      // ï¿½ï¿½ ï¿½Ö±ï¿½
     private float lastHealTime = 0f;
 
     protected override void Update()
     {
         if (isDead) return;
 
-        // ÀÏÁ¤ ÁÖ±â·Î Èú ½Ãµµ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ï¿½ ï¿½ï¿½ ï¿½Ãµï¿½
         if (Time.time >= lastHealTime + healInterval)
         {
             HealAlliesOrSelf();
             lastHealTime = Time.time;
         }
 
-        // ÇÃ·¹ÀÌ¾î È¸ÇÇ ÀÌµ¿
+        // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ ï¿½Ìµï¿½
         if (player != null)
         {
             float distance = Vector2.Distance(transform.position, player.position);
@@ -56,12 +56,12 @@ public class Enemy_Heart : EnemyController_2D
             if (ally != null && !ally.isDead)
             {
                 ally.Heal(healAmount); 
-                Debug.Log($"{name} ¡æ {ally.name} È¸º¹ +{healAmount}");
+                Debug.Log($"{name} ï¿½ï¿½ {ally.name} È¸ï¿½ï¿½ +{healAmount}");
                 healedAny = true;
             }
         }
 
-        // È¤½Ã ¾Æ¹«µµ °¨Áö ¾È µÆÀ» °æ¿ì ´ëºñ
+        // È¤ï¿½ï¿½ ï¿½Æ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         if (!healedAny)
             HealSelf();
 
@@ -72,15 +72,15 @@ public class Enemy_Heart : EnemyController_2D
     private void HealSelf()
     {
         Heal(healAmount);
-        Debug.Log($"{name} ÀÚ±â ÀÚ½Å È¸º¹ +{healAmount}");
+        Debug.Log($"{name} ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ È¸ï¿½ï¿½ +{healAmount}");
     }
 
-    // È¸º¹ Àü¿ë ÇÔ¼ö (ÃÖ´ë Ã¼·Â ÃÊ°ú ¹æÁö)
+    // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ (ï¿½Ö´ï¿½ Ã¼ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½)
     public void Heal(int amount)
     {
         if (isDead) return;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        Debug.Log($"{name} ÇöÀç Ã¼·Â: {currentHealth}/{maxHealth}");
+        Debug.Log($"{name} ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: {currentHealth}/{maxHealth}");
     }
 
     void OnDrawGizmosSelected()

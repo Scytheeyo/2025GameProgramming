@@ -6,11 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
   m_Name: Alice_Walk
-========
-  m_Name: CardWalk
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardWalk.anim
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -24,7 +20,6 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
       value: {fileID: -2113688995, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
     - time: 0.25
       value: {fileID: 391283881, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
@@ -32,24 +27,11 @@ AnimationClip:
       value: {fileID: 468894300, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
     - time: 0.75
       value: {fileID: -64794672, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
-========
-      value: {fileID: -1114896477, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - time: 0.083333336
-      value: {fileID: -1724945976, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - time: 0.16666667
-      value: {fileID: -1586131791, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - time: 0.25
-      value: {fileID: -2144790998, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardWalk.anim
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
   m_SampleRate: 4
-========
-  m_SampleRate: 12
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardWalk.anim
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -64,27 +46,16 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
     - {fileID: -2113688995, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
     - {fileID: 391283881, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
     - {fileID: 468894300, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
     - {fileID: -64794672, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
-========
-    - {fileID: -1114896477, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - {fileID: -1724945976, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - {fileID: -1586131791, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
-    - {fileID: -2144790998, guid: e7e2acf1649fa9942a5a1103ec144654, type: 3}
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardWalk.anim
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
     m_StopTime: 1
-========
-    m_StopTime: 0.33333334
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardWalk.anim
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

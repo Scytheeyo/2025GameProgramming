@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -34,15 +35,16 @@ public class Player : MonoBehaviour
     public Transform staffSlot;            // ★ 지팡이가 붙을 위치
     private Weapon equippedWeapon = null;  // ★ 현재 장착된 무기
 
-    // ī ,  ,  
+    // 카드, 인벤토리, 아이템 스프라이트
     public List<CardData> collectedCards = new List<CardData>();
     public List<CardData> activeDeck = new List<CardData>();
     public Dictionary<string, int> inventory = new Dictionary<string, int>();
     public Dictionary<string, Sprite> knownItemSprites = new Dictionary<string, Sprite>();
 
-    // κ丮, ī UI
+    // 인벤토리, 카드 UI
     public InventoryUI inventoryUIManager;
     public GameObject cardListWindow;
+    private Animator cardListAnimator; // ★ Animator 변수 추가
 
     void Start()
     {
@@ -50,13 +52,21 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         attackHitbox.SetActive(false);
 
+        // ★ Animator 컴포넌트 가져오기
+        if (cardListWindow != null)
+        {
+            cardListAnimator = cardListWindow.GetComponent<Animator>();
+        }
+
         health = Max_Health;
         mana = Max_Mana;
-        collectedCards.Add(new CardData(CardSuit.Spade, 1));
-        collectedCards.Add(new CardData(CardSuit.Spade, 2));
-        collectedCards.Add(new CardData(CardSuit.Spade, 3));
-        collectedCards.Add(new CardData(CardSuit.Spade, 4));
-        collectedCards.Add(new CardData(CardSuit.Spade, 5));
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Clover, i));
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Heart, i));
+        // for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Diamond, i));
+
+        // ★ 시작할 땐 확실하게 닫아둡니다.
+        if (cardListWindow != null) cardListWindow.SetActive(false);
     }
 
     void Update()
@@ -100,8 +110,21 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            cardListWindow.SetActive(!cardListWindow.activeSelf);
-            UpdateGamePauseState();
+            // ▼▼▼ [수정된 부분 - 애니메이터 제어] ▼▼▼
+            if (cardListWindow.activeSelf)
+            {
+                // 1. 창이 열려있으면 -> 닫기 트리거
+                if (cardListAnimator != null) cardListAnimator.SetTrigger("doClose");
+                // (UpdateGamePauseState()는 애니메이션 이벤트가 호출할 것임)
+            }
+            else
+            {
+                // 2. 창이 닫혀있으면 -> 활성화 후 열기 트리거
+                cardListWindow.SetActive(true); // OnEnable() 실행됨
+                if (cardListAnimator != null) cardListAnimator.SetTrigger("doOpen");
+                UpdateGamePauseState(); // 즉시 Time.timeScale = 0f 적용
+            }
+            // ▲▲▲ [여기까지] ▲▲▲
         }
     }
     void FixedUpdate()
@@ -335,7 +358,9 @@ public class Player : MonoBehaviour
             inventory.Add(itemName, amount);
         }
     }
-    void UpdateGamePauseState()
+
+    // ▼▼▼ [수정된 부분 - public으로 변경] ▼▼▼
+    public void UpdateGamePauseState()
     {
         // κ丮 â̳ ī  â *ϳ* ȰȭǾ ִٸ
         if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
@@ -349,6 +374,8 @@ public class Player : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
+    // ▲▲▲ [여기까지] ▲▲▲
+
     public void UseItem(string itemTag)
     {
         // 1. κ丮 ش  ִ Ȯ
@@ -389,6 +416,27 @@ public class Player : MonoBehaviour
             {
                 inventory.Remove(itemTag);
             }
+        }
+    }
+    public void AddCardToCollection(CardData newCard)
+    {
+        // 1. LINQ의 Any()를 사용해, 리스트에 'suit'와 'number'가
+        //    모두 일치하는 카드가 *이미* 존재하는지 확인합니다.
+        bool alreadyExists = collectedCards.Any(card =>
+            card.suit == newCard.suit &&
+            card.number == newCard.number
+        );
+
+        // 2. 존재하지 않는 경우(!alreadyExists)에만 리스트에 추가합니다.
+        if (!alreadyExists)
+        {
+            collectedCards.Add(newCard);
+            Debug.Log(newCard.suit + " " + newCard.number + " 카드를 획득했습니다.");
+        }
+        else
+        {
+            // 3. 이미 존재한다면 무시합니다.
+            Debug.Log(newCard.suit + " " + newCard.number + " 카드는 이미 보유 중이라 무시합니다.");
         }
     }
 }

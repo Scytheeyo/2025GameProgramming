@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim.meta
 guid: a282a39e98cf6a84e858123a7287aee2
-========
-guid: 18f8ed95a1a82d74a9c3fbd074580c63
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 7400000

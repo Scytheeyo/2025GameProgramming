@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
 guid: 9cefabbbccb05e149bb69b23b43f196f
-========
-guid: 4aa4302d67757094eb6ebd4a9ee6b019
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,11 +93,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       name: Alice_Walk-export-Sheet_0
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_0
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       rect:
         serializedVersion: 2
         x: 0
@@ -115,23 +107,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       spriteID: daa3803bd0e94bd478797678a841ebfb
       internalID: -2113688995
-========
-      spriteID: 2dd90d613c7074849bd929f14cbf5444
-      internalID: -93781320
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       name: Alice_Walk-export-Sheet_1
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_1
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       rect:
         serializedVersion: 2
         x: 64
@@ -145,23 +128,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       spriteID: 15a1b4926edf1664ea3aa46d4fd08048
       internalID: 391283881
-========
-      spriteID: 572057781f6006646a7aea219d124320
-      internalID: 1569408823
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       name: Alice_Walk-export-Sheet_2
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_2
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       rect:
         serializedVersion: 2
         x: 128
@@ -175,23 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       spriteID: bdcf1dcc8c55fd64a9353c6416c4aaf5
       internalID: 468894300
-========
-      spriteID: 17d1d4b0ddbb2314e81b0c29b7affce8
-      internalID: -1385495955
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       name: Alice_Walk-export-Sheet_3
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_3
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       rect:
         serializedVersion: 2
         x: 192
@@ -205,13 +170,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       spriteID: ab65743d03e4b284abd85ae10b530cac
       internalID: -64794672
-========
-      spriteID: ad3b17e7ccf92914085b219b392819a7
-      internalID: -2120370019
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
       vertices: []
       indices: 
       edges: []
@@ -227,17 +187,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
       Alice_Walk-export-Sheet_0: -2113688995
       Alice_Walk-export-Sheet_1: 391283881
       Alice_Walk-export-Sheet_2: 468894300
       Alice_Walk-export-Sheet_3: -64794672
-========
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_0: -93781320
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_1: 1569408823
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_2: -1385495955
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_3: -2120370019
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter.png.meta
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

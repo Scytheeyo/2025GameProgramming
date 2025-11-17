@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 public enum CardSuit
 {
-    Spade,   // °ø°Ý·Â
-    Heart,   // Ã¼·Â
-    Diamond, // ¹æ¾î·Â
-    Clover   // ¸¶³ª
+    Spade,   // ï¿½ï¿½ï¿½Ý·ï¿½
+    Heart,   // Ã¼ï¿½ï¿½
+    Diamond, // ï¿½ï¿½ï¿½ï¿½
+    Clover   // ï¿½ï¿½ï¿½ï¿½
 }
 
 public class CardData

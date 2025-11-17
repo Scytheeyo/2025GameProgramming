@@ -6,11 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim
   m_Name: Alice_Idle
-========
-  m_Name: CardIdle
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -24,7 +20,6 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim
       value: {fileID: -55478420, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
     - time: 0.25
       value: {fileID: 742020637, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
@@ -32,24 +27,11 @@ AnimationClip:
       value: {fileID: 131900696, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
     - time: 0.75
       value: {fileID: -411855478, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
-========
-      value: {fileID: -93781320, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - time: 0.083333336
-      value: {fileID: 1569408823, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - time: 0.16666667
-      value: {fileID: -1385495955, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - time: 0.25
-      value: {fileID: -2120370019, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim
   m_SampleRate: 4
-========
-  m_SampleRate: 12
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -64,27 +46,16 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim
     - {fileID: -55478420, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
     - {fileID: 742020637, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
     - {fileID: 131900696, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
     - {fileID: -411855478, guid: 8e1e6c6e2f1c5e04d87d54666acbfd35, type: 3}
-========
-    - {fileID: -93781320, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - {fileID: 1569408823, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - {fileID: -1385495955, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
-    - {fileID: -2120370019, guid: 4aa4302d67757094eb6ebd4a9ee6b019, type: 3}
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Player/Alice_Idle.anim
     m_StopTime: 1
-========
-    m_StopTime: 0.33333334
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardIdle.anim
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

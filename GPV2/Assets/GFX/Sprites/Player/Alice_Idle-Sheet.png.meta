@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
 guid: 8e1e6c6e2f1c5e04d87d54666acbfd35
-========
-guid: b613cd19e955854419977942e3746cdd
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,11 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
     filterMode: 0
-========
-    filterMode: 1
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -101,11 +93,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       name: Alice_Idle-Sheet_0
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_0
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       rect:
         serializedVersion: 2
         x: 0
@@ -119,23 +107,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       spriteID: 14688210495b58c4cb006dd3988412f8
       internalID: -55478420
-========
-      spriteID: 2dd90d613c7074849bd929f14cbf5444
-      internalID: -93781320
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       name: Alice_Idle-Sheet_1
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_1
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       rect:
         serializedVersion: 2
         x: 64
@@ -149,23 +128,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       spriteID: 17547e7ef463ac84ca403e7c3368a1e2
       internalID: 742020637
-========
-      spriteID: 572057781f6006646a7aea219d124320
-      internalID: 1569408823
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       name: Alice_Idle-Sheet_2
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_2
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       rect:
         serializedVersion: 2
         x: 128
@@ -179,23 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       spriteID: 1daa942d163028a45a75f2c7d420cd85
       internalID: 131900696
-========
-      spriteID: 17d1d4b0ddbb2314e81b0c29b7affce8
-      internalID: -1385495955
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       name: Alice_Idle-Sheet_3
-========
-      name: CardSordier_Idle-ezgif.com-gif-to-sprite-converter_3
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       rect:
         serializedVersion: 2
         x: 192
@@ -209,13 +170,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       spriteID: 24adbd6d9f9401b4e91e3761f8754919
       internalID: -411855478
-========
-      spriteID: ad3b17e7ccf92914085b219b392819a7
-      internalID: -2120370019
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
       vertices: []
       indices: 
       edges: []
@@ -231,17 +187,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
       Alice_Idle-Sheet_0: -55478420
       Alice_Idle-Sheet_1: 742020637
       Alice_Idle-Sheet_2: 131900696
       Alice_Idle-Sheet_3: -411855478
-========
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_0: -93781320
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_1: 1569408823
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_2: -1385495955
-      CardSordier_Idle-ezgif.com-gif-to-sprite-converter_3: -2120370019
->>>>>>>> cyj:GPV2/Assets/GFX/Sprites/CardSordier_Idle-ezgif.com-gif-to-sprite-converter 1.png.meta
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

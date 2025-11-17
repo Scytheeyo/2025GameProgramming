@@ -18,11 +18,14 @@ public class InventoryUI : MonoBehaviour
     // public List<ItemSpriteLookup> itemSpriteDatabase;
 
     private List<GameObject> createdSlots = new List<GameObject>();
-    private int maxSlots = 30;
+
+    // ▼▼▼ [수정된 부분] ▼▼▼
+    private int maxSlots = 20; // 30에서 20으로 변경
+    // ▲▲▲ [여기까지] ▲▲▲
 
     void Awake()
     {
-        // 1. 30개의 빈 슬롯을 미리 생성 (이전과 동일)
+        // 1. 20개의 빈 슬롯을 미리 생성
         for (int i = 0; i < maxSlots; i++)
         {
             GameObject slot = Instantiate(slotPrefab, slotGridContent);
@@ -73,7 +76,7 @@ public class InventoryUI : MonoBehaviour
 
                 // 4-1. 아이콘과 개수 표시
                 itemIcon.sprite = currentSprite;
-                itemIcon.enabled = (currentSprite != null);
+                itemIcon.enabled = (currentSprite != null); // ★
                 itemCount.text = currentCount.ToString();
 
                 // 4-2. 버튼 활성화 및 클릭 이벤트 연결
@@ -84,7 +87,7 @@ public class InventoryUI : MonoBehaviour
             {
                 // [빈 슬롯]
                 itemIcon.sprite = null;
-                itemIcon.enabled = false;
+                itemIcon.enabled = false; // ★
                 itemCount.text = "";
                 slotButton.interactable = false;
             }
