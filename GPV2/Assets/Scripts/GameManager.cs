@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     public Player player;
     public Exit  exit;
     public Entrance entrance;
+    public SceneFadeManager sfm;
 
     void Start()
     {
@@ -21,6 +23,8 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
+        sfm.NextLevelWithFade();
+
         if (stageIndex < stages.Length - 1)
         {
             stages[stageIndex].SetActive(false);
@@ -33,7 +37,6 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene("Stage2");
         }
-
     }
 
     public void PreviousStage()

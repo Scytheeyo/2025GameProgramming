@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 4399605849035345107}
   - component: {fileID: 4399605849035345116}
   - component: {fileID: 7584661380627569469}
-  m_Layer: 0
+  - component: {fileID: 2012559425}
+  m_Layer: 8
   m_Name: normalSword
   m_TagString: Weapon
   m_Icon: {fileID: 0}
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!60 &4399605849035345116
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -131,10 +132,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: "\uAE30\uBCF8 \uAC80"
   damage: 10
+  weaponLevel: 1
   swingDuration: 0.25
   swingStartAngle: 45
   swingEndAngle: -45
   projectilePrefab: {fileID: 0}
   projectileSpeed: 0
   fireRate: 0
+  ManaCost: 5
+  weaponType: 0
   isSwinging: 0
+--- !u!50 &2012559425
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4399605849035345117}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

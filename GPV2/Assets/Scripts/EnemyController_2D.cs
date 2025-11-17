@@ -5,6 +5,7 @@ public class EnemyController_2D : MonoBehaviour
     [Header("Stats")]
     public int maxHealth = 100;
     private int currentHealth;
+    public bool isBoss = false;
 
     [Header("Settings")]
     public float moveSpeed = 3f;
@@ -20,13 +21,15 @@ public class EnemyController_2D : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer sr;
-    private Collider2D myCollider;
+    public Collider2D myCollider;
 
     private bool isDead = false;
     private bool isAttacking = false;
     private bool playerInAttackRange = false;
     private float lastAttackTime = 0f;
 
+    private bool isKnockedBack = false;
+    private bool isFrozen = false;
     void Start()
     {
         if (player == null)
@@ -51,7 +54,9 @@ public class EnemyController_2D : MonoBehaviour
 
     void Update()
     {
-        if (isDead || player == null) return;
+        if (isDead || player == null || isFrozen) return;
+
+        if (isKnockedBack) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
         sr.flipX = (player.position.x < transform.position.x);
@@ -76,6 +81,8 @@ public class EnemyController_2D : MonoBehaviour
             Idle();
         }
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(999);
+
+
     }
 
     void Idle()
@@ -167,6 +174,38 @@ public class EnemyController_2D : MonoBehaviour
             Physics2D.IgnoreCollision(playerCol, myCollider, false);
     }
 
+    public void FreezeEnemy(float duration)
+    {
+        if (isDead) return;
+
+        isFrozen = true;
+
+        // 1. 애니메이션 속도 0으로 (정지)
+        if (animator != null)
+        {
+            animator.speed = 0;
+        }
+
+        // 2. 물리 움직임 정지
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true; // 중력 등 물리 영향 완전 차단
+
+        // 3. 정해진 시간 후에 자동으로 Unfreeze 함수 호출
+        Invoke(nameof(UnfreezeEnemy), duration);
+    }
+
+    // 정지 시간이 다 되었을 때 호출될 함수
+    private void UnfreezeEnemy()
+    {
+        isFrozen = false;
+
+        if (animator != null)
+        {
+            animator.speed = 1;
+        }
+        rb.isKinematic = false;
+    }
+
     // === 체력 및 사망 처리 ===
     public void TakeDamage(int dmg)
     {
@@ -185,7 +224,25 @@ public class EnemyController_2D : MonoBehaviour
         }
     }
 
-    void Die()
+    public void TakePercentDamage(float percent)
+    {
+        if (isDead) return;
+
+        int damage = Mathf.RoundToInt(maxHealth * percent);
+        currentHealth -= damage;
+        Debug.Log($"가드 브레이크! {damage} 데미지. (현재 체력: {currentHealth})");
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            animator.SetTrigger("Hit");
+        }
+    }
+
+    public void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -218,5 +275,21 @@ public class EnemyController_2D : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+    }
+
+    public void BeginKnockback(float duration)
+    {
+        isKnockedBack = true;
+        // 넉백 당하는 순간 기존 이동 관성 초기화 (선택 사항)
+        rb.velocity = Vector2.zero;
+
+        // 일정 시간 후 넉백 상태 해제
+        CancelInvoke("EndKnockback"); // 중복 호출 방지
+        Invoke("EndKnockback", duration);
+    }
+
+    private void EndKnockback()
+    {
+        isKnockedBack = false;
     }
 }
