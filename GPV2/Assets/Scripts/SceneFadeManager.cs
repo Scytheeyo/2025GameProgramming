@@ -9,7 +9,7 @@ public class SceneFadeManager : MonoBehaviour
     public static SceneFadeManager Instance { get; private set; }
 
     public Image fadeImage; 
-    public float fadeDuration = 1.0f; 
+    public float fadeDuration = 1.0f;
 
     private void Awake()
     {
