@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1081269191008207674}
   - component: {fileID: 1081269191008207673}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081269191008207675}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.26, y: 0, z: 0}
+  m_LocalPosition: {x: 0.006, y: 0, z: 0}
   m_LocalScale: {x: 2.1166, y: 2, z: 1.9575106}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,9 +45,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.12865676, y: 0}
+  m_Offset: {x: 0.067475215, y: 0}
   serializedVersion: 2
-  m_Radius: 0.47975296
+  m_Radius: 0.079552814
 --- !u!1 &1081269191953349662
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 1081269191953349649}
   - component: {fileID: 1081269191953349650}
   - component: {fileID: 1081269191953349648}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ Transform:
   m_GameObject: {fileID: 1081269191953349662}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.452, y: -0.004, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1081269191008207674}
@@ -147,7 +147,7 @@ Animator:
   m_GameObject: {fileID: 1081269191953349662}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d9cbb2641fa9e164092d06fc11322093, type: 2}
+  m_Controller: {fileID: 9100000, guid: cf24ca79e3954584a8d43f89fe872128, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -173,7 +173,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 100
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -188,7 +188,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1081269191953349662}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: a50d25dad1a8bb04bad3b795de4b6ff2, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -218,11 +218,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  currentHealth: 0
   moveSpeed: 3
-  chaseRange: 1
+  chaseRange: 10
   attackCooldown: 1
   damage: 10
   player: {fileID: 0}
   attackPoint: {fileID: 1081269191008207674}
-  dropItemPrefab: {fileID: 3445522045841734508, guid: d1fd11b9e4928b94eafb050155c639fd, type: 3}
+  dropItemPrefab: {fileID: 0}
   isDead: 0

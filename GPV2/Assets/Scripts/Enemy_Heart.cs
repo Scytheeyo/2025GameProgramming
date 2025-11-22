@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy_Heart : EnemyController_2D
@@ -6,26 +7,38 @@ public class Enemy_Heart : EnemyController_2D
     public int healAmount = 30;          // 1회 힐량
     public float healInterval = 5f;      // 힐 주기
     private float lastHealTime = 0f;
+    // 힐 중인지 체크하는 변수 추가
+    private bool isHealing = false;
 
     protected override void Update()
     {
         if (isDead) return;
 
-        // 일정 주기로 힐 시도
-        if (Time.time >= lastHealTime + healInterval)
+        // 1. 힐 중이면 이동 로직 실행 안 함 (멈춰있어야 함)
+        if (isHealing)
         {
-            HealAlliesOrSelf();
-            lastHealTime = Time.time;
+            rb.velocity = Vector2.zero; // 확실하게 정지
+            return;
         }
 
-        // 플레이어 회피 이동
+        // 2. 힐 쿨타임 체크
+        if (Time.time >= lastHealTime + healInterval)
+        {
+            StartCoroutine(HealRoutine()); // 코루틴으로 변경
+            lastHealTime = Time.time;
+            return; // 힐 시작했으면 이번 프레임은 이동 스킵
+        }
+
+        // 3. 이동 로직 (힐 중이 아닐 때만 실행됨)
         if (player != null)
         {
             float distance = Vector2.Distance(transform.position, player.position);
+
+            // 추적 범위보다 가까우면 도망감
             if (distance < chaseRange)
             {
                 Vector2 dir = (transform.position - player.position).normalized;
-                rb.velocity = dir * moveSpeed * 0.5f;
+                rb.velocity = dir * moveSpeed * 0.5f; // 50% 속도로 도망
                 animator?.SetFloat("Speed", 1);
             }
             else
@@ -36,7 +49,25 @@ public class Enemy_Heart : EnemyController_2D
         }
     }
 
-    private void HealAlliesOrSelf()
+    // 힐 과정을 코루틴으로 처리 (시간 제어 용이)
+    IEnumerator HealRoutine()
+    {
+        isHealing = true; // 힐 시작 상태 온
+
+        rb.velocity = Vector2.zero;
+        animator?.SetFloat("Speed", 0);
+        animator?.SetTrigger("Heal");
+
+        // 힐 애니메이션 길이만큼 대기 (대략 1초라고 가정, 필요하면 조정)
+        yield return new WaitForSeconds(1.0f);
+
+        // 실제 회복 로직 실행
+        HealLogic();
+
+        isHealing = false; // 힐 끝남, 다시 이동 가능
+    }
+
+    private void HealLogic()
     {
         if (attackPoint == null)
         {
@@ -46,33 +77,27 @@ public class Enemy_Heart : EnemyController_2D
 
         CircleCollider2D circle = attackPoint.GetComponent<CircleCollider2D>();
         float radius = circle != null ? circle.radius : 5f;
-
         Collider2D[] allies = Physics2D.OverlapCircleAll(attackPoint.position, radius);
-        bool healedAny = false;
 
+        bool healedAny = false;
         foreach (var col in allies)
         {
             EnemyController_2D ally = col.GetComponent<EnemyController_2D>();
+            // 나 자신은 제외하고 다른 적만 여기서 치료할지, 포함할지 결정
+            // ally != this 조건을 넣으면 타인만 치료
             if (ally != null && !ally.isDead)
             {
-                ally.Heal(healAmount); 
-                Debug.Log($"{name} → {ally.name} 회복 +{healAmount}");
+                ally.Heal(healAmount);
                 healedAny = true;
             }
         }
 
-        // 혹시 아무도 감지 안 됐을 경우 대비
-        if (!healedAny)
-            HealSelf();
-
-        animator?.SetTrigger("Heal");
+        if (!healedAny) HealSelf();
     }
-
 
     private void HealSelf()
     {
         Heal(healAmount);
-        Debug.Log($"{name} 자기 자신 회복 +{healAmount}");
     }
 
     // 회복 전용 함수 (최대 체력 초과 방지)
