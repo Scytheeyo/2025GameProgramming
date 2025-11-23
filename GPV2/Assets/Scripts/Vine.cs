@@ -5,9 +5,9 @@ using UnityEngine;
 public class Vine : MonoBehaviour
 {
     [Header("설정")]
-    public float vineJumpPower = 15f; // 점프 힘
+    public float vineJumpPower = 25f; // 점프 힘
     public float climbSpeed = 5f;     // ★ 덩굴 오르내리는 속도
-    public float regrabDelay = 0.5f;  // 재부착 대기 시간
+    public float regrabDelay = 0.3f;  // 재부착 대기 시간
 
     private bool isPlayerAttached = false;
     private Player playerScript;

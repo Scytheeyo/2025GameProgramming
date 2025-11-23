@@ -98,9 +98,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f497fa3a5ac7344db823603a61fbdd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vineJumpPower: 20
+  vineJumpPower: 25
   climbSpeed: 5
-  regrabDelay: 0.5
+  regrabDelay: 0.3
 --- !u!61 &3356041063834159057
 BoxCollider2D:
   m_ObjectHideFlags: 0
