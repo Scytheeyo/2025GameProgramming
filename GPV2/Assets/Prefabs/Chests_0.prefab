@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2191019866367144304}
   m_Layer: 0
   m_Name: Chests_0
-  m_TagString: Untagged
+  m_TagString: Chest
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,3 +168,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb25cc65f9ab0448a0d5ab147745cf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  choicePanel: {fileID: 0}
+  player: {fileID: 0}
