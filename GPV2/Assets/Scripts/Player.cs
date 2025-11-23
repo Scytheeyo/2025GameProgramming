@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     private Animator anim;
 
     public float moveSpeed = 5f;
-    public float jumpForce = 15f;
+    public float jumpForce = 30f;
     private bool isChangingStage = false;
     public GameObject attackHitbox;
     public float attackDelay = 0.2f;
@@ -259,7 +259,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Entrance" || other.tag == "Exit" || other.tag == "Chest")
+        if (other.tag == "Door" || other.tag == "Chest")
         {
             isAtEvent = true;
         }
@@ -302,7 +302,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Entrance") || other.CompareTag("Exit"))
+        if (other.tag == "Door")
         {
             isAtEvent = false;
         }
@@ -310,23 +310,20 @@ public class Player : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
+        Door doorComponent = other.GetComponent<Door>();
+
         if (isAtEvent)
         {
 
             if (Interaction)
             {
-                if (other.CompareTag("Entrance"))
+                if (other.CompareTag("Door"))
                 {
-                    DoorOpen.Play();
-                    gameManager.NextStage();
                     Interaction = false;
+                    doorComponent.InitiateTransition();
+                    
                 }
-                else if (other.CompareTag("Exit"))
-                {
-                    DoorOpen.Play();
-                    gameManager.PreviousStage();
-                    Interaction = false;
-                }
+
             }
         }
     }

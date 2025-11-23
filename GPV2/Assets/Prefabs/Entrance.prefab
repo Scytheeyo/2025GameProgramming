@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 196281167078645219}
   - component: {fileID: 2684247236502011697}
   - component: {fileID: 383542758700938775}
-  - component: {fileID: 349217014703339115}
+  - component: {fileID: -8691436379051643196}
   m_Layer: 0
   m_Name: Entrance
-  m_TagString: Entrance
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,7 +112,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.5510788, y: 3.8024406}
   m_EdgeRadius: 0
---- !u!114 &349217014703339115
+--- !u!114 &-8691436379051643196
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +121,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 3278594094915502563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 850ee123555e0f84d96e61189ce32198, type: 3}
+  m_Script: {fileID: 11500000, guid: d5f950ace95d8f647893d5198b7cd0f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isLocked: 0
+  nextStage: {fileID: 0}
+  targetEntrance: {fileID: 0}
+  nextRoomVcam: {fileID: 0}

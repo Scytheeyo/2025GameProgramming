@@ -36,7 +36,8 @@ public class StaffSkillManager : MonoBehaviour
     private bool isTimeStopped = false;
     public float fadeDuration = 1f;      
     public AudioClip timeStopSound;         
-    public CanvasGroup timeStopOverlay;     
+    public CanvasGroup timeStopOverlay;
+    public GameObject TimeStopEffect;
 
     void Start()
     {
@@ -242,9 +243,12 @@ public class StaffSkillManager : MonoBehaviour
     {
         if (isTimeStopped) yield break; // 중복 실행 방지
 
-        isTimeStopped = true;
-        Debug.Log("시간 정지! (암전)");
+        if (TimeStopEffect != null)
+        {
+            Instantiate(TimeStopEffect, Camera.main.transform.position + new Vector3(0, 0, 10), Quaternion.identity);
+        }
 
+        isTimeStopped = true;
         // 1. 사운드 재생
         if (audioSource != null && timeStopSound != null)
         {
@@ -269,7 +273,6 @@ public class StaffSkillManager : MonoBehaviour
         // GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
         // foreach (var bullet in enemyBullets) { ... }
 
-        // 4. 스킬 지속 시간만큼 대기 (이 시간 동안 화면은 계속 어두움)
         yield return new WaitForSeconds(timeStopDuration);
 
 
