@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -16,25 +17,56 @@ public class Player : MonoBehaviour
 
     public GameObject projectilePrefab;
     public Transform firePoint;
-    public float fireRate = 0.5f;
+    public float fireRate = 0.1f;
     private float nextFireTime = 0f;
 
     private float hMove = 0f;
     private bool isGrounded = false;
     private bool isRight = true;
 
-    //Enemy ��Ʈ
-    public int health = 100;
-    public int mana = 100;
+    public const int Max_Health = 100;
+    public int health;
+    public const int Max_Mana = 100;
+    public int mana;
     public GameManager gameManager;
     private bool isAtEvent = false;
     public bool Interaction = false;
+
+    public Transform staffSlot;            // ★ 지팡이가 붙을 위치
+    private Weapon equippedWeapon = null;  // ★ 현재 장착된 무기
+
+    // 카드, 인벤토리, 아이템 스프라이트
+    public List<CardData> collectedCards = new List<CardData>();
+    public List<CardData> activeDeck = new List<CardData>();
+    public Dictionary<string, int> inventory = new Dictionary<string, int>();
+    public Dictionary<string, Sprite> knownItemSprites = new Dictionary<string, Sprite>();
+
+    // 인벤토리, 카드 UI
+    public InventoryUI inventoryUIManager;
+    public GameObject cardListWindow;
+    private Animator cardListAnimator; // ★ Animator 변수 추가
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         attackHitbox.SetActive(false);
+
+        // ★ Animator 컴포넌트 가져오기
+        if (cardListWindow != null)
+        {
+            cardListAnimator = cardListWindow.GetComponent<Animator>();
+        }
+
+        health = Max_Health;
+        mana = Max_Mana;
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Clover, i));
+        for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Heart, i));
+        // for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Diamond, i));
+
+        // ★ 시작할 땐 확실하게 닫아둡니다.
+        if (cardListWindow != null) cardListWindow.SetActive(false);
     }
 
     void Update()
@@ -51,11 +83,13 @@ public class Player : MonoBehaviour
         {
             anim.SetTrigger("doAttack");
             Invoke("ActivateHitbox", attackDelay);
+
         }
 
-        if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime)
+        if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime && HasRangedWeaponReady())
         {
-            nextFireTime = Time.time + 1f / fireRate;
+            float rate = Mathf.Max(0.0001f, GetCurrentFireRate()); // 초당 발사 수
+            nextFireTime = Time.time + (1f / rate);                // ← 0.1f/fireRate 대신 '초당 n발' 표준식
             Shoot();
             // anim.SetTrigger("doShoot");
         }
@@ -67,6 +101,31 @@ public class Player : MonoBehaviour
             if (isAtEvent)
                 Interaction = true;
         }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            inventoryUIManager.gameObject.SetActive(!inventoryUIManager.gameObject.activeSelf);
+            UpdateGamePauseState();
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            // ▼▼▼ [수정된 부분 - 애니메이터 제어] ▼▼▼
+            if (cardListWindow.activeSelf)
+            {
+                // 1. 창이 열려있으면 -> 닫기 트리거
+                if (cardListAnimator != null) cardListAnimator.SetTrigger("doClose");
+                // (UpdateGamePauseState()는 애니메이션 이벤트가 호출할 것임)
+            }
+            else
+            {
+                // 2. 창이 닫혀있으면 -> 활성화 후 열기 트리거
+                cardListWindow.SetActive(true); // OnEnable() 실행됨
+                if (cardListAnimator != null) cardListAnimator.SetTrigger("doOpen");
+                UpdateGamePauseState(); // 즉시 Time.timeScale = 0f 적용
+            }
+            // ▲▲▲ [여기까지] ▲▲▲
+        }
     }
     void FixedUpdate()
     {
@@ -77,9 +136,22 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        GameObject projectileObject = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        int manaCost = GetCurrentProjectileManaCost();
+        if (mana <= manaCost) return;
+
+        GameObject prefab = GetCurrentProjectilePrefab();
+        if (prefab == null) return;
+
+        GameObject projectileObject = Instantiate(prefab, firePoint.position, Quaternion.identity);
+
         Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
-        projectileObject.GetComponent<Projectile>().Setup(shootDirection);
+
+
+        var proj = projectileObject.GetComponent<Projectile>();
+        if (proj != null)
+            proj.Setup(shootDirection);
+
+        mana -= manaCost;
     }
 
     private void ActivateHitbox()
@@ -95,7 +167,7 @@ public class Player : MonoBehaviour
 
     private void Flip(float h)
     {
-        if ((h < 0 && isRight) || (h > 0 && !isRight))
+        if ((h < 0 && !isRight) || (h > 0 && isRight))
         {
             isRight = !isRight;
             Vector3 theScale = transform.localScale;
@@ -127,33 +199,41 @@ public class Player : MonoBehaviour
             isAtEvent = true;
         }
 
-
-        if (other.tag == "RedPotion")
+        if (other.CompareTag("Weapon"))
         {
-            if (health < 100)
+            Weapon w = other.GetComponent<Weapon>();
+            if (w != null)
             {
-                health += 20;
-                if (health > 100)
-                {
-                    health = 100;
-                }
+                EquipWeapon(w);
             }
-            Destroy(other.gameObject);
         }
 
-        if (other.tag == "BluePotion")
+        if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
-            if (mana < 100)
+            string itemTag = other.tag;
+
+            if (itemTag == "RedPotion")
             {
-                mana += 20;
-                if (mana > 100)
+                TakeRedPotion();
+            }
+            else if (itemTag == "BluePotion")
+            {
+                TakeBluePotion();
+            }
+
+            if (!knownItemSprites.ContainsKey(itemTag))
+            {
+                SpriteRenderer sr = other.GetComponent<SpriteRenderer>();
+                if (sr != null && sr.sprite != null)
                 {
-                    mana = 100;
+                    knownItemSprites.Add(itemTag, sr.sprite);
+                    Debug.Log("  Ʈ н: " + itemTag);
                 }
             }
+            AddItemToInventory(itemTag, 1);
+
             Destroy(other.gameObject);
         }
-
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -188,5 +268,175 @@ public class Player : MonoBehaviour
     public void VelocityZero()
     {
         rb.velocity = Vector2.zero;
+    }
+
+    private void EquipWeapon(Weapon w)
+    {
+        if (equippedWeapon != null)
+            Destroy(equippedWeapon.gameObject);
+
+        equippedWeapon = w;
+
+        w.transform.SetParent(staffSlot);
+        w.transform.localPosition = Vector3.zero;
+
+        // ★ 타입별 장착 각도
+        if (w.weaponType == WeaponType.Ranged)
+            w.transform.localRotation = Quaternion.identity;              // 원거리: 그대로
+        else
+            w.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);   // 근거리/하이브리드: Z 180°
+
+        Collider2D col = w.GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        Rigidbody2D rb2 = w.GetComponent<Rigidbody2D>();
+        if (rb2 != null) rb2.simulated = false;
+    }
+
+    private bool HasRangedWeaponReady()
+    {
+        // 장착 무기가 있고, 원거리 또는 하이브리드이며, 프리팹이 존재
+        if (equippedWeapon == null) return projectilePrefab != null; // 무기 없으면 Player 기본값 사용
+        if (equippedWeapon.weaponType == WeaponType.Ranged || equippedWeapon.weaponType == WeaponType.Hybrid)
+            return equippedWeapon.projectilePrefab != null;
+        return false;
+    }
+
+    private float GetCurrentFireRate()
+    {
+        // 무기 있으면 무기 연사속도, 없으면 Player 기본값
+        return (equippedWeapon != null) ? equippedWeapon.fireRate : fireRate;
+    }
+
+    private GameObject GetCurrentProjectilePrefab()
+    {
+        return (equippedWeapon != null && equippedWeapon.projectilePrefab != null)
+            ? equippedWeapon.projectilePrefab
+            : projectilePrefab;
+    }
+
+    private int GetCurrentProjectileManaCost()
+    {
+        return (equippedWeapon != null && equippedWeapon.projectilePrefab != null) ? equippedWeapon.ManaCost : 10; // 기본 소모마나(필요시 Player 필드로 승격)
+    }
+
+    public void TakeRedPotion()
+    {
+        if (health < Max_Health)
+        {
+            health += Max_Health / 2;
+            if (health > Max_Health)
+            {
+                health = Max_Health;
+            }
+        }
+    }
+
+    public void TakeBluePotion()
+    {
+        if (mana < Max_Mana)
+        {
+            mana += Max_Mana / 2;
+            if (mana > Max_Mana)
+            {
+                mana = Max_Mana;
+            }
+        }
+    }
+
+    public void AddItemToInventory(string itemName, int amount)
+    {
+        // κ丮 ̹ ش  ִ Ȯ
+        if (inventory.ContainsKey(itemName))
+        {
+            //   
+            inventory[itemName] += amount;
+        }
+        else
+        {
+            //   ߰
+            inventory.Add(itemName, amount);
+        }
+    }
+
+    // ▼▼▼ [수정된 부분 - public으로 변경] ▼▼▼
+    public void UpdateGamePauseState()
+    {
+        // κ丮 â̳ ī  â *ϳ* ȰȭǾ ִٸ
+        if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
+        {
+            //  ð ϴ.
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            //  â  ִٸ  ð ٽ 1 մϴ.
+            Time.timeScale = 1f;
+        }
+    }
+    // ▲▲▲ [여기까지] ▲▲▲
+
+    public void UseItem(string itemTag)
+    {
+        // 1. κ丮 ش  ִ Ȯ
+        if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
+
+        bool itemUsed = false; //  뿡 ߴ 
+
+        // 2. ±(ڿ)   ȿ 
+        switch (itemTag)
+        {
+            case "RedPotion":
+                if (health < 100)
+                {
+                    health += 20; // ȹ  Ȥ ϴ 
+                    if (health > 100) health = 100;
+                    Debug.Log("HP  .  ü: " + health);
+                    itemUsed = true;
+                }
+                break;
+            case "BluePotion":
+                if (mana < 100)
+                {
+                    mana += 20;
+                    if (mana > 100) mana = 100;
+                    Debug.Log("MP  .  : " + mana);
+                    itemUsed = true;
+                }
+                break;
+                // (߿ ٸ  ± ߰)
+        }
+
+        // 3.  뿡  쿡  
+        if (itemUsed)
+        {
+            inventory[itemTag]--;
+            //   0 Ǹ κ丮 
+            if (inventory[itemTag] <= 0)
+            {
+                inventory.Remove(itemTag);
+            }
+        }
+    }
+    public void AddCardToCollection(CardData newCard)
+    {
+        // 1. LINQ의 Any()를 사용해, 리스트에 'suit'와 'number'가
+        //    모두 일치하는 카드가 *이미* 존재하는지 확인합니다.
+        bool alreadyExists = collectedCards.Any(card =>
+            card.suit == newCard.suit &&
+            card.number == newCard.number
+        );
+
+        // 2. 존재하지 않는 경우(!alreadyExists)에만 리스트에 추가합니다.
+        if (!alreadyExists)
+        {
+            collectedCards.Add(newCard);
+            Debug.Log(newCard.suit + " " + newCard.number + " 카드를 획득했습니다.");
+        }
+        else
+        {
+            // 3. 이미 존재한다면 무시합니다.
+            Debug.Log(newCard.suit + " " + newCard.number + " 카드는 이미 보유 중이라 무시합니다.");
+        }
     }
 }

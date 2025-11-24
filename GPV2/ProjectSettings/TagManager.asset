@@ -3,14 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Enemy
-  - Ground
-  - Exit
-  - Entrance
-  - RedPotion
-  - Chest
-  - Boss
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -18,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - Enemy
-  - Boss
+  - 
+  - 
   - 
   - 
   - 
