@@ -3575,11 +3575,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
---- !u!4 &1088100283 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8428736246263011788, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
-  m_PrefabInstance: {fileID: 1088100280}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1113133518
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7981,14 +7976,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 341599335396676540, guid: 97f4edde08a567b4cae0a9c263550c0f, type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 2015364177}
-    - target: {fileID: 341599335396676540, guid: 97f4edde08a567b4cae0a9c263550c0f, type: 3}
-      propertyPath: attackPoint
-      value: 
-      objectReference: {fileID: 1088100283}
     - target: {fileID: 845808462799040416, guid: 97f4edde08a567b4cae0a9c263550c0f, type: 3}
       propertyPath: m_Name
       value: healer
