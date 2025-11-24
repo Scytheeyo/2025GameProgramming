@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3356041063834159058}
   - component: {fileID: 3356041063834159057}
   m_Layer: 0
-  m_Name: VIneShort
+  m_Name: Vine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3356041063834159053}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.12, y: 12.85, z: 0}
+  m_LocalPosition: {x: 5.12, y: 12.85, z: 9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: e1b1cd36b0237df4d9c2080749830cd8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 06f44b3f78524cc4b83fe5d97d383370, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,9 +98,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f497fa3a5ac7344db823603a61fbdd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vineJumpPower: 20
+  vineJumpPower: 25
   climbSpeed: 5
-  regrabDelay: 0.5
+  regrabDelay: 0.3
 --- !u!61 &3356041063834159057
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -114,16 +114,16 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.010633945, y: -0.32217026}
+  m_Offset: {x: 0.010633945, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.625, y: 5.625}
+    oldSize: {x: 5.626465, y: 11.5}
     newSize: {x: 14.40375, y: 29.44}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.25950718, y: 4.7935963}
+  m_Size: {x: 0.25950718, y: 10.124046}
   m_EdgeRadius: 0

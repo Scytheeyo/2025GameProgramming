@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public GameObject nextStage;
-    public Transform targetEntrance;
-    public Cinemachine.CinemachineVirtualCamera nextRoomVcam;
+
+     public GameObject nextStage; 
+     public Transform targetEntrance; 
 
     public void InitiateTransition()
     {

@@ -36,22 +36,27 @@ public class GameManager : MonoBehaviour
     }
     public void MoveToNextStage(Door transitionDoor)
     {
+        // 연결된 방이 없는 경우 방어 코드
+        if (transitionDoor.nextStage == null)
+        {
+            return;
+        }
+
         if (currentStage != null)
         {
             currentStage.SetActive(false);
-            // previousRoomVcam.Priority = 10;
         }
 
         GameObject newStage = transitionDoor.nextStage;
-        newStage.SetActive(true);
+        newStage.SetActive(true); 
         currentStage = newStage;
 
-        RepositionPlayer(transitionDoor.targetEntrance.transform.position);
+        RepositionPlayer(transitionDoor.targetEntrance.position);
     }
 
     void RepositionPlayer(Vector3 targetPosition)
     {
         player.VelocityZero();
-        player.transform.position = targetPosition + new Vector3(0, -1.5f, 0);
+        player.transform.position = targetPosition;
     }
 }
