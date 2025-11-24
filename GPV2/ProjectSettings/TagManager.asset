@@ -4,13 +4,23 @@
 TagManager:
   serializedVersion: 2
   tags:
+<<<<<<< HEAD
   - Enemy
+=======
+>>>>>>> ad96203177ef50f307a294cd211d38653a50bcfd
   - Ground
   - Exit
   - Entrance
   - RedPotion
+<<<<<<< HEAD
   - Chest
   - Boss
+=======
+  - Enemy
+  - Chest
+  - Weapon
+  - BluePotion
+>>>>>>> ad96203177ef50f307a294cd211d38653a50bcfd
   layers:
   - Default
   - TransparentFX
