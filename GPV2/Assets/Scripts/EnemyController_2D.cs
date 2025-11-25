@@ -15,7 +15,7 @@ public class EnemyController_2D : MonoBehaviour
     [Header("References")]
     public Transform player;
     public Transform attackPoint;
-    public GameObject dropItemPrefab; // Inspector에서 아이템 프리팹 연결
+    public GameObject dropItemPrefab;
 
     protected Rigidbody2D rb;
     protected Animator animator;
@@ -42,7 +42,6 @@ public class EnemyController_2D : MonoBehaviour
             }
         }
 
-
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
@@ -53,16 +52,16 @@ public class EnemyController_2D : MonoBehaviour
     protected virtual void Update()
     {
         if (isDead || player == null) return;
-        
+
         float distance = Vector2.Distance(transform.position, player.position);
         sr.flipX = (player.position.x < transform.position.x);
         UpdateAttackPointDirection();
 
-        /*if (isAttacking)
+        if (isAttacking)
         {
             rb.velocity = Vector2.zero;
             return;
-        }*/
+        }
 
         if (playerInAttackRange)
         {
@@ -79,7 +78,7 @@ public class EnemyController_2D : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(999);
     }
 
-    void Idle()
+    protected void Idle()
     {
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
@@ -87,12 +86,12 @@ public class EnemyController_2D : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-    void ChasePlayer()
+    protected void ChasePlayer()
     {
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
         animator.SetFloat("Speed", 1);
-        Debug.Log($"[Enemy] Speed 파라미터 값: {animator.GetFloat("Speed")}");
+        //Debug.Log($"[Enemy] Speed 파라미터 값: {animator.GetFloat("Speed")}");
 
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
@@ -154,7 +153,6 @@ public class EnemyController_2D : MonoBehaviour
     {
         isAttacking = true;
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
 
         animator.SetBool("IsAttacking", true);
         animator.SetFloat("Speed", 0);
@@ -169,7 +167,6 @@ public class EnemyController_2D : MonoBehaviour
     void EndAttack()
     {
         isAttacking = false;
-        rb.isKinematic = false;
         animator.SetBool("IsAttacking", false);
 
         Collider2D playerCol = player.GetComponent<Collider2D>();
@@ -205,23 +202,26 @@ public class EnemyController_2D : MonoBehaviour
         animator.SetFloat("Speed", 0);
 
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
+
+        // 죽었을 때는 중력 꺼도 됨 (시체가 굴러다니는 거 방지)
+        // 만약 시체가 바닥에 툭 떨어지게 하고 싶으면 simulated는 true로 두세요.
+        rb.simulated = false;
         myCollider.enabled = false;
 
-        // 아이템은 사망 애니메이션의 마지막 프레임에서 DropItem() 호출
-        // (Animation Event로 연결)
+        if (dropItemPrefab != null)
+            Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
     }
 
-    // 애니메이션 이벤트용
+    // 애니메이션 이벤트 연결용
+    public void DestroyEnemy()
+    {
+        Destroy(gameObject);
+    }
+
     public void DropItem()
     {
         if (dropItemPrefab != null)
-        {
             Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-            Debug.Log("아이템 드롭!");
-        }
-
-        Destroy(gameObject, 0.2f); // 약간의 여유 후 제거
     }
 
     void OnDrawGizmosSelected()
