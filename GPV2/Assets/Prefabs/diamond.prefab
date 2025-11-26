@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5117330592053247516}
   - component: {fileID: 5117330592053247519}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,13 +62,13 @@ GameObject:
   - component: {fileID: 5117330593268302135}
   - component: {fileID: 5117330593268302132}
   - component: {fileID: 5189582277779506562}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: diamond
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5117330593268302138
 Transform:
   m_ObjectHideFlags: 0

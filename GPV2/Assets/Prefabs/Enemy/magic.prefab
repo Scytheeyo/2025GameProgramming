@@ -14,13 +14,13 @@ GameObject:
   - component: {fileID: 8428736245585864423}
   - component: {fileID: 8428736245585864420}
   - component: {fileID: 6893270086099606016}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: magic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8428736245585864426
 Transform:
   m_ObjectHideFlags: 0
@@ -175,11 +175,13 @@ MonoBehaviour:
   chaseRange: 10
   attackCooldown: 1
   damage: 10
+  hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  flashDuration: 0.1
   player: {fileID: 0}
   attackPoint: {fileID: 8428736246263011788}
   dropItemPrefab: {fileID: 0}
   isDead: 0
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 4612317195019768454, guid: 421830e161d7a0e4ba7d0b557f39dfca, type: 3}
   shootCooldown: 2
   castTime: 0.8
 --- !u!1 &8428736246263011789
@@ -192,13 +194,13 @@ GameObject:
   m_Component:
   - component: {fileID: 8428736246263011788}
   - component: {fileID: 8428736246263011791}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8428736246263011788
 Transform:
   m_ObjectHideFlags: 0

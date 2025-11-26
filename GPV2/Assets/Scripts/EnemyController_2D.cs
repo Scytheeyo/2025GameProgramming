@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class EnemyController_2D : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class EnemyController_2D : MonoBehaviour
     public float chaseRange = 10f;
     public float attackCooldown = 1f;
     public int damage = 10;
+
+    [Header("Hit Effect")]
+    public Color hitColor = new Color(1f, 0.4f, 0.4f); // 피격 시 색상
+    public float flashDuration = 0.1f; // 깜빡이는 시간
+    private Coroutine flashCoroutine;  // 깜빡임 코루틴 제어 변수
 
     [Header("References")]
     public Transform player;
@@ -75,7 +81,7 @@ public class EnemyController_2D : MonoBehaviour
         {
             Idle();
         }
-        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(999);
+        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
     protected void Idle()
@@ -91,13 +97,11 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
         animator.SetFloat("Speed", 1);
-        //Debug.Log($"[Enemy] Speed 파라미터 값: {animator.GetFloat("Speed")}");
 
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
     }
 
-    // === 회복 전용 함수 (최대 체력 초과 방지) ===
     public void Heal(int amount)
     {
         if (isDead) return;
@@ -180,7 +184,16 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= dmg;
-        Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
+        // Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
+
+        // [추가] 피격 깜빡임 효과 (연속 피격 시 기존 코루틴 취소 후 재실행)
+        if (gameObject.activeInHierarchy)
+        {
+            if (flashCoroutine != null)
+                StopCoroutine(flashCoroutine);
+
+            flashCoroutine = StartCoroutine(HitFlashRoutine());
+        }
 
         if (currentHealth <= 0)
         {
@@ -192,10 +205,26 @@ public class EnemyController_2D : MonoBehaviour
         }
     }
 
+    // [추가] Material 색상 변경 코루틴 (애니메이션 간섭 무시)
+    IEnumerator HitFlashRoutine()
+    {
+        if (sr != null)
+        {
+            sr.material.color = hitColor;
+            yield return new WaitForSeconds(flashDuration);
+            sr.material.color = Color.white;
+        }
+        flashCoroutine = null;
+    }
+
     void Die()
     {
         if (isDead) return;
         isDead = true;
+
+        // [추가] 죽을 때 색상 원상복구 및 코루틴 정지
+        StopAllCoroutines();
+        if (sr != null) sr.material.color = Color.white;
 
         animator.SetBool("IsDead", true);
         animator.SetBool("IsAttacking", false);
@@ -203,8 +232,6 @@ public class EnemyController_2D : MonoBehaviour
 
         rb.velocity = Vector2.zero;
 
-        // 죽었을 때는 중력 꺼도 됨 (시체가 굴러다니는 거 방지)
-        // 만약 시체가 바닥에 툭 떨어지게 하고 싶으면 simulated는 true로 두세요.
         rb.simulated = false;
         myCollider.enabled = false;
 
@@ -212,7 +239,6 @@ public class EnemyController_2D : MonoBehaviour
             Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
     }
 
-    // 애니메이션 이벤트 연결용
     public void DestroyEnemy()
     {
         Destroy(gameObject);
