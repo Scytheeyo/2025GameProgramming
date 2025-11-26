@@ -61,6 +61,9 @@ public class Player : MonoBehaviour
         health = Max_Health;
         mana = Max_Mana;
         for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
+        for (int i = 2; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
+        for (int i = 3; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
+        for (int i = 4; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Spade, i));
         for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Clover, i));
         for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Heart, i));
         // for (int i = 1; i <= 13; ++i) AddCardToCollection(new CardData(CardSuit.Diamond, i));
@@ -420,23 +423,7 @@ public class Player : MonoBehaviour
     }
     public void AddCardToCollection(CardData newCard)
     {
-        // 1. LINQ의 Any()를 사용해, 리스트에 'suit'와 'number'가
-        //    모두 일치하는 카드가 *이미* 존재하는지 확인합니다.
-        bool alreadyExists = collectedCards.Any(card =>
-            card.suit == newCard.suit &&
-            card.number == newCard.number
-        );
-
-        // 2. 존재하지 않는 경우(!alreadyExists)에만 리스트에 추가합니다.
-        if (!alreadyExists)
-        {
-            collectedCards.Add(newCard);
-            Debug.Log(newCard.suit + " " + newCard.number + " 카드를 획득했습니다.");
-        }
-        else
-        {
-            // 3. 이미 존재한다면 무시합니다.
-            Debug.Log(newCard.suit + " " + newCard.number + " 카드는 이미 보유 중이라 무시합니다.");
-        }
+        collectedCards.Add(newCard);
+        Debug.Log(newCard.suit + " " + newCard.number + " 카드를 획득했습니다.");
     }
 }

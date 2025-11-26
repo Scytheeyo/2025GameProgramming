@@ -28,36 +28,56 @@ public class CardListUI : MonoBehaviour
             return;
         }
 
-        // ▼▼▼ [수정된 부분] ▼▼▼
-        // 1. 컬렉션(보유 카드) 패널 새로 고침 (52개 고정 슬롯)
+        // 1. 컬렉션(보유 카드) 패널 새로 고침
         foreach (Transform child in collectionContent)
         {
             Destroy(child.gameObject);
         }
 
-        // GetCardSprite의 스프라이트 순서(하트, 다이아, 스페이드, 클로버)를 따릅니다.
         List<CardSuit> suitOrder = new List<CardSuit> { CardSuit.Spade, CardSuit.Heart, CardSuit.Diamond, CardSuit.Clover };
 
         foreach (CardSuit suit in suitOrder)
         {
             for (int number = 1; number <= 13; number++)
             {
-                // 이 슬롯에 해당하는 카드 데이터 생성 (참조용)
                 CardData slotCardData = new CardData(suit, number);
 
-                // 이 카드를 플레이어가 보유했는지 확인 (실제 인스턴스)
-                CardData ownedCardInstance = player.collectedCards.FirstOrDefault(c => c.suit == suit && c.number == number);
+                // [수정 1] 해당 문양과 숫자를 가진 카드가 총 몇 장인지 계산
+                int cardCount = player.collectedCards.Count(c => c.suit == suit && c.number == number);
 
-                // 보유한 카드가 덱에 있는지 확인
-                bool isInDeck = (ownedCardInstance != null) && player.activeDeck.Contains(ownedCardInstance);
+                // [수정 2] 버튼 기능 연결을 위해 '첫 번째' 카드 인스턴스를 가져옴 (없으면 null)
+                CardData firstInstance = player.collectedCards.FirstOrDefault(c => c.suit == suit && c.number == number);
 
-                // --- UI 오브젝트 생성 및 설정 ---
+                // 덱에 포함되어 있는지 확인 (한 장이라도 덱에 있으면 표시)
+                bool isInDeck = (firstInstance != null) && player.activeDeck.Contains(firstInstance);
+
+                // --- UI 오브젝트 생성 ---
                 GameObject cardObj = Instantiate(cardPrefab, collectionContent);
                 Image cardImage = cardObj.GetComponent<Image>();
                 Button cardButton = cardObj.GetComponent<Button>();
 
-                Sprite cardSprite = GetCardSprite(slotCardData); // 스프라이트 가져오기
+                // [수정 3] 수량 텍스트 찾기 및 설정
+                // 프리팹에 만들어둔 "CountText"라는 이름의 자식 오브젝트를 찾습니다.
+                Transform countTextTrans = cardObj.transform.Find("CountText");
+                if (countTextTrans != null)
+                {
+                    TextMeshProUGUI countText = countTextTrans.GetComponent<TextMeshProUGUI>();
+                    if (countText != null)
+                    {
+                        // 2장 이상일 때만 "2", "3" 표시 (1장이나 0장은 숨김 처리)
+                        if (cardCount >= 1)
+                        {
+                            countText.text = "" + cardCount;
+                            countText.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            countText.gameObject.SetActive(false);
+                        }
+                    }
+                }
 
+                Sprite cardSprite = GetCardSprite(slotCardData);
                 if (cardImage != null && cardSprite != null)
                 {
                     cardImage.sprite = cardSprite;
@@ -65,36 +85,31 @@ public class CardListUI : MonoBehaviour
 
                 cardButton.onClick.RemoveAllListeners();
 
-                // --- 상태에 따라 UI 분기 ---
-                if (ownedCardInstance != null && !isInDeck)
+                // --- 상태 분기 ---
+                // 카드를 1장 이상 가지고 있고, 덱에 없다면 덱으로 보낼 수 있음
+                if (cardCount > 0 && !isInDeck)
                 {
-                    // 1. 보유 중 O, 덱 X (컬렉션에 표시, 클릭 가능)
-                    cardImage.color = Color.white; // 밝게
+                    cardImage.color = Color.white;
                     cardButton.interactable = true;
 
-                    // 리스너에는 '실제' 카드 인스턴스를 전달해야 함
-                    CardData cardToMove = ownedCardInstance;
-                    cardButton.onClick.AddListener(() => MoveCardToDeck(cardToMove));
+                    // 첫 번째 인스턴스를 덱으로 이동시킴
+                    cardButton.onClick.AddListener(() => MoveCardToDeck(firstInstance));
                 }
                 else
                 {
-                    // 2. 보유 중 X (컬렉션에 어둡게, 클릭 불가)
-                    // 3. 보유 중 O, 덱 O (컬렉션에 어둡게, 클릭 불가)
-                    cardImage.color = new Color(0.2f, 0.2f, 0.2f, 0.5f); // 어둡게 (실루엣)
+                    // 카드가 없거나(0장), 이미 덱에 있는 경우
+                    cardImage.color = new Color(0.2f, 0.2f, 0.2f, 0.5f); // 어둡게
                     cardButton.interactable = false;
                 }
             }
         }
-        // ▲▲▲ [여기까지 수정] ▲▲▲
 
-
-        // 2. 덱(활성 덱) 패널 새로 고침 (기존 로직 + 정렬 유지)
+        // 2. 덱(활성 덱) 패널 새로 고침 (기존 로직 유지)
         foreach (Transform child in deckContent)
         {
             Destroy(child.gameObject);
         }
 
-        // 숫자 우선, 문양 차선 정렬 (이전 요청)
         List<CardData> sortedDeck = player.activeDeck
                                         .OrderBy(card => card.number)
                                         .ThenBy(card => card.suit)
@@ -102,8 +117,7 @@ public class CardListUI : MonoBehaviour
 
         foreach (CardData cardInDeck in sortedDeck)
         {
-            // CreateCardUI 함수는 덱 패널을 위해 계속 사용
-            CreateCardUI(cardInDeck, deckContent, false); // false = "MoveToCollection" 리스너
+            CreateCardUI(cardInDeck, deckContent, false);
         }
     }
 
