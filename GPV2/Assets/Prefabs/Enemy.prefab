@@ -78,7 +78,7 @@ Transform:
   m_GameObject: {fileID: 1081269191953349662}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.452, y: -0.004, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 10, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1081269191008207674}
@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  isBoss: 0
   moveSpeed: 3
   chaseRange: 1
   attackCooldown: 1
@@ -225,3 +226,4 @@ MonoBehaviour:
   player: {fileID: 0}
   attackPoint: {fileID: 1081269191008207674}
   dropItemPrefab: {fileID: 3445522045841734508, guid: d1fd11b9e4928b94eafb050155c639fd, type: 3}
+  myCollider: {fileID: 0}
