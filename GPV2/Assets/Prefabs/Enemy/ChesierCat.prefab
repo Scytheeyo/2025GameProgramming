@@ -97,9 +97,10 @@ GameObject:
   - component: {fileID: 907468451843598894}
   - component: {fileID: 907468451843598891}
   - component: {fileID: 907468451843598890}
+  - component: {fileID: 856663785}
   m_Layer: 0
   m_Name: ChesierCat
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -222,15 +223,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eec1a99ec6528cc409ccd87db52329b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
   moveSpeed: 2.5
+  chaseRange: 10
+  attackCooldown: 1
+  damage: 10
+  hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  flashDuration: 0.1
+  player: {fileID: 0}
+  attackPoint: {fileID: 907468451843598892}
+  dropItemPrefab: {fileID: 0}
+  isDead: 0
   turnSpeed: 100
-  dashSpeed: 8
+  dashSpeed: 10
   alphaUpdateInterval: 0.1
   alphaStep: 0.1
   invisibleDistance: 15
-  attackRange: 7
   appearAnimDuration: 2
-  attackDuration: 0.5
+  attackDuration: 2.5
+--- !u!50 &856663785
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907468451843598895}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 10
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &907468451954027460
 GameObject:
   m_ObjectHideFlags: 0

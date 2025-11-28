@@ -118,7 +118,7 @@ public class EnemyController_2D : MonoBehaviour
             : new Vector3(xOffset, attackPoint.localPosition.y, 0);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -206,7 +206,7 @@ public class EnemyController_2D : MonoBehaviour
     }
 
     // [추가] Material 색상 변경 코루틴 (애니메이션 간섭 무시)
-    IEnumerator HitFlashRoutine()
+    protected virtual IEnumerator HitFlashRoutine()
     {
         if (sr != null)
         {
@@ -217,7 +217,7 @@ public class EnemyController_2D : MonoBehaviour
         flashCoroutine = null;
     }
 
-    void Die()
+    protected virtual void Die()
     {
         if (isDead) return;
         isDead = true;
