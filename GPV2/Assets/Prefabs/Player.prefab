@@ -56,7 +56,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3989535346665826268}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.1, y: 0.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -192,7 +192,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3989535347563536464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.93, y: -4.05, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -339,6 +339,7 @@ MonoBehaviour:
   attackHitbox: {fileID: 3989535347171507335}
   attackDelay: 0.2
   attackDuration: 0.4
+  comboResetTime: 1
   projectilePrefab: {fileID: 5768103149254272704, guid: 12da7ce437a74f2489badca13ca0ab6c, type: 3}
   firePoint: {fileID: 3989535346665826259}
   fireRate: 0.5
@@ -349,6 +350,7 @@ MonoBehaviour:
   staffSlot: {fileID: 1073355679}
   inventoryUIManager: {fileID: 0}
   cardListWindow: {fileID: 0}
+  optionWindow: {fileID: 0}
 --- !u!1 &3989535347859282009
 GameObject:
   m_ObjectHideFlags: 0
