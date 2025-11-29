@@ -30,6 +30,7 @@ public class BarrierController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // 플레이어인지, 그리고 이미 발동된 적이 없는지 확인
         if (other.CompareTag("Player") && !isActivated)
         {
             // 리지드바디 체크 등 물리 오류 방지용 로그
