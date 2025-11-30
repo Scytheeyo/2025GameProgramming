@@ -3,16 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - RedPotion
+  - Boss
+  - Enemy
+  - Entrance
+  - Weapon
+  - Exit
+  - Ground
+  - BluePotion
+  - Chest
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Enemy
   - Water
   - UI
-  - 
-  - 
+  - Boss
+  - Player
   - 
   - 
   - 

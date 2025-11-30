@@ -1,5 +1,8 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1102 &-8294641800980610392
+========
 --- !u!1102 &-5575008000476919601
 AnimatorState:
   serializedVersion: 6
@@ -54,13 +57,47 @@ AnimatorStateTransition:
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1102 &-4338711974400399744
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_Name: QueenIdle
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: 1302007164265813679}
+  - {fileID: -2606139553418130771}
+  - {fileID: -4714774093400211936}
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 81c55fbed7330794c998537c43116d71, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &-4730328367976324190
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: QueenIdle 0
+========
   m_Name: cardDie
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -73,13 +110,21 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_Motion: {fileID: 7400000, guid: 8fc36be25c979c4449a003f9b0f34768, type: 2}
+========
   m_Motion: {fileID: 7400000, guid: 0b6213f598bbd9046a099b956ed06e37, type: 2}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1101 &-4714774093400211936
+========
 --- !u!1101 &-4308439322786713879
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,20 +136,82 @@ AnimatorStateTransition:
     m_ConditionEvent: IsDead
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_DstState: {fileID: -4730328367976324190}
+========
   m_DstState: {fileID: -4338711974400399744}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_ExitTime: 0.375
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &-4373311834622298386
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 4
+    m_ConditionEvent: Speed
+    m_EventTreshold: 0.1
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -8294641800980610392}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.625
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &-3454594599472720836
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: IsSummoning
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -8294641800980610392}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0
+  m_TransitionOffset: 0
+  m_ExitTime: 1
+========
   m_ExitTime: 0.25
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1101 &-2869226791840104344
+========
 --- !u!1101 &-4206273258447843833
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,32 +223,78 @@ AnimatorStateTransition:
     m_ConditionEvent: IsDead
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_DstState: {fileID: -4730328367976324190}
+========
   m_DstState: {fileID: -4338711974400399744}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_ExitTime: 0.625
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &-2606139553418130771
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: IsSummoning
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -296744958413603697}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0
+  m_TransitionOffset: 0
+  m_ExitTime: 1
+========
   m_ExitTime: 0.25
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1102 &-296744958413603697
+========
 --- !u!1102 &-1820950430033905247
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_Name: QueenSummon
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: -3454594599472720836}
+  - {fileID: 7913520669177468225}
+========
   m_Name: cardMagic
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 5076585971717304628}
   - {fileID: -4308439322786713879}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -151,12 +304,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_Motion: {fileID: 7400000, guid: 7ec113ed5befa6a4b8dda9cb70e151c4, type: 2}
+========
   m_Motion: {fileID: 7400000, guid: bbd3abcdbecde9642bc361ca75faa688, type: 2}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1107 &-94981105484795078
+========
 --- !u!1101 &-1686254615275416874
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -183,6 +343,7 @@ AnimatorStateTransition:
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1107 &-469251141873702866
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorStateMachine:
   serializedVersion: 6
   m_ObjectHideFlags: 1
@@ -192,6 +353,19 @@ AnimatorStateMachine:
   m_Name: Base Layer
   m_ChildStates:
   - serializedVersion: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+    m_State: {fileID: -8294641800980610392}
+    m_Position: {x: 330, y: 70, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -20315446952945429}
+    m_Position: {x: 590, y: 190, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -296744958413603697}
+    m_Position: {x: 637.44116, y: 33.94757, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -4730328367976324190}
+    m_Position: {x: 400, y: -40, z: 0}
+========
     m_State: {fileID: 7222814487810849517}
     m_Position: {x: 370, y: 90, z: 0}
   - serializedVersion: 1
@@ -203,6 +377,7 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -4338711974400399744}
     m_Position: {x: 650, y: 130, z: 0}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -212,14 +387,50 @@ AnimatorStateMachine:
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_DefaultState: {fileID: -8294641800980610392}
+--- !u!1102 &-20315446952945429
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: QueenWalk
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: -4373311834622298386}
+  - {fileID: -2869226791840104344}
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 0230a0a7d98d7c342b9b0c7420260ad7, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+========
   m_DefaultState: {fileID: 7222814487810849517}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 --- !u!91 &9100000
 AnimatorController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_Name: QueenController
+========
   m_Name: Card3
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Speed
@@ -228,7 +439,11 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  - m_Name: IsSummoning
+========
   - m_Name: IsAttacking
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -240,16 +455,14 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: Hit
-    m_Type: 9
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+    m_StateMachine: {fileID: -94981105484795078}
+========
     m_StateMachine: {fileID: -469251141873702866}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
     m_Mask: {fileID: 0}
     m_Motions: []
     m_Behaviours: []
@@ -259,7 +472,11 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1101 &1302007164265813679
+========
 --- !u!1101 &2371093019078145732
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -271,7 +488,11 @@ AnimatorStateTransition:
     m_ConditionEvent: Speed
     m_EventTreshold: 0.1
   m_DstStateMachine: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_DstState: {fileID: -20315446952945429}
+========
   m_DstState: {fileID: -5575008000476919601}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
@@ -284,7 +505,11 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+--- !u!1101 &7913520669177468225
+========
 --- !u!1101 &2550525200898999570
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -293,22 +518,35 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+    m_ConditionEvent: IsDead
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -4730328367976324190}
+========
     m_ConditionEvent: IsAttacking
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1820950430033905247}
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+  m_ExitTime: 0.85294116
+========
   m_ExitTime: 0.25
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/QueenController.controller
+========
 --- !u!1101 &5076585971717304628
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -363,3 +601,4 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Animators/Enemy/Card3.controller

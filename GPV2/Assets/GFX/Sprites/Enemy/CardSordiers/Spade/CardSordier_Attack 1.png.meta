@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
 guid: c3cce7aad4b0b034aa348351fd253d7d
+========
+guid: 223e977217b363e4589a2af60d122465
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -105,12 +109,20 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       name: CardSordier_Attack_0
+========
+      name: CardSordier2_walk_0
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       rect:
         serializedVersion: 2
         x: 0
         y: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
         width: 96
+========
+        width: 64
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
         height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -119,19 +131,33 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       spriteID: bdb98a92343194c4bac904ba5a83fb8c
       internalID: 354152446
+========
+      spriteID: 173f6b63f5f6916419ebe52a82e64dc4
+      internalID: -633822777
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       name: CardSordier_Attack_1
       rect:
         serializedVersion: 2
         x: 96
         y: 0
         width: 96
+========
+      name: CardSordier2_walk_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
         height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -140,19 +166,27 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       spriteID: 15b9a716e93471746b5cec5af83c890a
       internalID: 1800177618
+========
+      spriteID: 8e4e1f25cf7365b43839521101944c93
+      internalID: -1168005525
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       name: CardSordier_Attack_2
+========
+      name: CardSordier2_walk_2
       rect:
         serializedVersion: 2
-        x: 192
+        x: 128
         y: 0
-        width: 96
+        width: 64
         height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -161,6 +195,33 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+      spriteID: 81437bcb043c7e748bda4c3a47f8e980
+      internalID: 545741396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardSordier2_walk_3
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
+        width: 96
+========
+        width: 64
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       spriteID: 689d98e42eefc6b4a9e216105ea8bd95
       internalID: -175856757
       vertices: []
@@ -184,6 +245,10 @@ TextureImporter:
       bones: []
       spriteID: c480ff3a63f5c694eb2e8b7e34fed58f
       internalID: 793433071
+========
+      spriteID: 97c3296332e2dba43b87fd8025228ef6
+      internalID: -1617014901
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       vertices: []
       indices: 
       edges: []
@@ -199,10 +264,17 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Attack 1.png.meta
       CardSordier_Attack_0: 354152446
       CardSordier_Attack_1: 1800177618
       CardSordier_Attack_2: -175856757
       CardSordier_Attack_3: 793433071
+========
+      CardSordier2_walk_0: -633822777
+      CardSordier2_walk_1: -1168005525
+      CardSordier2_walk_2: 545741396
+      CardSordier2_walk_3: -1617014901
+>>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

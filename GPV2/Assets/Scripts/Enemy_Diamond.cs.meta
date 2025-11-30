@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/Scripts/Enemy_Diamond.cs.meta
 guid: a659bf92cbbe23e4b8c783f58d98c99d
+========
+guid: 6005349a3eed21747b983e617091b83d
+>>>>>>>> origin/hj:GPV2/Assets/Scripts/Boss_HeartQueen.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
