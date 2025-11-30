@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
 guid: 223e977217b363e4589a2af60d122465
-========
-guid: 0f1231fe81e39c94d97814a1b35e38f3
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -109,11 +105,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       name: CardSordier2_walk_0
-========
-      name: CheshierCat_Attack_0
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       rect:
         serializedVersion: 2
         x: 0
@@ -127,23 +119,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       spriteID: 173f6b63f5f6916419ebe52a82e64dc4
       internalID: -633822777
-========
-      spriteID: c7c746c81ae817443bbf89d6138718a1
-      internalID: -883696701
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       name: CardSordier2_walk_1
-========
-      name: CheshierCat_Attack_1
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       rect:
         serializedVersion: 2
         x: 64
@@ -157,23 +140,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       spriteID: 8e4e1f25cf7365b43839521101944c93
       internalID: -1168005525
-========
-      spriteID: bcec9eff783ab404d82919b811e2570e
-      internalID: -376753296
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       name: CardSordier2_walk_2
-========
-      name: CheshierCat_Attack_2
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       rect:
         serializedVersion: 2
         x: 128
@@ -187,7 +161,6 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       spriteID: 81437bcb043c7e748bda4c3a47f8e980
       internalID: 545741396
       vertices: []
@@ -211,10 +184,6 @@ TextureImporter:
       bones: []
       spriteID: 97c3296332e2dba43b87fd8025228ef6
       internalID: -1617014901
-========
-      spriteID: 62c748949c1bf4f4186efadf4ea41440
-      internalID: 538425942
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
       vertices: []
       indices: 
       edges: []
@@ -230,16 +199,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_walk.png.meta
       CardSordier2_walk_0: -633822777
       CardSordier2_walk_1: -1168005525
       CardSordier2_walk_2: 545741396
       CardSordier2_walk_3: -1617014901
-========
-      CheshierCat_Attack_0: -883696701
-      CheshierCat_Attack_1: -376753296
-      CheshierCat_Attack_2: 538425942
->>>>>>>> origin/hj:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
