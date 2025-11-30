@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/Prefabs/Caterpillar.prefab.meta
 guid: 8053ea5a988fa4b468cc36cf9dd3d643
+========
+guid: 2b675e79fe883ce4391afd0db4bdab7e
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/Prefabs/CardPrefab.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

@@ -6,7 +6,11 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Card3_Idle.anim
   m_Name: Card3_Idle
+========
+  m_Name: Alice_Walk
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,6 +24,7 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Card3_Idle.anim
       value: {fileID: 1435750213, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
     - time: 0.2
       value: {fileID: 751468288, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
@@ -27,11 +32,24 @@ AnimationClip:
       value: {fileID: 2007920495, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
     - time: 0.6
       value: {fileID: 1138555899, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
+========
+      value: {fileID: -2113688995, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - time: 0.25
+      value: {fileID: 391283881, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - time: 0.5
+      value: {fileID: 468894300, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - time: 0.75
+      value: {fileID: -64794672, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Card3_Idle.anim
   m_SampleRate: 10
+========
+  m_SampleRate: 4
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -46,16 +64,27 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Card3_Idle.anim
     - {fileID: 1435750213, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
     - {fileID: 751468288, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
     - {fileID: 2007920495, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
     - {fileID: 1138555899, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
+========
+    - {fileID: -2113688995, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - {fileID: 391283881, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - {fileID: 468894300, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+    - {fileID: -64794672, guid: 9cefabbbccb05e149bb69b23b43f196f, type: 3}
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Card3_Idle.anim
     m_StopTime: 0.70000005
+========
+    m_StopTime: 1
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Player/Alice_Walk.anim
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

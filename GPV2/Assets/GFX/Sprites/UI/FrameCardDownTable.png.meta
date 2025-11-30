@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/UI/FrameCardDownTable.png.meta
 guid: 0393db60990f7614da1d927080ff967a
+========
+guid: 7e03492dc70f9084593a0e892a2bb816
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Spade/CardSordier_Walk.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}

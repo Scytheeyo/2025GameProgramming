@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/Scripts/Boss_CardCaptain.cs.meta
 guid: 851717364f58458478abd0e3c9d3f17f
+========
+guid: 93d0f66d234c16548b1e9bc1f5879aca
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/Scripts/CardData.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

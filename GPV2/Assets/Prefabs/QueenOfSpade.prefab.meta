@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/Prefabs/QueenOfSpade.prefab.meta
 guid: 21a5ca09e543c4d4cb857986aca09527
+========
+guid: 1510e55e7272dc241b2babbc580a2892
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/Prefabs/EffectCanvas.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 
