@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class EnemyController_2D : MonoBehaviour
 {
     [Header("Stats")]
     public int maxHealth = 100;
     public int currentHealth;
+    public bool isBoss = false; // [추가됨] 보스 여부 확인
 
     [Header("Settings")]
     public float moveSpeed = 3f;
@@ -12,10 +14,15 @@ public class EnemyController_2D : MonoBehaviour
     public float attackCooldown = 1f;
     public int damage = 10;
 
+    [Header("Hit Effect")]
+    public Color hitColor = new Color(1f, 0.4f, 0.4f); // 피격 시 색상
+    public float flashDuration = 0.1f; // 깜빡이는 시간
+    private Coroutine flashCoroutine;  // 깜빡임 코루틴 제어 변수
+
     [Header("References")]
     public Transform player;
     public Transform attackPoint;
-    public GameObject dropItemPrefab; // Inspector에서 아이템 프리팹 연결
+    public GameObject dropItemPrefab;
 
     protected Rigidbody2D rb;
     protected Animator animator;
@@ -42,7 +49,6 @@ public class EnemyController_2D : MonoBehaviour
             }
         }
 
-
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
@@ -53,16 +59,16 @@ public class EnemyController_2D : MonoBehaviour
     protected virtual void Update()
     {
         if (isDead || player == null) return;
-        
+
         float distance = Vector2.Distance(transform.position, player.position);
         sr.flipX = (player.position.x < transform.position.x);
         UpdateAttackPointDirection();
 
-        /*if (isAttacking)
+        if (isAttacking)
         {
             rb.velocity = Vector2.zero;
             return;
-        }*/
+        }
 
         if (playerInAttackRange)
         {
@@ -76,10 +82,10 @@ public class EnemyController_2D : MonoBehaviour
         {
             Idle();
         }
-        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(999);
+        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
-    void Idle()
+    protected void Idle()
     {
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
@@ -87,18 +93,16 @@ public class EnemyController_2D : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-    void ChasePlayer()
+    protected void ChasePlayer()
     {
         if (isDead) return;
         animator.SetBool("IsAttacking", false);
         animator.SetFloat("Speed", 1);
-        Debug.Log($"[Enemy] Speed 파라미터 값: {animator.GetFloat("Speed")}");
 
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
     }
 
-    // === 회복 전용 함수 (최대 체력 초과 방지) ===
     public void Heal(int amount)
     {
         if (isDead) return;
@@ -115,7 +119,7 @@ public class EnemyController_2D : MonoBehaviour
             : new Vector3(xOffset, attackPoint.localPosition.y, 0);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -154,7 +158,6 @@ public class EnemyController_2D : MonoBehaviour
     {
         isAttacking = true;
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
 
         animator.SetBool("IsAttacking", true);
         animator.SetFloat("Speed", 0);
@@ -169,7 +172,6 @@ public class EnemyController_2D : MonoBehaviour
     void EndAttack()
     {
         isAttacking = false;
-        rb.isKinematic = false;
         animator.SetBool("IsAttacking", false);
 
         Collider2D playerCol = player.GetComponent<Collider2D>();
@@ -183,7 +185,16 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= dmg;
-        Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
+        // Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
+
+        // [추가] 피격 깜빡임 효과 (연속 피격 시 기존 코루틴 취소 후 재실행)
+        if (gameObject.activeInHierarchy)
+        {
+            if (flashCoroutine != null)
+                StopCoroutine(flashCoroutine);
+
+            flashCoroutine = StartCoroutine(HitFlashRoutine());
+        }
 
         if (currentHealth <= 0)
         {
@@ -195,33 +206,85 @@ public class EnemyController_2D : MonoBehaviour
         }
     }
 
-    void Die()
+    // [추가] Material 색상 변경 코루틴 (애니메이션 간섭 무시)
+    protected virtual IEnumerator HitFlashRoutine()
+    {
+        if (sr != null)
+        {
+            sr.material.color = hitColor;
+            yield return new WaitForSeconds(flashDuration);
+            sr.material.color = Color.white;
+        }
+        flashCoroutine = null;
+    }
+
+    // [수정됨] protected -> public으로 변경 (외부에서 호출 가능하도록)
+    public virtual void Die()
     {
         if (isDead) return;
         isDead = true;
+
+        // [추가] 죽을 때 색상 원상복구 및 코루틴 정지
+        StopAllCoroutines();
+        if (sr != null) sr.material.color = Color.white;
 
         animator.SetBool("IsDead", true);
         animator.SetBool("IsAttacking", false);
         animator.SetFloat("Speed", 0);
 
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
+
+        rb.simulated = false;
         myCollider.enabled = false;
 
-        // 아이템은 사망 애니메이션의 마지막 프레임에서 DropItem() 호출
-        // (Animation Event로 연결)
+        if (dropItemPrefab != null)
+            Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
     }
 
-    // 애니메이션 이벤트용
+    public void DestroyEnemy()
+    {
+        Destroy(gameObject);
+    }
+
     public void DropItem()
     {
         if (dropItemPrefab != null)
-        {
             Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
-            Debug.Log("아이템 드롭!");
-        }
+    }
 
-        Destroy(gameObject, 0.2f); // 약간의 여유 후 제거
+    // [추가됨] 넉백 시작 함수
+    public void BeginKnockback(Vector2 direction, float force)
+    {
+        if (isBoss || isDead) return; // 보스는 밀리지 않음
+        rb.AddForce(direction * force, ForceMode2D.Impulse);
+    }
+
+    // [추가됨] 퍼센트 데미지 함수
+    public void TakePercentDamage(float percent)
+    {
+        if (isDead) return;
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
+    }
+
+    // [추가됨] 적 정지(빙결) 함수
+    public void FreezeEnemy(float duration)
+    {
+        if (isBoss || isDead) return;
+        StartCoroutine(FreezeRoutine(duration));
+    }
+
+    private IEnumerator FreezeRoutine(float duration)
+    {
+        float originalSpeed = moveSpeed;
+        moveSpeed = 0f;
+        if (animator != null) animator.speed = 0f;
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = originalSpeed;
+        if (animator != null) animator.speed = 1f;
     }
 
     void OnDrawGizmosSelected()

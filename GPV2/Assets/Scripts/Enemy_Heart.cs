@@ -1,31 +1,44 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy_Heart : EnemyController_2D
 {
     [Header("Heal Settings")]
-    public int healAmount = 30;          // 1È¸ ï¿½ï¿½ï¿½ï¿½
-    public float healInterval = 5f;      // ï¿½ï¿½ ï¿½Ö±ï¿½
+    public int healAmount = 30;          // 1È¸ Èú·®
+    public float healInterval = 5f;      // Èú ÁÖ±â
     private float lastHealTime = 0f;
+    // Èú ÁßÀÎÁö Ã¼Å©ÇÏ´Â º¯¼ö Ãß°¡
+    private bool isHealing = false;
 
     protected override void Update()
     {
         if (isDead) return;
 
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ï¿½ ï¿½ï¿½ ï¿½Ãµï¿½
-        if (Time.time >= lastHealTime + healInterval)
+        // 1. Èú ÁßÀÌ¸é ÀÌµ¿ ·ÎÁ÷ ½ÇÇà ¾È ÇÔ (¸ØÃçÀÖ¾î¾ß ÇÔ)
+        if (isHealing)
         {
-            HealAlliesOrSelf();
-            lastHealTime = Time.time;
+            rb.velocity = Vector2.zero; // È®½ÇÇÏ°Ô Á¤Áö
+            return;
         }
 
-        // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ È¸ï¿½ï¿½ ï¿½Ìµï¿½
+        // 2. Èú ÄðÅ¸ÀÓ Ã¼Å©
+        if (Time.time >= lastHealTime + healInterval)
+        {
+            StartCoroutine(HealRoutine()); // ÄÚ·çÆ¾À¸·Î º¯°æ
+            lastHealTime = Time.time;
+            return; // Èú ½ÃÀÛÇßÀ¸¸é ÀÌ¹ø ÇÁ·¹ÀÓÀº ÀÌµ¿ ½ºÅµ
+        }
+
+        // 3. ÀÌµ¿ ·ÎÁ÷ (Èú ÁßÀÌ ¾Æ´Ò ¶§¸¸ ½ÇÇàµÊ)
         if (player != null)
         {
             float distance = Vector2.Distance(transform.position, player.position);
+
+            // ÃßÀû ¹üÀ§º¸´Ù °¡±î¿ì¸é µµ¸Á°¨
             if (distance < chaseRange)
             {
                 Vector2 dir = (transform.position - player.position).normalized;
-                rb.velocity = dir * moveSpeed * 0.5f;
+                rb.velocity = dir * moveSpeed * 0.5f; // 50% ¼Óµµ·Î µµ¸Á
                 animator?.SetFloat("Speed", 1);
             }
             else
@@ -36,7 +49,25 @@ public class Enemy_Heart : EnemyController_2D
         }
     }
 
-    private void HealAlliesOrSelf()
+    // Èú °úÁ¤À» ÄÚ·çÆ¾À¸·Î Ã³¸® (½Ã°£ Á¦¾î ¿ëÀÌ)
+    IEnumerator HealRoutine()
+    {
+        isHealing = true; // Èú ½ÃÀÛ »óÅÂ ¿Â
+
+        rb.velocity = Vector2.zero;
+        animator?.SetFloat("Speed", 0);
+        animator?.SetTrigger("Heal");
+
+        // Èú ¾Ö´Ï¸ÞÀÌ¼Ç ±æÀÌ¸¸Å­ ´ë±â (´ë·« 1ÃÊ¶ó°í °¡Á¤, ÇÊ¿äÇÏ¸é Á¶Á¤)
+        yield return new WaitForSeconds(1.0f);
+
+        // ½ÇÁ¦ È¸º¹ ·ÎÁ÷ ½ÇÇà
+        HealLogic();
+
+        isHealing = false; // Èú ³¡³², ´Ù½Ã ÀÌµ¿ °¡´É
+    }
+
+    private void HealLogic()
     {
         if (attackPoint == null)
         {
@@ -46,41 +77,35 @@ public class Enemy_Heart : EnemyController_2D
 
         CircleCollider2D circle = attackPoint.GetComponent<CircleCollider2D>();
         float radius = circle != null ? circle.radius : 5f;
-
         Collider2D[] allies = Physics2D.OverlapCircleAll(attackPoint.position, radius);
-        bool healedAny = false;
 
+        bool healedAny = false;
         foreach (var col in allies)
         {
             EnemyController_2D ally = col.GetComponent<EnemyController_2D>();
+            // ³ª ÀÚ½ÅÀº Á¦¿ÜÇÏ°í ´Ù¸¥ Àû¸¸ ¿©±â¼­ Ä¡·áÇÒÁö, Æ÷ÇÔÇÒÁö °áÁ¤
+            // ally != this Á¶°ÇÀ» ³ÖÀ¸¸é Å¸ÀÎ¸¸ Ä¡·á
             if (ally != null && !ally.isDead)
             {
-                ally.Heal(healAmount); 
-                Debug.Log($"{name} ï¿½ï¿½ {ally.name} È¸ï¿½ï¿½ +{healAmount}");
+                ally.Heal(healAmount);
                 healedAny = true;
             }
         }
 
-        // È¤ï¿½ï¿½ ï¿½Æ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
-        if (!healedAny)
-            HealSelf();
-
-        animator?.SetTrigger("Heal");
+        if (!healedAny) HealSelf();
     }
-
 
     private void HealSelf()
     {
         Heal(healAmount);
-        Debug.Log($"{name} ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ È¸ï¿½ï¿½ +{healAmount}");
     }
 
-    // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ (ï¿½Ö´ï¿½ Ã¼ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    // È¸º¹ Àü¿ë ÇÔ¼ö (ÃÖ´ë Ã¼·Â ÃÊ°ú ¹æÁö)
     public void Heal(int amount)
     {
         if (isDead) return;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        Debug.Log($"{name} ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½: {currentHealth}/{maxHealth}");
+        Debug.Log($"{name} ÇöÀç Ã¼·Â: {currentHealth}/{maxHealth}");
     }
 
     void OnDrawGizmosSelected()

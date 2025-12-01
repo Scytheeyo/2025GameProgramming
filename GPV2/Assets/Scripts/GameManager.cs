@@ -4,69 +4,59 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] stages;
-    public int stageIndex;
+
     public Player player;
-    public Exit  exit;
-    public Entrance entrance;
+    public GameObject currentStage; 
+    public static GameManager instance;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        player = FindObjectOfType<Player>();
-    }
-
-    public void NextStage()
-    {
-        if (stageIndex < stages.Length - 1)
+        if (currentStage == null)
         {
-            stages[stageIndex].SetActive(false);
-            stageIndex++;
-            stages[stageIndex].SetActive(true);
-
-            ExitReposition();
-        }
-        else
-        {
-            SceneManager.LoadScene("Stage2");
-        }
-
-    }
-
-    public void PreviousStage()
-    {
-        if (stageIndex > 0)
-        {
-            stages[stageIndex].SetActive(false);
-            stageIndex--;
-            stages[stageIndex].SetActive(true);
-            EntranceReposition();
-        }
-        else
-        {
-          return;
+                return;
         }
     }
-
-    void Update()
+    public void MoveToNextStage(Door transitionDoor)
     {
-        
+        // 연결된 방이 없는 경우 방어 코드
+        if (transitionDoor.nextStage == null)
+        {
+            return;
+        }
+
+        if (currentStage != null)
+        {
+            currentStage.SetActive(false);
+        }
+
+        GameObject newStage = transitionDoor.nextStage;
+        newStage.SetActive(true); 
+        currentStage = newStage;
+
+        RepositionPlayer(transitionDoor.targetEntrance.position);
     }
 
-    void ExitReposition()
+    void RepositionPlayer(Vector3 targetPosition)
     {
-        exit = FindObjectOfType<Exit>();
         player.VelocityZero();
-        player.transform.position = exit.getCurrentPosition() + new Vector3 (0, -1.5f, 0);
-    }
-
-    void EntranceReposition()
-    {
-        entrance = FindObjectOfType<Entrance>();
-        player.VelocityZero();
-        player.transform.position = entrance.getCurrentPosition() + new Vector3(0, -1.5f, 0);
+        player.transform.position = targetPosition;
     }
 }

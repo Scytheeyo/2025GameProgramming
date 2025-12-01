@@ -119,7 +119,7 @@ public class GameHUD : MonoBehaviour
                 mpText.text = $"{player.mana} / {player.maxMana}";
             }
 
-            lastMP = player.mana;
+            lastMP = (int) player.mana;
             lastMaxMP = player.maxMana;
         }
     }

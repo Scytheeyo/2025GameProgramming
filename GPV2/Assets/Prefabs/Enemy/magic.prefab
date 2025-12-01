@@ -13,14 +13,14 @@ GameObject:
   - component: {fileID: 8428736245585864421}
   - component: {fileID: 8428736245585864423}
   - component: {fileID: 8428736245585864420}
-  - component: {fileID: 1088100282}
-  m_Layer: 0
+  - component: {fileID: 6893270086099606016}
+  m_Layer: 3
   m_Name: magic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8428736245585864426
 Transform:
   m_ObjectHideFlags: 0
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8428736245585864424}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.89, y: -2.4509397, z: 0}
   m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7f00389700a6e9b49890bc7f4f398691, type: 3}
+  m_Sprite: {fileID: 1435750213, guid: b8e50f3abc920f8449a15f29f5fa7325, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,7 +99,7 @@ Animator:
   m_GameObject: {fileID: 8428736245585864424}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cf24ca79e3954584a8d43f89fe872128, type: 2}
+  m_Controller: {fileID: 9100000, guid: c56e21e67b21a4446b5e9c7bac62b7a9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -125,7 +125,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 100
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -140,7 +140,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 8428736245585864424}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: a50d25dad1a8bb04bad3b795de4b6ff2, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -157,7 +157,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.18, y: 0.49608493}
   m_EdgeRadius: 0
---- !u!114 &1088100282
+--- !u!114 &6893270086099606016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,12 +175,15 @@ MonoBehaviour:
   chaseRange: 10
   attackCooldown: 1
   damage: 10
+  hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  flashDuration: 0.1
   player: {fileID: 0}
   attackPoint: {fileID: 8428736246263011788}
   dropItemPrefab: {fileID: 0}
   isDead: 0
-  projectilePrefab: {fileID: 3445522045841734508, guid: d1fd11b9e4928b94eafb050155c639fd, type: 3}
+  projectilePrefab: {fileID: 4612317195019768454, guid: 421830e161d7a0e4ba7d0b557f39dfca, type: 3}
   shootCooldown: 2
+  castTime: 0.8
 --- !u!1 &8428736246263011789
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,13 +194,13 @@ GameObject:
   m_Component:
   - component: {fileID: 8428736246263011788}
   - component: {fileID: 8428736246263011791}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8428736246263011788
 Transform:
   m_ObjectHideFlags: 0

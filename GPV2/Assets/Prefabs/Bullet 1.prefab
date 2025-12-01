@@ -136,6 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd7afeec80addc4eb0a61e4b12068a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ExplosionGo: {fileID: 0}
   speed: 40
   damage: 10
   lifeTime: 3
+  knockbackForce: 0
