@@ -5,15 +5,16 @@ using System.Collections.Generic;
 public class StaffSkillManager : MonoBehaviour
 {
     private Player player;
-    private AudioSource audioSource; 
+    private AudioSource audioSource;
 
     [Header("스킬 설정")]
-    public LayerMask enemyLayer; // 적 레이어 지정 필수
+    // ★ 중요: 인스펙터에서 이 변수를 클릭하고 'Enemy'와 'Boss' 레이어를 둘 다 체크하세요!
+    public LayerMask enemyLayer;
 
     [Header("Lv2: 마력 폭발")]
     public int explosionManaCost = 15;
-    public GameObject explosionProjectilePrefab; //Projectile 스크립트가 붙은 프리팹 연결
-    public float explosionKnockback = 15f;       //넉백 강도 설정
+    public GameObject explosionProjectilePrefab; // Projectile 스크립트가 붙은 프리팹
+    public float explosionKnockback = 15f;       // 넉백 강도
 
     [Header("Lv3: 마나 가드")]
     public float manaGuardDuration = 10f;
@@ -28,14 +29,14 @@ public class StaffSkillManager : MonoBehaviour
     public float laserRange = 12f;
     public float laserWidth = 1f;
     public AudioClip laserSound;
-    public LineRenderer laserLine; // 컴포넌트 필요
+    public LineRenderer laserLine;
 
     [Header("Lv5: 시간 정지")]
     public int timeStopManaCost = 60;
     public float timeStopDuration = 10f;
     private bool isTimeStopped = false;
-    public float fadeDuration = 1f;      
-    public AudioClip timeStopSound;         
+    public float fadeDuration = 1f;
+    public AudioClip timeStopSound;
     public CanvasGroup timeStopOverlay;
     public GameObject TimeStopEffect;
 
@@ -43,7 +44,7 @@ public class StaffSkillManager : MonoBehaviour
     {
         player = GetComponent<Player>();
 
-        // 레이저 초기화
+        // 레이저 라인 렌더러 초기화
         if (laserLine == null)
         {
             laserLine = gameObject.AddComponent<LineRenderer>();
@@ -56,7 +57,7 @@ public class StaffSkillManager : MonoBehaviour
         }
 
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) 
+        if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
@@ -64,7 +65,7 @@ public class StaffSkillManager : MonoBehaviour
         if (timeStopOverlay != null)
         {
             timeStopOverlay.alpha = 0f;
-            timeStopOverlay.gameObject.SetActive(true); // 오브젝트는 켜둬야 함
+            timeStopOverlay.gameObject.SetActive(true);
         }
 
         if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
@@ -72,19 +73,20 @@ public class StaffSkillManager : MonoBehaviour
 
     void Update()
     {
-        // 지팡이 계열 무기를 들고 있을 때만 스킬 사용 가능 체크 (옵션)
+        // 지팡이 계열 무기 체크
         if (player.equippedWeapon == null || player.equippedWeapon.weaponType != WeaponType.Ranged) return;
 
         CheckSkillInput();
 
+        // 마나 가드 로직 (매 프레임 마나 소모)
         if (player.isManaGuardOn)
         {
-            player.mana -= manaGuardCostPerSec *Time.deltaTime ;
+            player.mana -= manaGuardCostPerSec * Time.deltaTime;
 
             if (player.mana <= 0)
             {
-                player.mana = 0; 
-                player.isManaGuardOn = false; 
+                player.mana = 0;
+                player.isManaGuardOn = false;
                 if (manaGuardCoroutine != null)
                 {
                     StopCoroutine(manaGuardCoroutine);
@@ -93,46 +95,38 @@ public class StaffSkillManager : MonoBehaviour
             }
         }
 
-        // 마나 가드 상태 시각적 표현 유지 (플레이어 위치 따라가기 등)
-        if (player.isManaGuardOn && guardShieldEffect != null)
+        // 마나 가드 이펙트 ON/OFF
+        if (guardShieldEffect != null)
         {
-            guardShieldEffect.SetActive(true);
-        }
-        else if (!player.isManaGuardOn && guardShieldEffect != null)
-        {
-            guardShieldEffect.SetActive(false);
+            guardShieldEffect.SetActive(player.isManaGuardOn);
         }
     }
 
     void CheckSkillInput()
     {
-        if (player.EquippedWeapon == null || player.EquippedWeapon.weaponType != WeaponType.Ranged)
-        {
-            return; 
-        }
-
         if (player.EquippedWeapon == null) return;
-
 
         int currentWeaponLevel = player.EquippedWeapon.weaponLevel;
 
-
-
+        // Lv 2: 마력 폭발
         if (currentWeaponLevel >= 2 && Input.GetKeyDown(KeyCode.Alpha1))
         {
             if (TryConsumeMana(explosionManaCost)) CastExplosion();
         }
 
+        // Lv 3: 마나 가드
         if (currentWeaponLevel >= 3 && Input.GetKeyDown(KeyCode.Alpha2))
         {
             ToggleManaGuard();
         }
 
+        // Lv 4: 레이저
         if (currentWeaponLevel >= 4 && Input.GetKeyDown(KeyCode.Alpha3))
         {
             if (TryConsumeMana(laserManaCost)) StartCoroutine(CastLaser());
         }
 
+        // Lv 5: 시간 정지
         if (currentWeaponLevel >= 5 && Input.GetKeyDown(KeyCode.Alpha4))
         {
             if (!isTimeStopped && TryConsumeMana(timeStopManaCost))
@@ -145,7 +139,6 @@ public class StaffSkillManager : MonoBehaviour
         if (player.mana >= cost)
         {
             player.mana -= cost;
-            Debug.Log($"마나 소모: -{cost} (남은 마나: {player.mana})");
             return true;
         }
         else
@@ -155,7 +148,11 @@ public class StaffSkillManager : MonoBehaviour
         }
     }
 
-    // 1. 마력 폭발 (Knockback)
+    // =================================================================================
+    // 스킬 구현부
+    // =================================================================================
+
+    // 1. 마력 폭발
     void CastExplosion()
     {
         if (explosionProjectilePrefab == null) return;
@@ -163,30 +160,25 @@ public class StaffSkillManager : MonoBehaviour
         Vector3 firePos = player.firePoint != null ? player.firePoint.position : transform.position;
         GameObject projObj = Instantiate(explosionProjectilePrefab, firePos, Quaternion.identity);
 
-        // Projectile 스크립트 가져오기
+        // Projectile 스크립트 설정
         Projectile projectile = projObj.GetComponent<Projectile>();
-
         if (projectile != null)
         {
-            // 방향 결정
             Vector2 dir = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
             projectile.Setup(dir, explosionKnockback);
         }
-
     }
 
-    // 2. 마나 가드 (토글 및 10초 시간 제한)
+    // 2. 마나 가드
     void ToggleManaGuard()
     {
-        if (player.isManaGuardOn == false) 
+        if (player.isManaGuardOn == false)
         {
             player.isManaGuardOn = true;
-
             if (manaGuardCoroutine != null) StopCoroutine(manaGuardCoroutine);
-
             manaGuardCoroutine = StartCoroutine(ManaGuardTimer());
         }
-        else 
+        else
         {
             player.isManaGuardOn = false;
             if (manaGuardCoroutine != null)
@@ -208,7 +200,7 @@ public class StaffSkillManager : MonoBehaviour
         }
     }
 
-    // 3. 레이저 (Raycast)
+    // 3. 레이저 (보스 적용됨)
     IEnumerator CastLaser()
     {
         if (audioSource != null && laserSound != null)
@@ -217,31 +209,42 @@ public class StaffSkillManager : MonoBehaviour
         }
         laserLine.enabled = true;
 
-        // 플레이어가 보는 방향 (Player 스크립트의 isRight 변수 활용은 private이라 transform.localScale로 판단)
         Vector2 dir = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
         Vector3 startPos = player.firePoint != null ? player.firePoint.position : transform.position;
 
-        // 레이캐스트
+        // ★ [핵심] enemyLayer에 Boss 레이어가 체크되어 있다면 보스도 hit에 포함됨
         RaycastHit2D[] hits = Physics2D.RaycastAll(startPos, dir, laserRange, enemyLayer);
 
-        // 라인 그리기
         laserLine.SetPosition(0, startPos);
         laserLine.SetPosition(1, startPos + (Vector3)(dir * laserRange));
 
         foreach (var hit in hits)
         {
-            // 적 소멸 또는 큰 데미지
-            Debug.Log(hit.collider.name + " 레이저 적중!");
-            Destroy(hit.collider.gameObject); // 적 소멸
+            // A. 일반 몬스터 피격
+            EnemyController_2D enemy = hit.collider.GetComponent<EnemyController_2D>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(laserDamage);
+                Debug.Log($"일반 몹 {hit.collider.name} 레이저 적중!");
+            }
+
+            // B. [추가] 보스 몬스터 피격
+            Boss_CardCaptain boss = hit.collider.GetComponent<Boss_CardCaptain>();
+            if (boss != null)
+            {
+                boss.TakeDamage(laserDamage);
+                Debug.Log("보스 레이저 적중!");
+            }
         }
 
         yield return new WaitForSeconds(laserDuration);
         laserLine.enabled = false;
     }
 
+    // 4. 시간 정지 (보스 적용됨)
     IEnumerator CastTimeStop()
     {
-        if (isTimeStopped) yield break; // 중복 실행 방지
+        if (isTimeStopped) yield break;
 
         if (TimeStopEffect != null)
         {
@@ -249,35 +252,40 @@ public class StaffSkillManager : MonoBehaviour
         }
 
         isTimeStopped = true;
-        // 1. 사운드 재생
+
         if (audioSource != null && timeStopSound != null)
         {
             audioSource.PlayOneShot(timeStopSound);
         }
 
-        // 2. 화면 암전 (Fade In)
+        // 화면 암전
         StartCoroutine(FadeOverlay(true, fadeDuration));
-        yield return new WaitForSeconds(fadeDuration); // 페이드인 완료까지 대기
+        yield return new WaitForSeconds(fadeDuration);
 
-        // 3. 모든 적 찾아서 얼리기 (EnemyController_2D.cs의 FreezeEnemy 함수 필요)
+        // A. 일반 몬스터 얼리기
         EnemyController_2D[] enemies = FindObjectsOfType<EnemyController_2D>();
         foreach (var enemy in enemies)
         {
-            if (enemy != null)
+            if (enemy != null) enemy.FreezeEnemy(timeStopDuration);
+        }
+
+        // B. [추가] 보스 몬스터 얼리기
+        // (주의: Boss_CardCaptain 스크립트에 FreezeBoss 함수가 추가되어 있어야 함)
+        Boss_CardCaptain[] bosses = FindObjectsOfType<Boss_CardCaptain>();
+        foreach (var boss in bosses)
+        {
+            if (boss != null)
             {
-                enemy.FreezeEnemy(timeStopDuration);
+                boss.FreezeBoss(timeStopDuration);
+                Debug.Log("보스 시간 정지 적용됨!");
             }
         }
 
-        // (팁: 적의 투사체도 멈추고 싶다면 여기서 Tag로 찾아서 Rigidbody를 멈추세요)
-        // GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
-        // foreach (var bullet in enemyBullets) { ... }
-
         yield return new WaitForSeconds(timeStopDuration);
 
-
+        // 화면 복구
         StartCoroutine(FadeOverlay(false, fadeDuration));
-        yield return new WaitForSeconds(fadeDuration); // 페이드아웃 완료까지 대기
+        yield return new WaitForSeconds(fadeDuration);
 
         isTimeStopped = false;
     }
@@ -287,7 +295,7 @@ public class StaffSkillManager : MonoBehaviour
         if (timeStopOverlay == null) yield break;
 
         float startAlpha = fadeIn ? 0f : timeStopOverlay.alpha;
-        float endAlpha = fadeIn ? 1f : 0f; 
+        float endAlpha = fadeIn ? 1f : 0f;
         float time = 0f;
 
         while (time < duration)

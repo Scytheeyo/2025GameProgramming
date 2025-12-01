@@ -354,12 +354,34 @@ public class Player : MonoBehaviour
     // ---------------- [충돌 처리] ----------------
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = true;
+        // 태그가 Ground인 물체와 부딪혔을 때
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            // 부딪힌 지점의 법선 벡터(충돌 면이 바라보는 방향)를 가져옵니다.
+            // (0, 1)이면 윗면(바닥), (1, 0)이면 옆면(벽), (0, -1)이면 아랫면(천장)
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                // 법선 벡터의 Y값이 0.7 이상이면 '위쪽을 보고 있는 면' 즉, 바닥입니다.
+                if (contact.normal.y > 0.7f)
+                {
+                    isGrounded = true;
+                    // Debug.Log("진짜 바닥에 착지!");
+                    return; // 하나라도 바닥이면 OK
+                }
+            }
+
+            // 여기까지 왔다면 Ground 태그지만 바닥은 아님 (벽이나 천장)
+            // Debug.Log("이건 벽이나 천장이야!");
+        }
     }
 
+    // 떨어질 때도 마찬가지로 체크 (선택 사항이지만 추천)
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

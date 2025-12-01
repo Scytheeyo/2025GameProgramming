@@ -11,9 +11,8 @@ public class Boss_CardCaptain : MonoBehaviour
     public int currentHealth;
 
     [Header("피격 효과 설정")]
-    // 빨간색으로 깜빡임 (원하면 Color.white로 바꿔서 하얗게도 가능)
     public Color hitColor = new Color(1f, 0.4f, 0.4f);
-    public float flashDuration = 0.1f; // 깜빡이는 시간
+    public float flashDuration = 0.1f;
 
     [Header("3단 콤보 공격")]
     public float attackCooldown = 2.0f;
@@ -33,16 +32,18 @@ public class Boss_CardCaptain : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Collider2D myCollider;
-    private SpriteRenderer sr; // [추가] 색상을 바꾸기 위해 필요
+    private SpriteRenderer sr;
 
     private bool isActing = false;
+    // ★ [추가] 시간 정지 상태 변수
+    private bool isFrozen = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         myCollider = GetComponent<Collider2D>();
-        sr = GetComponent<SpriteRenderer>(); // [추가] 컴포넌트 가져오기
+        sr = GetComponent<SpriteRenderer>();
 
         currentHealth = maxHealth;
 
@@ -58,6 +59,13 @@ public class Boss_CardCaptain : MonoBehaviour
     void Update()
     {
         if (player == null) return;
+
+        // ★ [추가] 얼어있으면(시간 정지) 모든 동작 정지
+        if (isFrozen)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
 
         if (isActing)
         {
@@ -85,46 +93,80 @@ public class Boss_CardCaptain : MonoBehaviour
         {
             MoveTowardsPlayer();
         }
+
+        // 테스트용 (K키로 자해)
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
     // ====================================================
-    // [수정] 피격 함수 (색상 깜빡임 추가)
+    // 피격 처리
     // ====================================================
     public void TakeDamage(int dmg)
     {
-        // [삭제됨] if (isActing) return;  <-- 이 줄 때문에 공격 중에 무적이었던 겁니다.
-
-        // 1. 체력 감소 (언제든 데미지 입음)
+        // 1. 체력 감소
         currentHealth -= dmg;
 
-        // 2. 피격 효과 (색상 깜빡임) - 공격 중이어도 빨개짐
+        // 2. 피격 효과 (색상 깜빡임)
         if (gameObject.activeInHierarchy)
         {
             StartCoroutine(HitFlashRoutine());
         }
 
-        // 3. 피격 모션 (Hit 애니메이션)
-        // [중요] 공격이나 소환 중(isActing)이 아닐 때만 움찔거려야 행동이 안 끊김
-        if (!isActing)
+        // 3. 피격 모션 (공격 중이거나 얼어있지 않을 때만)
+        if (!isActing && !isFrozen)
         {
-            animator.SetTrigger("Hit"); 
+            animator.SetTrigger("Hit");
         }
 
         // 4. 사망 처리
         if (currentHealth <= 0) Die();
     }
 
-    // ====================================================
-    // [신규] 깜빡임 코루틴
-    // ====================================================
     IEnumerator HitFlashRoutine()
     {
-        sr.color = hitColor; // 빨간색
-        yield return new WaitForSeconds(flashDuration); // 0.1초 대기
-        sr.color = Color.white; // 원상복구
+        if (sr != null)
+        {
+            sr.color = hitColor;
+            yield return new WaitForSeconds(flashDuration);
+            sr.color = Color.white;
+        }
     }
 
+    // ====================================================
+    // ★ [신규] 시간 정지 (StaffSkillManager에서 호출)
+    // ====================================================
+    public void FreezeBoss(float duration)
+    {
+        if (!isFrozen)
+        {
+            StartCoroutine(FreezeRoutine(duration));
+        }
+    }
+
+    IEnumerator FreezeRoutine(float duration)
+    {
+        isFrozen = true;
+
+        // 1. 물리 정지 (밀리지 않게)
+        Vector2 originalVelocity = rb.velocity;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
+
+        // 2. 애니메이션 멈춤
+        float originalAnimSpeed = animator.speed;
+        animator.speed = 0;
+
+        yield return new WaitForSeconds(duration);
+
+        // 3. 복구
+        rb.isKinematic = false;
+        animator.speed = originalAnimSpeed;
+        isFrozen = false;
+    }
+
+    // ====================================================
+    // 공격 패턴
+    // ====================================================
     IEnumerator AttackRoutine()
     {
         isActing = true;
@@ -145,20 +187,32 @@ public class Boss_CardCaptain : MonoBehaviour
         isActing = false;
     }
 
+    // ====================================================
+    // 소환 패턴 (수정됨: Missing Prefab 방지)
+    // ====================================================
     IEnumerator SummonRoutine()
     {
         isActing = true;
         StopMovement();
         animator.SetBool("IsSummoning", true);
+
         yield return new WaitForSeconds(1.0f);
 
         if (minionPrefabs != null && minionPrefabs.Length > 0)
         {
             for (int i = 0; i < minionPrefabs.Length; i++)
             {
+                // ★ [안전장치] 프리팹이 Missing이거나 비어있으면 건너뜀 (에러 방지)
+                if (minionPrefabs[i % minionPrefabs.Length] == null)
+                {
+                    Debug.LogWarning($"[Boss] Minion Prefab Index {i} is Missing or Null!");
+                    continue;
+                }
+
                 Transform point = (summonPoints != null && summonPoints.Length > 0)
                                   ? summonPoints[i % summonPoints.Length]
                                   : transform;
+
                 Instantiate(minionPrefabs[i % minionPrefabs.Length], point.position, Quaternion.identity);
             }
         }
@@ -166,7 +220,8 @@ public class Boss_CardCaptain : MonoBehaviour
         lastSummonTime = Time.time;
         animator.SetBool("IsSummoning", false);
         yield return new WaitForSeconds(0.5f);
-        isActing = false;
+
+        isActing = false; // 동작 완료
     }
 
     void MoveTowardsPlayer()
@@ -195,9 +250,7 @@ public class Boss_CardCaptain : MonoBehaviour
     void Die()
     {
         StopAllCoroutines();
-        // 죽을 땐 원래 색으로 돌려놓기
         sr.color = Color.white;
-
         isActing = true;
         animator.SetTrigger("Die");
         rb.velocity = Vector2.zero;
@@ -210,6 +263,9 @@ public class Boss_CardCaptain : MonoBehaviour
         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, LayerMask.GetMask("Player"));
         foreach (Collider2D p in hitPlayers)
         {
+            // 플레이어에게 데미지 주는 로직 (Player 스크립트의 TakeDamage 호출 필요)
+            Player pc = p.GetComponent<Player>();
+            if (pc != null) pc.TakeDamage(10);
             Debug.Log("플레이어 피격!");
         }
     }
