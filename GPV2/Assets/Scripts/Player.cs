@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq; // ★ Player2에서 가져옴 (AddCardToCollection 사용 위해)
+using System.Linq;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
@@ -10,10 +11,15 @@ public class Player : MonoBehaviour
 
     [Header("이동 및 점프")]
     public float moveSpeed = 5f;
-    public float jumpForce = 30f; // Player1의 높은 점프력 유지
+    public float jumpForce = 30f;
     private float hMove = 0f;
     private bool isGrounded = false;
     public bool isRight = true;
+
+    [Header("점프 시너지 (Player_Ver 통합)")]
+    public int maxJumpCount = 1;
+    public int currentJumpCount = 0;
+    public float jumpMultiplier = 1.0f;
 
     [Header("전투 기본")]
     public GameObject attackHitbox;
@@ -26,14 +32,24 @@ public class Player : MonoBehaviour
     public float fireRate = 0.1f;
     private float nextFireTime = 0f;
 
-    [Header("상태 및 스탯")]
-    public const int Max_Health = 100;
+    [Header("상태 및 스탯 (시너지 적용)")]
+    public int baseMaxHealth = 100;
+    public int maxHealth;
     public int health;
-    public const int Max_Mana = 100000; // Player1의 높은 마나통 유지 (테스트용 추정)
+
+    public int baseMaxMana = 100;
+    public int maxMana;
     public float mana;
+
+    public float baseAttackDamage = 10f;
+    public float currentAttackDamage;
+    public float baseDefense = 0f;
+    public float currentDefense;
+
     public GameManager gameManager;
     private bool isAtEvent = false;
     public bool Interaction = false;
+    private bool isDead = false;
 
     [Header("장비 및 오디오")]
     public Transform staffSlot;
@@ -60,6 +76,14 @@ public class Player : MonoBehaviour
     private GameObject chargedEffectInstance = null;
     private SpriteRenderer sr;
 
+    [Header("덱 시너지 효과 (Player_Ver 통합)")]
+    public bool hasResurrection = false;
+    public bool isResurrectionUsed = false;
+    public float cooldownReduction = 0f;
+    public bool hasDoubleStrike = false;
+    public bool hasStatBuff = false;
+    public bool hasUltimate = false;
+
     [Header("카드 및 인벤토리")]
     public List<CardData> collectedCards = new List<CardData>();
     public List<CardData> activeDeck = new List<CardData>();
@@ -69,7 +93,9 @@ public class Player : MonoBehaviour
     [Header("UI")]
     public InventoryUI inventoryUIManager;
     public GameObject cardListWindow;
-    private Animator cardListAnimator; // ★ Player2에서 가져옴
+    private Animator cardListAnimator;
+    public GameObject optionWindow;
+    private Animator optionUIAnimator;
 
     void Start()
     {
@@ -80,36 +106,46 @@ public class Player : MonoBehaviour
         sr = GetComponentInChildren<SpriteRenderer>();
         if (sr == null) Debug.LogError("Player의 SpriteRenderer를 찾을 수 없습니다!");
 
-        // ★ Player2의 UI 애니메이터 로직 통합
         if (cardListWindow != null)
         {
             cardListAnimator = cardListWindow.GetComponent<Animator>();
-            cardListWindow.SetActive(false); // 시작 시 닫기
+            cardListWindow.SetActive(false);
+        }
+        if (optionWindow != null)
+        {
+            optionUIAnimator = optionWindow.GetComponent<Animator>();
+            optionWindow.SetActive(false);
         }
 
-        health = Max_Health;
-        mana = Max_Mana;
-
-        // ★ 카드는 일단 Player1의 수동 추가 방식을 유지하되, 필요하면 Player2의 루프 방식으로 교체 가능
-        collectedCards.Add(new CardData(CardSuit.Spade, 1));
-        collectedCards.Add(new CardData(CardSuit.Spade, 2));
-        collectedCards.Add(new CardData(CardSuit.Spade, 3));
-        collectedCards.Add(new CardData(CardSuit.Spade, 4));
-        collectedCards.Add(new CardData(CardSuit.Spade, 5));
+        RecalculateStats();
+        health = maxHealth;
+        mana = maxMana;
     }
 
     void Update()
     {
-        hMove = Input.GetAxisRaw("Horizontal");
+        if (isDead) return;
 
-        // 점프
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        HandleUIInput();
+
+        if (IsUIOpen() || IsPointerOverUI())
         {
-            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            // anim.SetTrigger("doJump"); // Player1은 주석처리 되어있음
+            anim.SetBool("isMoving", false);
+            return;
         }
 
-        // ---------------- [공격 로직: Player1의 차지/스윙 시스템 채택] ----------------
+        hMove = Input.GetAxisRaw("Horizontal");
+
+        CheckDeckSynergy();
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isGrounded || currentJumpCount < maxJumpCount)
+            {
+                DoJump();
+            }
+        }
+
         if (Input.GetButtonDown("Fire1"))
         {
             if (!isSwinging && equippedWeapon != null)
@@ -122,17 +158,17 @@ public class Player : MonoBehaviour
         if (isCharging)
         {
             fire1HoldTime += Time.deltaTime;
-            // 차지 이펙트 처리
-            if (fire1HoldTime >= 0.5f && chargeEffectInstance == null)
+            float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
+
+            if (effectiveTime >= 0.5f && chargeEffectInstance == null)
             {
-                if (chargeEffectPrefab != null && fire1HoldTime < 2f)
+                if (chargeEffectPrefab != null && effectiveTime < 2f)
                 {
                     chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
                     chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
                 }
             }
-            // 풀차지 이펙트 처리
-            if (chargeEffectInstance != null && fire1HoldTime >= 2f)
+            if (chargeEffectInstance != null && effectiveTime >= 2f)
             {
                 Destroy(chargeEffectInstance);
                 chargeEffectInstance = null;
@@ -146,22 +182,22 @@ public class Player : MonoBehaviour
             if (isCharging)
             {
                 isCharging = false;
-                // 이펙트 정리
+                
                 if (chargeEffectInstance != null) { Destroy(chargeEffectInstance); chargeEffectInstance = null; }
                 if (chargedEffectInstance != null) { Destroy(chargedEffectInstance); chargedEffectInstance = null; }
 
                 if (!isSwinging && equippedWeapon != null)
                 {
-                    if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && fire1HoldTime >= chargehold)
+                    float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
+
+                    if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
-                        Debug.Log("강한 베기 발동!");
                         currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
                         CastStrongAttack();
                         currentAttackMultiplier = 1.0f;
                     }
                     else
                     {
-                        Debug.Log("일반 베기");
                         normalAttack.Play();
                         currentAttackMultiplier = 1.0f;
                         StartCoroutine(SwingWeapon());
@@ -169,59 +205,263 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        // -------------------------------------------------------------------------
 
-        // 원거리 공격
         if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime && HasRangedWeaponReady())
         {
             float rate = Mathf.Max(0.0001f, GetCurrentFireRate());
+            rate = rate / (1f - cooldownReduction);
+
             nextFireTime = Time.time + (1f / rate);
             Shoot();
         }
 
-        anim.SetBool("isMoving", hMove != 0);
+        if (Input.GetKeyDown(KeyCode.Z) && hasUltimate)
+        {
+            CastUltimate();
+        }
 
-        // 상호작용
+        anim.SetBool("isMoving", hMove != 0);
+        anim.SetBool("isGrounded", isGrounded);
+
         if (Input.GetKeyDown(KeyCode.W))
         {
             if (isAtEvent) Interaction = true;
-        }
-
-        // 인벤토리 UI
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            inventoryUIManager.gameObject.SetActive(!inventoryUIManager.gameObject.activeSelf);
-            UpdateGamePauseState();
-        }
-
-        // 카드 리스트 UI (★ Player2의 애니메이터 로직 적용)
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            if (cardListWindow.activeSelf)
-            {
-                // 열려있으면 닫기 애니메이션
-                if (cardListAnimator != null) cardListAnimator.SetTrigger("doClose");
-                else { cardListWindow.SetActive(false); UpdateGamePauseState(); }
-            }
-            else
-            {
-                // 닫혀있으면 열기 애니메이션
-                cardListWindow.SetActive(true);
-                if (cardListAnimator != null) cardListAnimator.SetTrigger("doOpen");
-                UpdateGamePauseState();
-            }
         }
     }
 
     void FixedUpdate()
     {
+        if (isDead || IsUIOpen())
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+
         rb.velocity = new Vector2(hMove * moveSpeed, rb.velocity.y);
         Flip(hMove);
     }
+    void HandleUIInput()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Animator invAnim = inventoryUIManager.GetComponent<Animator>();
+            if (invAnim == null && inventoryUIManager.uiAnimator != null) invAnim = inventoryUIManager.uiAnimator;
 
-    // ---------------- [Player1의 전투 메서드들] ----------------
+            ToggleUI(inventoryUIManager.gameObject, invAnim, cardListWindow, optionWindow);
+        }
 
-    // [추가됨] 스킬 매니저에서 호출하는 공격 모션 함수
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            ToggleUI(cardListWindow, cardListAnimator, inventoryUIManager.gameObject, optionWindow);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (optionWindow != null && optionWindow.activeSelf)
+            {
+                OptionPage optionScript = optionWindow.GetComponent<OptionPage>();
+                if (optionScript != null) optionScript.ClickConfirm();
+
+                Animator optAnim = optionWindow.GetComponent<Animator>();
+                if (optAnim != null) optAnim.SetTrigger("doClose");
+                else optionWindow.SetActive(false);
+            }
+            else
+            {
+                if (inventoryUIManager.gameObject.activeSelf) inventoryUIManager.gameObject.SetActive(false);
+                if (cardListWindow.activeSelf) cardListWindow.SetActive(false);
+
+                optionWindow.SetActive(true);
+                if (optionUIAnimator != null) optionUIAnimator.SetTrigger("doOpen");
+                UpdateGamePauseState();
+            }
+        }
+    }
+
+    void ToggleUI(GameObject targetUI, Animator targetAnim, GameObject otherUI1, GameObject otherUI2)
+    {
+        if (targetUI.activeSelf)
+        {
+            ResetCombatTriggers();
+
+            if (targetAnim != null)
+            {
+                targetAnim.SetTrigger("doClose");
+            }
+            else
+            {
+                targetUI.SetActive(false);
+                UpdateGamePauseState();
+            }
+        }
+        else
+        {
+            if (otherUI1 != null) otherUI1.SetActive(false);
+            if (otherUI2 != null) otherUI2.SetActive(false);
+
+            targetUI.SetActive(true);
+            if (targetAnim != null) targetAnim.SetTrigger("doOpen");
+
+            UpdateGamePauseState();
+        }
+    }
+
+    void ResetCombatTriggers()
+    {
+        if (anim != null)
+        {
+            anim.ResetTrigger("doAttack");
+        }
+        isCharging = false;
+        isSwinging = false;
+        if (chargeEffectInstance != null) Destroy(chargeEffectInstance);
+        if (chargedEffectInstance != null) Destroy(chargedEffectInstance);
+    }
+
+    bool IsUIOpen()
+    {
+        return (inventoryUIManager != null && inventoryUIManager.gameObject.activeSelf) ||
+               (cardListWindow != null && cardListWindow.activeSelf) ||
+               (optionWindow != null && optionWindow.activeSelf);
+    }
+
+    bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public void CheckDeckSynergy()
+    {
+        maxJumpCount = 1;
+        jumpMultiplier = 1.0f;
+        hasResurrection = false;
+        cooldownReduction = 0f;
+        hasDoubleStrike = false;
+        hasStatBuff = false;
+        hasUltimate = false;
+
+        if (activeDeck.Count < 5)
+        {
+            CheckPartialSynergy();
+            RecalculateStats();
+            return;
+        }
+
+        var sortedDeck = activeDeck.OrderBy(c => c.number).ToList();
+        var numberGroups = activeDeck.GroupBy(c => c.number).ToList();
+        var suitGroups = activeDeck.GroupBy(c => c.suit).ToList();
+
+        bool isStraight = true;
+        for (int i = 0; i < 4; i++)
+        {
+            if (sortedDeck[i + 1].number - sortedDeck[i].number != 1)
+            {
+                isStraight = false;
+                break;
+            }
+        }
+
+        bool isFlush = suitGroups.Any(g => g.Count() == 5);
+        bool isFourCard = numberGroups.Any(g => g.Count() == 4);
+        bool isFullHouse = numberGroups.Any(g => g.Count() == 3) && numberGroups.Any(g => g.Count() == 2);
+
+        if (isStraight && isFlush) hasUltimate = true;
+        else if (isFourCard) hasStatBuff = true;
+        else if (isFullHouse) hasDoubleStrike = true;
+        else if (isFlush) cooldownReduction = 0.2f;
+        else if (isStraight) hasResurrection = true;
+        else CheckPartialSynergy();
+
+        RecalculateStats();
+    }
+
+    void CheckPartialSynergy()
+    {
+        var numberGroups = activeDeck.GroupBy(c => c.number).ToList();
+        bool isTriple = numberGroups.Any(g => g.Count() >= 3);
+        bool isPair = numberGroups.Any(g => g.Count() == 2);
+
+        if (isTriple)
+        {
+            maxJumpCount = 2;
+            jumpMultiplier = 1.3f;
+        }
+        else if (isPair)
+        {
+            maxJumpCount = 2;
+            jumpMultiplier = 1.0f;
+        }
+    }
+
+    public void RecalculateStats()
+    {
+        float addedAttack = 0;
+        int addedHealth = 0;
+        float addedDefense = 0;
+        int addedMana = 0;
+
+        foreach (CardData card in collectedCards)
+        {
+            switch (card.suit)
+            {
+                case CardSuit.Spade: addedAttack += card.number; break;
+                case CardSuit.Heart: addedHealth += card.number; break;
+                case CardSuit.Diamond: addedDefense += card.number; break;
+                case CardSuit.Clover: addedMana += card.number; break;
+            }
+        }
+
+        float tempAttack = baseAttackDamage + addedAttack;
+        float tempHealth = baseMaxHealth + addedHealth;
+        float tempDefense = baseDefense + addedDefense;
+        float tempMana = baseMaxMana + addedMana;
+
+        if (hasStatBuff)
+        {
+            tempAttack *= 1.1f;
+            tempHealth *= 1.1f;
+            tempDefense *= 1.1f;
+            tempMana *= 1.1f;
+        }
+
+        currentAttackDamage = tempAttack;
+        maxHealth = (int)tempHealth;
+        currentDefense = tempDefense;
+        maxMana = (int)tempMana;
+
+        if (health > maxHealth) health = maxHealth;
+        if (mana > maxMana) mana = maxMana;
+    }
+
+    void DoJump()
+    {
+        float finalJumpForce = jumpForce;
+        if (!isGrounded) finalJumpForce *= jumpMultiplier;
+
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(new Vector2(0, finalJumpForce), ForceMode2D.Impulse);
+
+        // anim.SetTrigger("doJump"); // 필요 시 주석 해제
+        isGrounded = false;
+        currentJumpCount++;
+    }
+
+    void CastUltimate()
+    {
+        Debug.Log("Ultimate Activated: Royal Straight Flush!");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy.name.Contains("Boss") || enemy.name.Contains("King") || enemy.name.Contains("Queen"))
+            {
+                enemy.SendMessage("TakeDamage", 1000, SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                Destroy(enemy);
+            }
+        }
+    }
     public void PerformSkillSwing()
     {
         if (!isSwinging && equippedWeapon != null)
@@ -258,7 +498,6 @@ public class Player : MonoBehaviour
         attackHitbox.SetActive(false);
     }
 
-    // ---------------- [Player1의 복잡한 무기 장착 로직 유지] ----------------
     private void EquipWeapon(Weapon w)
     {
         if (equippedWeapon != null) Destroy(equippedWeapon.gameObject);
@@ -266,7 +505,6 @@ public class Player : MonoBehaviour
         equippedWeapon = w;
         if (w != null) w.SetOwner(this);
 
-        // 지팡이/칼 슬롯 구분
         w.transform.SetParent(swordSlot);
 
         if (w.weaponType == WeaponType.Ranged)
@@ -286,7 +524,6 @@ public class Player : MonoBehaviour
         if (rb2 != null) rb2.simulated = false;
     }
 
-    // ---------------- [Player1의 스윙 코루틴 유지] ----------------
     private IEnumerator SwingWeapon()
     {
         isSwinging = true;
@@ -318,7 +555,6 @@ public class Player : MonoBehaviour
         currentAttackMultiplier = 1.0f;
     }
 
-    // Player1의 강공격 로직
     void CastStrongAttack()
     {
         StrongAttack.Play();
@@ -332,7 +568,12 @@ public class Player : MonoBehaviour
         effectInstance.transform.localScale = effectScale;
 
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPosition, strongAttackRadius, enemyLayer);
-        int finalDamage = Mathf.RoundToInt(equippedWeapon.damage * currentAttackMultiplier);
+
+        float baseDmg = equippedWeapon.damage + currentAttackDamage;
+        if (hasDoubleStrike) baseDmg *= 2.0f;
+
+        int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
+
         foreach (Collider2D enemyCollider in hitEnemies)
         {
             EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
@@ -351,10 +592,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    // ---------------- [충돌 처리] ----------------
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = true;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            currentJumpCount = 0;
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -395,7 +639,6 @@ public class Player : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
-        // Player1의 Door 컴포넌트 상호작용 방식 유지 (더 구체적이므로)
         Door doorComponent = other.GetComponent<Door>();
 
         if (isAtEvent && Interaction)
@@ -410,18 +653,20 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        // Player1의 마나 가드 로직 유지
+        if (isDead) return;
+        int finalDamage = Mathf.Max(1, damage - (int)currentDefense);
+
         if (isManaGuardOn && mana > 0)
         {
-            if (mana >= damage)
+            if (mana >= finalDamage)
             {
-                mana -= damage;
-                Debug.Log($"마나 가드 방어! (소모 마나: {damage})");
+                mana -= finalDamage;
+                Debug.Log($"마나 가드 방어! (소모 마나: {finalDamage})");
                 return;
             }
             else
             {
-                int remainingDmg = damage - (int)mana;
+                int remainingDmg = finalDamage - (int)mana;
                 mana = 0;
                 isManaGuardOn = false;
                 health -= remainingDmg;
@@ -430,14 +675,30 @@ public class Player : MonoBehaviour
         }
         else
         {
-            health -= damage;
+            health -= finalDamage;
         }
 
         if (health <= 0)
         {
-            health = 0;
-            Debug.Log("플레이어 사망");
+            if (hasResurrection && !isResurrectionUsed)
+            {
+                health = maxHealth / 2;
+                isResurrectionUsed = true;
+                Debug.Log("Resurrected by Straight Synergy!");
+            }
+            else
+            {
+                health = 0;
+                Die();
+            }
         }
+    }
+
+    void Die()
+    {
+        isDead = true;
+        // anim.SetTrigger("doDie");
+        Debug.Log("플레이어 사망");
     }
 
     public void VelocityZero()
@@ -445,7 +706,6 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-    // ---------------- [유틸리티 및 아이템] ----------------
     private bool HasRangedWeaponReady()
     {
         if (equippedWeapon == null) return projectilePrefab != null;
@@ -472,19 +732,19 @@ public class Player : MonoBehaviour
 
     public void TakeRedPotion()
     {
-        if (health < Max_Health)
+        if (health < maxHealth)
         {
-            health += Max_Health / 2;
-            if (health > Max_Health) health = Max_Health;
+            health += maxHealth / 2;
+            if (health > maxHealth) health = maxHealth;
         }
     }
 
     public void TakeBluePotion()
     {
-        if (mana < Max_Mana)
+        if (mana < maxMana)
         {
-            mana += Max_Mana / 2;
-            if (mana > Max_Mana) mana = Max_Mana;
+            mana += (float)(maxMana / 2);
+            if (mana > maxMana) mana = maxMana;
         }
     }
 
@@ -494,10 +754,11 @@ public class Player : MonoBehaviour
         else inventory.Add(itemName, amount);
     }
 
-    // ★ Player2에서 public으로 변경된 부분 적용
     public void UpdateGamePauseState()
     {
-        if (inventoryUIManager.gameObject.activeSelf || cardListWindow.activeSelf)
+        if ((inventoryUIManager != null && inventoryUIManager.gameObject.activeSelf) ||
+            (cardListWindow != null && cardListWindow.activeSelf) ||
+            (optionWindow != null && optionWindow.activeSelf))
             Time.timeScale = 0f;
         else
             Time.timeScale = 1f;
@@ -511,18 +772,18 @@ public class Player : MonoBehaviour
         switch (itemTag)
         {
             case "RedPotion":
-                if (health < 100)
+                if (health < maxHealth)
                 {
                     health += 20;
-                    if (health > 100) health = 100;
+                    if (health > maxHealth) health = maxHealth;
                     itemUsed = true;
                 }
                 break;
             case "BluePotion":
-                if (mana < 100)
+                if (mana < maxMana)
                 {
                     mana += 20;
-                    if (mana > 100) mana = 100;
+                    if (mana > maxMana) mana = maxMana;
                     itemUsed = true;
                 }
                 break;
@@ -535,7 +796,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    // ★ Player2의 신규 메서드 추가 (카드 중복 방지)
     public void AddCardToCollection(CardData newCard)
     {
         bool alreadyExists = collectedCards.Any(card =>
@@ -547,6 +807,7 @@ public class Player : MonoBehaviour
         {
             collectedCards.Add(newCard);
             Debug.Log(newCard.suit + " " + newCard.number + " 카드를 획득했습니다.");
+            RecalculateStats();
         }
         else
         {
