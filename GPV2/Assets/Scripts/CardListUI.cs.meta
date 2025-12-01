@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream:GPV2/Assets/Scripts/CardListUI.cs.meta
 guid: b904d36a6787e5448b35a8ffb9911043
+=======
+<<<<<<<< HEAD:GPV2/Assets/Scripts/AutoDestroy.cs.meta
+guid: 3390cb6a0d51bc243ab4e67e34ad9cec
+========
+guid: 1f24e57ea4f31b0419797486a26d3131
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/Room.cs.meta
+>>>>>>> Stashed changes:GPV2/Assets/Scripts/AutoDestroy.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

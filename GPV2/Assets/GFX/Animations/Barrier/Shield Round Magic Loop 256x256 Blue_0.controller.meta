@@ -1,8 +1,19 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:GPV2/Assets/GFX/Animations/Barrier/Shield Round Magic Loop 256x256 Blue_0.controller.meta
 guid: 2e37ec1709a0679409b6478e589beaab
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 9100000
+========
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Anim_CloverSpin.anim.meta
+guid: 19ae28b53e26bcc4ea8eebf9e0d111e2
+========
+guid: 0cb003100cd73094a8289a88010e30a8
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Portal.anim.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+>>>>>>>> Stashed changes:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Anim_CloverSpin.anim.meta
   userData: 
   assetBundleName: 
   assetBundleVariant: 

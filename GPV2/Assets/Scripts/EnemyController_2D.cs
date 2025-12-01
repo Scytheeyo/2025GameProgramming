@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyController_2D : MonoBehaviour
+public class EnemyController_2D : MonoBehaviour, IDamageable
 {
     [Header("Stats")]
     public int maxHealth = 100;
@@ -213,6 +213,18 @@ public class EnemyController_2D : MonoBehaviour
 
         currentHealth -= dmg;
         Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
+<<<<<<< Updated upstream
+=======
+
+        // [추가] 피격 깜빡임 효과 (연속 피격 시 기존 코루틴 취소 후 재실행)
+        if (gameObject.activeInHierarchy)
+        {
+            if (flashCoroutine != null)
+                StopCoroutine(flashCoroutine);
+
+            flashCoroutine = StartCoroutine(HitFlashRoutine());
+        }
+>>>>>>> Stashed changes
 
         if (currentHealth <= 0)
         {

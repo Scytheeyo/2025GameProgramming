@@ -1,0 +1,250 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+guid: b8e50f3abc920f8449a15f29f5fa7325
+========
+guid: 8e1e6c6e2f1c5e04d87d54666acbfd35
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+    filterMode: 1
+========
+    filterMode: 0
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      name: CardSordier3_Idle_0
+========
+      name: Alice_Idle-Sheet_0
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      spriteID: d2449958e1005284fa076aae1b64fcf5
+      internalID: 1435750213
+========
+      spriteID: 14688210495b58c4cb006dd3988412f8
+      internalID: -55478420
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      name: CardSordier3_Idle_1
+========
+      name: Alice_Idle-Sheet_1
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      spriteID: dd7ec62049ba3d84a8bcf25c7ec4265f
+      internalID: 751468288
+========
+      spriteID: 17547e7ef463ac84ca403e7c3368a1e2
+      internalID: 742020637
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      name: CardSordier3_Idle_2
+========
+      name: Alice_Idle-Sheet_2
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      spriteID: e4a299f634881904cac8f4fb69d09999
+      internalID: 2007920495
+========
+      spriteID: 1daa942d163028a45a75f2c7d420cd85
+      internalID: 131900696
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      name: CardSordier3_Idle_3
+========
+      name: Alice_Idle-Sheet_3
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      spriteID: e781c01048846a54cba9dacd5fda5251
+      internalID: 1138555899
+========
+      spriteID: 24adbd6d9f9401b4e91e3761f8754919
+      internalID: -411855478
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Clover/CardSordier3_Idle.png.meta
+      CardSordier3_Idle_0: 1435750213
+      CardSordier3_Idle_1: 751468288
+      CardSordier3_Idle_2: 2007920495
+      CardSordier3_Idle_3: 1138555899
+========
+      Alice_Idle-Sheet_0: -55478420
+      Alice_Idle-Sheet_1: 742020637
+      Alice_Idle-Sheet_2: 131900696
+      Alice_Idle-Sheet_3: -411855478
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Idle-Sheet.png.meta
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

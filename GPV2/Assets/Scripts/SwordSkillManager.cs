@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 public class SwordSkillManager : MonoBehaviour
 {
     private Player player;
@@ -105,11 +106,15 @@ public class SwordSkillManager : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPosition, SmashRadius, enemyLayer);
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
-            if (enemy != null)
+            IDamageable[] target = FindObjectsOfType<MonoBehaviour>().OfType<IDamageable>().ToArray();
+            foreach (var enemy in target)
             {
-                float percent = enemy.isBoss ? bossEnemyDamagePercent : normalEnemyDamagePercent;
-                enemy.TakePercentDamage(percent);
+                if (enemy != null) //&& !enemy.isBoss)
+                {
+                    bool isBoss = (enemy as Component).CompareTag("Boss");
+                    float percent = isBoss ? bossEnemyDamagePercent : normalEnemyDamagePercent;
+                    enemy.TakePercentDamage(percent);
+                }
             }
         }
     }
@@ -152,10 +157,10 @@ public class SwordSkillManager : MonoBehaviour
         }
         yield return new WaitForSeconds(effectDuration);
 
-        EnemyController_2D[] allEnemies = FindObjectsOfType<EnemyController_2D>();
-        foreach (var enemy in allEnemies)
+        IDamageable[] target = FindObjectsOfType<MonoBehaviour>().OfType<IDamageable>().ToArray();
+        foreach (var enemy in target)
         {
-            if (enemy != null && !enemy.isBoss)
+            if (enemy != null) //&& !enemy.isBoss)
             {
                 enemy.Die();
             }

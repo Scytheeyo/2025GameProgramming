@@ -1,0 +1,272 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+guid: 0f1231fe81e39c94d97814a1b35e38f3
+========
+guid: 3f8e8394e741d2c41a79a5cbbea9475d
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+  spritePixelsToUnits: 100
+========
+  spritePixelsToUnits: 32
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+========
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      name: CheshierCat_Attack_0
+========
+      name: burning_start_1_0
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+        width: 64
+        height: 64
+========
+        width: 24
+        height: 32
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      spriteID: c7c746c81ae817443bbf89d6138718a1
+      internalID: -883696701
+========
+      spriteID: 7df7caba29176674ea72968b9fc81a1b
+      internalID: -590298250
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      name: CheshierCat_Attack_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+========
+      name: burning_start_1_1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 24
+        height: 32
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      spriteID: bcec9eff783ab404d82919b811e2570e
+      internalID: -376753296
+========
+      spriteID: 1571078c4b530894f8696af1af088770
+      internalID: -1946124632
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      name: CheshierCat_Attack_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+========
+      name: burning_start_1_2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 24
+        height: 32
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      spriteID: 62c748949c1bf4f4186efadf4ea41440
+      internalID: 538425942
+========
+      spriteID: 7d533f76c3bbfae47ab8c35e2883ace6
+      internalID: 1637263710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: burning_start_1_3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acfee575acded2448892ed028289a392
+      internalID: -207496504
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CheshierCat/CheshierCat_Attack.png.meta
+      CheshierCat_Attack_0: -883696701
+      CheshierCat_Attack_1: -376753296
+      CheshierCat_Attack_2: 538425942
+========
+      burning_start_1_0: -590298250
+      burning_start_1_1: -1946124632
+      burning_start_1_2: 1637263710
+      burning_start_1_3: -207496504
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/burning_start_1.png.meta
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

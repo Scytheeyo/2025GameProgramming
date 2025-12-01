@@ -20,6 +20,7 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
+<<<<<<< Updated upstream:GPV2/Assets/GFX/Animations/Player/Idle.anim
       value: {fileID: -2023418783, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - time: 0.11666667
       value: {fileID: -136551206, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
@@ -33,11 +34,29 @@ AnimationClip:
       value: {fileID: 102723263, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - time: 0.7
       value: {fileID: -98770262, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
+=======
+      value: {fileID: -86997036, guid: 72c7dcc446290bb48a8c2848601b639c, type: 3}
+    - time: 1
+      value: {fileID: 0}
+>>>>>>> Stashed changes:GPV2/Assets/GFX/Animations/Enemy/CheshierCat/CheshierCatAttackReady.anim
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
+<<<<<<< Updated upstream:GPV2/Assets/GFX/Animations/Player/Idle.anim
   m_SampleRate: 60
+=======
+  - curve:
+    - time: 0
+      value: {fileID: -883696701, guid: 0f1231fe81e39c94d97814a1b35e38f3, type: 3}
+    - time: 2
+      value: {fileID: 0}
+    attribute: m_Sprite
+    path: body
+    classID: 212
+    script: {fileID: 0}
+  m_SampleRate: 1
+>>>>>>> Stashed changes:GPV2/Assets/GFX/Animations/Enemy/CheshierCat/CheshierCatAttackReady.anim
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -52,6 +71,7 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
+<<<<<<< Updated upstream:GPV2/Assets/GFX/Animations/Player/Idle.anim
     - {fileID: -2023418783, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - {fileID: -136551206, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - {fileID: -1114230180, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
@@ -59,12 +79,22 @@ AnimationClip:
     - {fileID: 589965505, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - {fileID: 102723263, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
     - {fileID: -98770262, guid: 9917130a9cbc0df49b006f9a0ce4a70a, type: 3}
+=======
+    - {fileID: -86997036, guid: 72c7dcc446290bb48a8c2848601b639c, type: 3}
+    - {fileID: 0}
+    - {fileID: -883696701, guid: 0f1231fe81e39c94d97814a1b35e38f3, type: 3}
+    - {fileID: 0}
+>>>>>>> Stashed changes:GPV2/Assets/GFX/Animations/Enemy/CheshierCat/CheshierCatAttackReady.anim
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
+<<<<<<< Updated upstream:GPV2/Assets/GFX/Animations/Player/Idle.anim
     m_StopTime: 0.71666664
+=======
+    m_StopTime: 3
+>>>>>>> Stashed changes:GPV2/Assets/GFX/Animations/Enemy/CheshierCat/CheshierCatAttackReady.anim
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

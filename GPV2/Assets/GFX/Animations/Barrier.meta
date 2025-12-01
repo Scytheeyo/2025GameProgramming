@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream
 guid: c7cfa53092424a046bc3bbffc006c128
+=======
+<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy.meta
+guid: 99485451dd597b541886f2ff89d6247b
+========
+guid: c7cfa53092424a046bc3bbffc006c128
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animations/Barrier.meta
+>>>>>>> Stashed changes
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

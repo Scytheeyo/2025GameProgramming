@@ -230,6 +230,95 @@ public class Player : MonoBehaviour
         attackHitbox.SetActive(false);
     }
 
+<<<<<<< Updated upstream
+=======
+    private void EquipWeapon(Weapon w)
+    {
+        if (equippedWeapon != null) Destroy(equippedWeapon.gameObject);
+
+        equippedWeapon = w;
+        if (w != null) w.SetOwner(this);
+
+        w.transform.SetParent(swordSlot);
+
+        if (w.weaponType == WeaponType.Ranged)
+            w.transform.localPosition = new Vector3(0.35f, 0.1f, 0f);
+        else
+            w.transform.localPosition = new Vector3(0.35f, 0f, 0f);
+
+        if (!isRight)
+            w.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        else
+            w.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        Collider2D col = w.GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        Rigidbody2D rb2 = w.GetComponent<Rigidbody2D>();
+        if (rb2 != null) rb2.simulated = false;
+    }
+
+    private IEnumerator SwingWeapon()
+    {
+        isSwinging = true;
+        Collider2D weaponCollider = equippedWeapon.GetComponent<Collider2D>();
+        Rigidbody2D weaponRb = equippedWeapon.GetComponent<Rigidbody2D>();
+        if (weaponCollider != null) weaponCollider.enabled = true;
+        if (weaponRb != null) weaponRb.simulated = true;
+
+        float duration = equippedWeapon.swingDuration;
+        float startAngle = equippedWeapon.swingStartAngle;
+        float endAngle = equippedWeapon.swingEndAngle;
+        float timer = 0f;
+        Quaternion baseRotation = swordSlot.localRotation;
+        Quaternion startRot = baseRotation * Quaternion.Euler(0, 0, startAngle);
+        Quaternion endRot = baseRotation * Quaternion.Euler(0, 0, endAngle);
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / duration;
+            swordSlot.localRotation = Quaternion.Lerp(startRot, endRot, progress);
+            yield return null;
+        }
+
+        swordSlot.localRotation = baseRotation;
+        if (weaponCollider != null) weaponCollider.enabled = false;
+        if (weaponRb != null) weaponRb.simulated = false;
+        isSwinging = false;
+        currentAttackMultiplier = 1.0f;
+    }
+
+    void CastStrongAttack()
+    {
+        StrongAttack.Play();
+        if (strongAttackEffectPrefab == null) return;
+
+        Vector3 spawnPosition = firePoint.position;
+        Vector3 effectScale = Vector3.one;
+        if (!isRight) effectScale.x = -1;
+
+        GameObject effectInstance = Instantiate(strongAttackEffectPrefab, spawnPosition, Quaternion.identity);
+        effectInstance.transform.localScale = effectScale;
+
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPosition, strongAttackRadius, enemyLayer);
+
+        float baseDmg = equippedWeapon.damage + currentAttackDamage;
+        if (hasDoubleStrike) baseDmg *= 2.0f;
+
+        int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
+
+        foreach (Collider2D enemyCollider in hitEnemies)
+        {
+            IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target != null)
+            {
+                target.TakeDamage(finalDamage);
+            }
+        }
+    }
+
+>>>>>>> Stashed changes
     private void Flip(float h)
     {
         if ((h < 0 && isRight) || (h > 0 && !isRight))

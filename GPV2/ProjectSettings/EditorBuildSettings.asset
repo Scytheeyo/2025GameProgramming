@@ -9,9 +9,13 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+<<<<<<< Updated upstream
     path: Assets/Scenes/Stage1.unity
+=======
+    path: Assets/Prefabs/Scenes/Stage1.unity
+>>>>>>> Stashed changes
     guid: ad6c6a0264d579648ab78ce477266735
   - enabled: 1
-    path: Assets/Scenes/Stage2.unity
+    path: Assets/Prefabs/Scenes/Stage2.unity
     guid: 5ffbf4786898cb046abac75fbac21f1d
   m_configObjects: {}

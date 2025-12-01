@@ -4359,15 +4359,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5579399632845568550}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f24e57ea4f31b0419797486a26d3131, type: 3}
+  m_Script: {fileID: 11500000, guid: 2bb04cc79d70a984aa42f79d8a8804cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   entrancePoint: {fileID: 9119022968066731769}
   entranceDoors:
   - {fileID: 4428470421671279509}
   exitDoors:
-  - {fileID: 5336715866470982527}
   - {fileID: 5336715866433745607}
+  - {fileID: 5336715866470982527}
 --- !u!1 &5579399633768974221
 GameObject:
   m_ObjectHideFlags: 0

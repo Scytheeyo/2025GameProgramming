@@ -38,7 +38,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -62,15 +62,15 @@ TextureImporter:
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
-  applyGammaDecoding: 0
-  cookieLightType: 0
+  applyGammaDecoding: 1
+  cookieLightType: 2
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -82,7 +82,11 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
+<<<<<<< Updated upstream
     textureCompression: 1
+=======
+    textureCompression: 0
+>>>>>>> Stashed changes
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -107,8 +111,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: e57775be2b95a404991ddf86ddeed313
       internalID: 1792314372
+=======
+      spriteID: 63ce7e044ad820d4e97902a5ef62a234
+      internalID: -1138857054
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -128,8 +137,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: b43c9283282d1804aadb9387f1eebc2b
       internalID: 1478870264
+=======
+      spriteID: ff1831f5a2d7a61488dcc7c30e93c256
+      internalID: -571985591
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -149,8 +163,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: a7d89e681dac6254882f94b9c2547eef
       internalID: -1423984913
+=======
+      spriteID: 082881301f698194eaad5ff969bf58aa
+      internalID: 1046812001
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -170,8 +189,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: 1efbefddaa6b338428bb0d56c1b9a376
       internalID: 1694281305
+=======
+      spriteID: 6a82bb01308899849a92ea00abddda51
+      internalID: 246240922
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -191,8 +215,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: fdf2d3716ada28c45a85d57bf9df1a93
       internalID: 940603227
+=======
+      spriteID: 2abc133c559022248805e2d1bd02328d
+      internalID: 1508430068
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -212,8 +241,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: da362d9b104855843af8cc24006b2d3d
       internalID: -1400728561
+=======
+      spriteID: 93a254f189b45674883f45916cfe0777
+      internalID: 1037348315
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -233,8 +267,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: bdc1c41a27249d943bd84ca69a3e9499
       internalID: 405584219
+=======
+      spriteID: 5b4bc12aa5dfbee4e85e10173e9b390d
+      internalID: -1122651890
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -254,8 +293,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
+<<<<<<< Updated upstream
       spriteID: def5d0099888274468e7f367b58cfd07
       internalID: -298216555
+=======
+      spriteID: f3a454c43e3d22343b7cf34df51a498f
+      internalID: -21280104
+>>>>>>> Stashed changes
       vertices: []
       indices: 
       edges: []
@@ -271,6 +315,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+<<<<<<< Updated upstream
       Smash_0: 1792314372
       Smash_1: 1478870264
       Smash_2: -1423984913
@@ -279,6 +324,16 @@ TextureImporter:
       Smash_5: -1400728561
       Smash_6: 405584219
       Smash_7: -298216555
+=======
+      Smash_0: -1138857054
+      Smash_1: -571985591
+      Smash_2: 1046812001
+      Smash_3: 246240922
+      Smash_4: 1508430068
+      Smash_5: 1037348315
+      Smash_6: -1122651890
+      Smash_7: -21280104
+>>>>>>> Stashed changes
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

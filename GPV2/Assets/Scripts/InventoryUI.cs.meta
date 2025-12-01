@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream:GPV2/Assets/Scripts/InventoryUI.cs.meta
 guid: 501cc146647893f4dba3d1b328c357d5
+=======
+<<<<<<<< HEAD:GPV2/Assets/Scripts/Boss_CardCaptain.cs.meta
+guid: 851717364f58458478abd0e3c9d3f17f
+========
+guid: 93d0f66d234c16548b1e9bc1f5879aca
+>>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/Scripts/CardData.cs.meta
+>>>>>>> Stashed changes:GPV2/Assets/Scripts/Boss_CardCaptain.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
