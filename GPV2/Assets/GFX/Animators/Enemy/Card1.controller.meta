@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/Card1.controller.meta
 guid: 064403a40e174364b8ea16369459c7a9
-========
-guid: 2e9bb0518560dac428ad4145ae2eb9f8
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animators/explosion_0.controller.meta
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 9100000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

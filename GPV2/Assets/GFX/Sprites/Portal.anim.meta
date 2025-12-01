@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animations/Enemy/CardSoldier/Clover/Anim_CloverSpin.anim.meta
 guid: 93477c1a3fb17f44aa22417876374bae
-========
-guid: 0cb003100cd73094a8289a88010e30a8
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Portal.anim.meta
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 7400000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
