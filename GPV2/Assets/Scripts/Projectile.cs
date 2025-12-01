@@ -19,6 +19,7 @@ public class Projectile : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    // 기본값 설정 수정: knockbackValue가 없으면 0으로 초기화
     public void Setup(Vector2 moveDirection, float knockbackValue = 0f)
     {
         rb.velocity = moveDirection.normalized * speed;
@@ -38,18 +39,18 @@ public class Projectile : MonoBehaviour
 
             if (enemy != null)
             {
+                // 데미지 적용
                 enemy.TakeDamage(damage);
 
+                // 넉백 적용 (힘이 0보다 클 때만)
                 if (knockbackForce > 0)
                 {
-                    enemy.BeginKnockback(0.3f);
+                    // 1. 밀려날 방향 계산 (적 위치 - 투사체 위치)
+                    Vector2 knockbackDir = (other.transform.position - transform.position).normalized;
 
-                    Rigidbody2D enemyRb = other.GetComponent<Rigidbody2D>();
-                    if (enemyRb != null)
-                    {
-                        Vector2 knockbackDir = (other.transform.position - transform.position).normalized;
-                        enemyRb.AddForce(knockbackDir * knockbackForce, ForceMode2D.Impulse);
-                    }
+                    // 2. EnemyController의 함수 호출 (방향과 힘을 전달)
+                    // 기존 코드의 enemy.BeginKnockback(0.3f) 에러 수정됨
+                    enemy.BeginKnockback(knockbackDir, knockbackForce);
                 }
             }
             Destroy(gameObject);
@@ -63,7 +64,8 @@ public class Projectile : MonoBehaviour
 
     void PlayExplosion()
     {
-        if (knockbackForce == 0) return;
+        if (ExplosionGo == null) return; // 폭발 프리팹이 없으면 리턴 (안전장치)
+
         GameObject explosion = (GameObject)Instantiate(ExplosionGo);
         explosion.transform.position = transform.position;
     }

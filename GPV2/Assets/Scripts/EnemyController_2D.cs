@@ -6,6 +6,7 @@ public class EnemyController_2D : MonoBehaviour
     [Header("Stats")]
     public int maxHealth = 100;
     public int currentHealth;
+    public bool isBoss = false; // [추가됨] 보스 여부 확인
 
     [Header("Settings")]
     public float moveSpeed = 3f;
@@ -217,7 +218,8 @@ public class EnemyController_2D : MonoBehaviour
         flashCoroutine = null;
     }
 
-    protected virtual void Die()
+    // [수정됨] protected -> public으로 변경 (외부에서 호출 가능하도록)
+    public virtual void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -248,6 +250,41 @@ public class EnemyController_2D : MonoBehaviour
     {
         if (dropItemPrefab != null)
             Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
+    }
+
+    // [추가됨] 넉백 시작 함수
+    public void BeginKnockback(Vector2 direction, float force)
+    {
+        if (isBoss || isDead) return; // 보스는 밀리지 않음
+        rb.AddForce(direction * force, ForceMode2D.Impulse);
+    }
+
+    // [추가됨] 퍼센트 데미지 함수
+    public void TakePercentDamage(float percent)
+    {
+        if (isDead) return;
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
+    }
+
+    // [추가됨] 적 정지(빙결) 함수
+    public void FreezeEnemy(float duration)
+    {
+        if (isBoss || isDead) return;
+        StartCoroutine(FreezeRoutine(duration));
+    }
+
+    private IEnumerator FreezeRoutine(float duration)
+    {
+        float originalSpeed = moveSpeed;
+        moveSpeed = 0f;
+        if (animator != null) animator.speed = 0f;
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = originalSpeed;
+        if (animator != null) animator.speed = 1f;
     }
 
     void OnDrawGizmosSelected()

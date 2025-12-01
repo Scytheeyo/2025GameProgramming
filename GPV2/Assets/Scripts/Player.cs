@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     public GameObject attackHitbox;
     public float attackDelay = 0.2f;
     public float attackDuration = 0.4f;
-    
+
     [Header("원거리 공격")]
     public GameObject projectilePrefab;
     public Transform firePoint;
@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
     public GameManager gameManager;
     private bool isAtEvent = false;
     public bool Interaction = false;
-    
+
     [Header("장비 및 오디오")]
     public Transform staffSlot;
     public Transform swordSlot;
@@ -46,9 +46,9 @@ public class Player : MonoBehaviour
     [Header("전투 스킬 (Player1)")]
     public bool isManaGuardOn = false;
     private bool isSwinging = false;
-    private bool isCharging = false;      
-    private float fire1HoldTime = 0f;    
-    public float chargehold = 2f;  
+    private bool isCharging = false;
+    private float fire1HoldTime = 0f;
+    public float chargehold = 2f;
     public float currentAttackMultiplier = 1.0f;
     public GameObject strongAttackEffectPrefab;
     public float strongAttackRadius = 2.0f;
@@ -112,7 +112,7 @@ public class Player : MonoBehaviour
         // ---------------- [공격 로직: Player1의 차지/스윙 시스템 채택] ----------------
         if (Input.GetButtonDown("Fire1"))
         {
-            if (!isSwinging && equippedWeapon != null )
+            if (!isSwinging && equippedWeapon != null)
             {
                 isCharging = true;
                 fire1HoldTime = 0f;
@@ -129,7 +129,7 @@ public class Player : MonoBehaviour
                 {
                     chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
                     chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-                } 
+                }
             }
             // 풀차지 이펙트 처리
             if (chargeEffectInstance != null && fire1HoldTime >= 2f)
@@ -143,13 +143,13 @@ public class Player : MonoBehaviour
 
         if (Input.GetButtonUp("Fire1"))
         {
-            if (isCharging) 
+            if (isCharging)
             {
                 isCharging = false;
                 // 이펙트 정리
                 if (chargeEffectInstance != null) { Destroy(chargeEffectInstance); chargeEffectInstance = null; }
                 if (chargedEffectInstance != null) { Destroy(chargedEffectInstance); chargedEffectInstance = null; }
-                
+
                 if (!isSwinging && equippedWeapon != null)
                 {
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && fire1HoldTime >= chargehold)
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour
                         CastStrongAttack();
                         currentAttackMultiplier = 1.0f;
                     }
-                    else 
+                    else
                     {
                         Debug.Log("일반 베기");
                         normalAttack.Play();
@@ -220,6 +220,16 @@ public class Player : MonoBehaviour
     }
 
     // ---------------- [Player1의 전투 메서드들] ----------------
+
+    // [추가됨] 스킬 매니저에서 호출하는 공격 모션 함수
+    public void PerformSkillSwing()
+    {
+        if (!isSwinging && equippedWeapon != null)
+        {
+            StartCoroutine(SwingWeapon());
+        }
+    }
+
     void Shoot()
     {
         int manaCost = GetCurrentProjectileManaCost();
@@ -255,19 +265,19 @@ public class Player : MonoBehaviour
 
         equippedWeapon = w;
         if (w != null) w.SetOwner(this);
-        
+
         // 지팡이/칼 슬롯 구분
-        w.transform.SetParent(swordSlot); 
-        
+        w.transform.SetParent(swordSlot);
+
         if (w.weaponType == WeaponType.Ranged)
             w.transform.localPosition = new Vector3(0.35f, 0.1f, 0f);
         else
             w.transform.localPosition = new Vector3(0.35f, 0f, 0f);
 
-        if(!isRight)
-           w.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        if (!isRight)
+            w.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         else
-           w.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            w.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         Collider2D col = w.GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
@@ -301,8 +311,8 @@ public class Player : MonoBehaviour
             yield return null;
         }
 
-        swordSlot.localRotation = baseRotation; 
-        if (weaponCollider != null) weaponCollider.enabled = false; 
+        swordSlot.localRotation = baseRotation;
+        if (weaponCollider != null) weaponCollider.enabled = false;
         if (weaponRb != null) weaponRb.simulated = false;
         isSwinging = false;
         currentAttackMultiplier = 1.0f;
@@ -393,7 +403,7 @@ public class Player : MonoBehaviour
             if (other.CompareTag("Door"))
             {
                 Interaction = false;
-                if(doorComponent != null) doorComponent.InitiateTransition();
+                if (doorComponent != null) doorComponent.InitiateTransition();
             }
         }
     }
@@ -497,13 +507,13 @@ public class Player : MonoBehaviour
     {
         if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
 
-        bool itemUsed = false; 
+        bool itemUsed = false;
         switch (itemTag)
         {
             case "RedPotion":
                 if (health < 100)
                 {
-                    health += 20; 
+                    health += 20;
                     if (health > 100) health = 100;
                     itemUsed = true;
                 }

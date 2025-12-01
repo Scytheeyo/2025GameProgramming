@@ -147,8 +147,8 @@ public class Caterpillar : EnemyController_2D
         }
     }
 
-    // ★ [죽음 처리 오버라이드] 체셔 고양이와 동일하게 FadeOut 효과 적용
-    protected override void Die()
+    // ★ [수정됨] protected -> public으로 변경
+    public override void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -199,6 +199,5 @@ public class Caterpillar : EnemyController_2D
             yield return new WaitForSeconds(flashDuration);
             sr.color = Color.white;
         }
-        // 부모 변수 접근 오류 해결을 위해 삭제함
     }
 }

@@ -125,7 +125,7 @@ public class CheshireCat : EnemyController_2D
     // ★ 사용자의 요청에 따라 경고 방지용 오버라이드 함수들(OnTriggerExit2D, TakeDamage)을 삭제했습니다.
     // 이제 부모 클래스의 함수가 그대로 호출됩니다.
 
-    protected override void Die()
+    public override void Die()
     {
         if (isDead) return;
         isDead = true;
