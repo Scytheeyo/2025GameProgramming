@@ -6,18 +6,19 @@ public class EnemyController_2D : MonoBehaviour
     [Header("Stats")]
     public int maxHealth = 100;
     public int currentHealth;
-    public bool isBoss = false; // [추가됨] 보스 여부 확인
+    public bool isBoss = false;
 
     [Header("Settings")]
     public float moveSpeed = 3f;
     public float chaseRange = 10f;
+    public float attackRange = 1.0f; // [신규] 공격 판정 범위 (Gizmos로 확인 가능)
     public float attackCooldown = 1f;
     public int damage = 10;
 
     [Header("Hit Effect")]
-    public Color hitColor = new Color(1f, 0.4f, 0.4f); // 피격 시 색상
-    public float flashDuration = 0.1f; // 깜빡이는 시간
-    private Coroutine flashCoroutine;  // 깜빡임 코루틴 제어 변수
+    public Color hitColor = new Color(1f, 0.4f, 0.4f);
+    public float flashDuration = 0.1f;
+    private Coroutine flashCoroutine;
 
     [Header("References")]
     public Transform player;
@@ -54,6 +55,8 @@ public class EnemyController_2D : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         myCollider = GetComponent<Collider2D>();
         currentHealth = maxHealth;
+
+        if (attackPoint == null) attackPoint = transform;
     }
 
     protected virtual void Update()
@@ -61,8 +64,13 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead || player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-        sr.flipX = (player.position.x < transform.position.x);
-        UpdateAttackPointDirection();
+
+        // 공격 중이 아닐 때만 바라보는 방향 전환
+        if (!isAttacking)
+        {
+            sr.flipX = (player.position.x < transform.position.x);
+            UpdateAttackPointDirection();
+        }
 
         if (isAttacking)
         {
@@ -82,6 +90,8 @@ public class EnemyController_2D : MonoBehaviour
         {
             Idle();
         }
+
+        // 테스트용
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
@@ -140,8 +150,6 @@ public class EnemyController_2D : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInAttackRange = false;
-            isAttacking = false;
-            animator.SetBool("IsAttacking", false);
         }
     }
 
@@ -162,11 +170,32 @@ public class EnemyController_2D : MonoBehaviour
         animator.SetBool("IsAttacking", true);
         animator.SetFloat("Speed", 0);
 
+        // 플레이어와 충돌 무시는 선택 사항 (필요 없으면 삭제 가능)
         Collider2D playerCol = player.GetComponent<Collider2D>();
         if (playerCol && myCollider)
             Physics2D.IgnoreCollision(playerCol, myCollider, true);
 
-        Invoke(nameof(EndAttack), 0.6f);
+        // 안전장치: 애니메이션 이벤트가 씹히거나 없을 때를 대비해 일정 시간 후 공격 상태 해제
+        Invoke(nameof(EndAttack), 1.0f);
+    }
+
+    // [신규] 애니메이션 이벤트에서 호출할 데미지 함수
+    public void DealDamage()
+    {
+        if (attackPoint == null) return;
+
+        // 1. 범위 내 모든 콜라이더 감지
+        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+
+        foreach (Collider2D col in hitObjects)
+        {
+            // 2. 태그 확인 (레이어 무시)
+            if (col.CompareTag("Player"))
+            {
+                // Debug.Log($"{name}이(가) 플레이어 공격! 데미지: {damage}");
+                col.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     void EndAttack()
@@ -185,14 +214,10 @@ public class EnemyController_2D : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= dmg;
-        // Debug.Log("Enemy hit! 현재 체력: " + currentHealth);
 
-        // [추가] 피격 깜빡임 효과 (연속 피격 시 기존 코루틴 취소 후 재실행)
         if (gameObject.activeInHierarchy)
         {
-            if (flashCoroutine != null)
-                StopCoroutine(flashCoroutine);
-
+            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
             flashCoroutine = StartCoroutine(HitFlashRoutine());
         }
 
@@ -206,7 +231,6 @@ public class EnemyController_2D : MonoBehaviour
         }
     }
 
-    // [추가] Material 색상 변경 코루틴 (애니메이션 간섭 무시)
     protected virtual IEnumerator HitFlashRoutine()
     {
         if (sr != null)
@@ -218,13 +242,11 @@ public class EnemyController_2D : MonoBehaviour
         flashCoroutine = null;
     }
 
-    // [수정됨] protected -> public으로 변경 (외부에서 호출 가능하도록)
     public virtual void Die()
     {
         if (isDead) return;
         isDead = true;
 
-        // [추가] 죽을 때 색상 원상복구 및 코루틴 정지
         StopAllCoroutines();
         if (sr != null) sr.material.color = Color.white;
 
@@ -233,7 +255,6 @@ public class EnemyController_2D : MonoBehaviour
         animator.SetFloat("Speed", 0);
 
         rb.velocity = Vector2.zero;
-
         rb.simulated = false;
         myCollider.enabled = false;
 
@@ -252,14 +273,12 @@ public class EnemyController_2D : MonoBehaviour
             Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
     }
 
-    // [추가됨] 넉백 시작 함수
     public void BeginKnockback(Vector2 direction, float force)
     {
-        if (isBoss || isDead) return; // 보스는 밀리지 않음
+        if (isBoss || isDead) return;
         rb.AddForce(direction * force, ForceMode2D.Impulse);
     }
 
-    // [추가됨] 퍼센트 데미지 함수
     public void TakePercentDamage(float percent)
     {
         if (isDead) return;
@@ -268,7 +287,6 @@ public class EnemyController_2D : MonoBehaviour
         TakeDamage(dmg);
     }
 
-    // [추가됨] 적 정지(빙결) 함수
     public void FreezeEnemy(float duration)
     {
         if (isBoss || isDead) return;
@@ -289,7 +307,15 @@ public class EnemyController_2D : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
+        // 추적 범위 (노란색)
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+
+        // 공격 범위 (빨간색)
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        }
     }
 }

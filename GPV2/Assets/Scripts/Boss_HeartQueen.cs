@@ -11,19 +11,20 @@ public class Boss_HeartQueen : MonoBehaviour
     public int currentHealth;
 
     [Header("피격 효과 설정")]
-    public Color hitColor = new Color(1f, 0.4f, 0.4f); // 살짝 연한 빨강
-    public float flashDuration = 0.1f; // 깜빡이는 시간
+    public Color hitColor = new Color(1f, 0.4f, 0.4f);
+    public float flashDuration = 0.1f;
 
     [Header("일반 공격")]
+    public int attackDamage = 20; // [신규] 일반 공격 데미지
     public float attackCooldown = 1.5f;
     private float lastAttackTime = -999f;
     private int attackComboIndex = 0;
 
-    [Header("소환 패턴 (복구됨)")]
-    public float summonCooldown = 30f; // 30초마다 소환
+    [Header("소환 패턴")]
+    public float summonCooldown = 30f;
     private float lastSummonTime = -999f;
-    public GameObject[] minionPrefabs; // 소환할 쫄병들
-    public Transform[] summonPoints;   // 소환 위치
+    public GameObject[] minionPrefabs;
+    public Transform[] summonPoints;
 
     [Header("돌진 공격")]
     public float dashSpeed = 15f;
@@ -32,7 +33,7 @@ public class Boss_HeartQueen : MonoBehaviour
     [SerializeField] private bool isDashReady = false;
 
     [Header("점프 찍기 (필살기)")]
-    public int jumpDamage = 30;
+    public int jumpDamage = 30; // 점프 공격 데미지
     public float jumpHeight = 15f;
     private int nextJumpHealth;
 
@@ -44,9 +45,9 @@ public class Boss_HeartQueen : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Collider2D myCollider;
-    private SpriteRenderer sr; // [추가] 색상 변경용
+    private SpriteRenderer sr;
 
-    private bool isActing = false;  // 행동 중 잠금
+    private bool isActing = false;
     private bool isDashing = false;
     private Vector2 dashDirection;
 
@@ -55,11 +56,11 @@ public class Boss_HeartQueen : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         myCollider = GetComponent<Collider2D>();
-        sr = GetComponent<SpriteRenderer>(); // [추가] 컴포넌트 가져오기
+        sr = GetComponent<SpriteRenderer>();
 
         currentHealth = maxHealth;
-        isDashReady = false; // 시작 시 돌진 끄기
-        lastSummonTime = Time.time; // 시작하자마자 소환하지 않게 초기화
+        isDashReady = false;
+        lastSummonTime = Time.time;
 
         if (player == null)
         {
@@ -68,15 +69,15 @@ public class Boss_HeartQueen : MonoBehaviour
         }
         if (attackPoint == null) attackPoint = transform;
 
-        // 점프 패턴 체력 설정
         nextJumpHealth = maxHealth - 100;
     }
 
     void Update()
     {
-        // J키 테스트 (삭제 가능)
+        // 테스트용 키
         if (Input.GetKeyDown(KeyCode.J) && !isActing) StartCoroutine(JumpSmashRoutine());
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
+
         if (player == null) return;
 
         // 1. 행동 중이면 정지
@@ -100,18 +101,14 @@ public class Boss_HeartQueen : MonoBehaviour
             }
         }
 
-        // ====================================================
-        // [1순위] 소환 패턴 체크 (쿨타임 되면 무조건 실행)
-        // ====================================================
+        // [1순위] 소환 패턴
         if (Time.time >= lastSummonTime + summonCooldown)
         {
             StartCoroutine(SummonRoutine());
-            return; // 소환하러 갔으니 아래 로직 무시
+            return;
         }
 
-        // ====================================================
-        // [2순위] 행동 결정 (공격 / 돌진 / 이동)
-        // ====================================================
+        // [2순위] 행동 결정
         if (distToPlayer <= attackRange)
         {
             StopMovement();
@@ -135,93 +132,69 @@ public class Boss_HeartQueen : MonoBehaviour
 
     public void TakeDamage(int dmg)
     {
-        // [수정] 점프(필살기) 패턴 중일 때만 무적 (화면 밖으로 나갔을 때)
-        // (Kinematic 상태면 점프 중이라고 판단)
+        // 점프 중(Kinematic)일 땐 무적
         if (rb.bodyType == RigidbodyType2D.Kinematic) return;
 
-        // 1. 체력 감소 (행동 중이라도 데미지는 입어야 함)
         currentHealth -= dmg;
 
-        // 2. 피격 효과 (색상 깜빡임) - 행동 중이라도 빨개져야 함
         if (gameObject.activeInHierarchy)
         {
             StartCoroutine(HitFlashRoutine());
         }
 
-        // 3. 피격 모션 (Hit 애니메이션)
-        // [중요] 행동 중(공격/돌진)이 아닐 때만 움찔거려야 공격이 안 끊김
         if (!isActing)
         {
             animator.SetTrigger("Hit");
         }
 
-        // 4. 점프 패턴 발동 체크
+        // 점프 패턴 발동 체크
         if (currentHealth <= nextJumpHealth)
         {
             nextJumpHealth -= 100;
-
-            // 하던거 멈추고 강제 패턴 발동
             StopAllCoroutines();
-            if (sr != null) sr.color = Color.white; // 색깔 복구
+            if (sr != null) sr.color = Color.white;
             StartCoroutine(JumpSmashRoutine());
         }
 
-        // 5. 사망 체크
         if (currentHealth <= 0) Die();
     }
 
-    // ====================================================
-    // [신규] 깜빡임 코루틴
-    // ====================================================
     IEnumerator HitFlashRoutine()
     {
-        sr.color = hitColor; // 빨간색
-        yield return new WaitForSeconds(flashDuration); // 0.1초 대기
-        sr.color = Color.white; // 원상복구
+        sr.color = hitColor;
+        yield return new WaitForSeconds(flashDuration);
+        sr.color = Color.white;
     }
 
-    // ====================================================
-    // 소환 코루틴 (복구됨)
-    // ====================================================
     IEnumerator SummonRoutine()
     {
-        isActing = true; // 행동 잠금
+        isActing = true;
         rb.velocity = Vector2.zero;
         animator.SetFloat("Speed", 0);
-
-        // 소환 애니메이션 시작 (Bool 사용)
         animator.SetBool("IsSummoning", true);
 
-        // 애니메이션 재생될 때까지 대기 (예: 1초)
         yield return new WaitForSeconds(1.0f);
 
-        // 쫄병 생성
         if (minionPrefabs != null && minionPrefabs.Length > 0)
         {
             for (int i = 0; i < minionPrefabs.Length; i++)
             {
                 Transform point = (summonPoints != null && summonPoints.Length > 0)
                                   ? summonPoints[i % summonPoints.Length]
-                                  : transform; // 포인트 없으면 내 위치에
+                                  : transform;
 
                 Instantiate(minionPrefabs[i % minionPrefabs.Length], point.position, Quaternion.identity);
             }
             Debug.Log("여왕: 나와라 카드병사들!");
         }
 
-        // 쿨타임 갱신
         lastSummonTime = Time.time;
-
-        // 애니메이션 종료
         animator.SetBool("IsSummoning", false);
-        yield return new WaitForSeconds(0.5f); // 후딜레이
+        yield return new WaitForSeconds(0.5f);
 
-        isActing = false; // 행동 잠금 해제
+        isActing = false;
     }
 
-    // ====================================================
-    // 점프 찍기 코루틴
-    // ====================================================
     IEnumerator JumpSmashRoutine()
     {
         isActing = true;
@@ -235,7 +208,7 @@ public class Boss_HeartQueen : MonoBehaviour
         animator.ResetTrigger("AttackH");
         animator.ResetTrigger("Dash");
         animator.ResetTrigger("Hit");
-        animator.SetBool("IsSummoning", false); // 소환 중이었다면 끄기
+        animator.SetBool("IsSummoning", false);
 
         animator.SetTrigger("Jump");
         yield return new WaitForSeconds(0.5f);
@@ -247,6 +220,7 @@ public class Boss_HeartQueen : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = new Vector3(transform.position.x, targetY, transform.position.z);
 
+        // 위로 상승
         while (elapsed < 0.5f)
         {
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / 0.5f);
@@ -255,6 +229,7 @@ public class Boss_HeartQueen : MonoBehaviour
         }
         transform.position = endPos;
 
+        // 공중 대기
         yield return new WaitForSeconds(3.0f);
 
         if (player != null)
@@ -265,6 +240,7 @@ public class Boss_HeartQueen : MonoBehaviour
             transform.position = skyPos;
             animator.SetTrigger("Fall");
 
+            // 낙하
             elapsed = 0f;
             while (elapsed < 0.2f)
             {
@@ -278,11 +254,15 @@ public class Boss_HeartQueen : MonoBehaviour
         if (landEffectPrefab != null)
             Instantiate(landEffectPrefab, transform.position, Quaternion.identity);
 
-        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(transform.position, 2.5f, LayerMask.GetMask("Player"));
+        // [수정됨] 찍기 데미지 적용 (레이어 무시, 태그 확인)
+        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(transform.position, 2.5f);
         foreach (Collider2D p in hitPlayers)
         {
-            Debug.Log("쿵! 데미지: " + jumpDamage);
-            // p.GetComponent<PlayerHealth>().TakeDamage(jumpDamage);
+            if (p.CompareTag("Player"))
+            {
+                Debug.Log($"여왕 점프 공격! 데미지: {jumpDamage}");
+                p.SendMessage("TakeDamage", jumpDamage, SendMessageOptions.DontRequireReceiver);
+            }
         }
 
         yield return new WaitForSeconds(1.0f);
@@ -322,6 +302,25 @@ public class Boss_HeartQueen : MonoBehaviour
         isActing = false;
     }
 
+    // ====================================================
+    // [신규] 애니메이션 이벤트용 일반 공격 함수
+    // ====================================================
+    public void DealDamage()
+    {
+        // 1. 공격 범위 내 모든 물체 감지
+        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+
+        foreach (Collider2D col in hitObjects)
+        {
+            // 2. 태그가 Player인지 확인 (레이어 상관 X)
+            if (col.CompareTag("Player"))
+            {
+                Debug.Log($"여왕 일반 공격! 데미지: {attackDamage}");
+                col.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
     public void StartDashMove() { isDashing = true; }
     public void EndDashMove() { isDashing = false; isActing = false; rb.velocity = Vector2.zero; lastDashEndTime = Time.time; }
     void MoveTowardsPlayer() { animator.SetFloat("Speed", 1); LookAtPlayer(); float dirX = Mathf.Sign(player.position.x - transform.position.x); rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y); }
@@ -332,14 +331,20 @@ public class Boss_HeartQueen : MonoBehaviour
     {
         StopAllCoroutines();
         isActing = true;
-
-        // [추가] 죽을 때 원래 색으로 복구
         if (sr != null) sr.color = Color.white;
-
         animator.SetTrigger("Die");
         rb.velocity = Vector2.zero;
         if (myCollider != null) myCollider.enabled = false;
     }
 
-    void OnDrawGizmos() { if (isDashReady) Gizmos.color = Color.green; else Gizmos.color = Color.red; Gizmos.DrawWireSphere(transform.position, chaseRange); if (attackPoint != null) { Gizmos.color = Color.yellow; Gizmos.DrawWireSphere(attackPoint.position, attackRange); } }
+    void OnDrawGizmos()
+    {
+        if (isDashReady) Gizmos.color = Color.green; else Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, chaseRange);
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        }
+    }
 }

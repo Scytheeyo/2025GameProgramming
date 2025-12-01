@@ -10,10 +10,12 @@ public class Boss_CardCaptain : MonoBehaviour
     public int maxHealth = 300;
     public int currentHealth;
 
+    [Header("공격력 설정")] // [신규] 데미지 조절용 변수
+    public int attackDamage = 15; // 여기서 데미지 수치를 조정하세요!
+
     [Header("피격 효과 설정")]
-    // 빨간색으로 깜빡임 (원하면 Color.white로 바꿔서 하얗게도 가능)
     public Color hitColor = new Color(1f, 0.4f, 0.4f);
-    public float flashDuration = 0.1f; // 깜빡이는 시간
+    public float flashDuration = 0.1f;
 
     [Header("3단 콤보 공격")]
     public float attackCooldown = 2.0f;
@@ -33,7 +35,7 @@ public class Boss_CardCaptain : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Collider2D myCollider;
-    private SpriteRenderer sr; // [추가] 색상을 바꾸기 위해 필요
+    private SpriteRenderer sr;
 
     private bool isActing = false;
 
@@ -42,7 +44,7 @@ public class Boss_CardCaptain : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         myCollider = GetComponent<Collider2D>();
-        sr = GetComponent<SpriteRenderer>(); // [추가] 컴포넌트 가져오기
+        sr = GetComponent<SpriteRenderer>();
 
         currentHealth = maxHealth;
 
@@ -85,44 +87,33 @@ public class Boss_CardCaptain : MonoBehaviour
         {
             MoveTowardsPlayer();
         }
+
+        // 테스트용 (K키 누르면 자해)
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
-    // ====================================================
-    // [수정] 피격 함수 (색상 깜빡임 추가)
-    // ====================================================
     public void TakeDamage(int dmg)
     {
-        // [삭제됨] if (isActing) return;  <-- 이 줄 때문에 공격 중에 무적이었던 겁니다.
-
-        // 1. 체력 감소 (언제든 데미지 입음)
         currentHealth -= dmg;
 
-        // 2. 피격 효과 (색상 깜빡임) - 공격 중이어도 빨개짐
         if (gameObject.activeInHierarchy)
         {
             StartCoroutine(HitFlashRoutine());
         }
 
-        // 3. 피격 모션 (Hit 애니메이션)
-        // [중요] 공격이나 소환 중(isActing)이 아닐 때만 움찔거려야 행동이 안 끊김
         if (!isActing)
         {
-            animator.SetTrigger("Hit"); 
+            animator.SetTrigger("Hit");
         }
 
-        // 4. 사망 처리
         if (currentHealth <= 0) Die();
     }
 
-    // ====================================================
-    // [신규] 깜빡임 코루틴
-    // ====================================================
     IEnumerator HitFlashRoutine()
     {
-        sr.color = hitColor; // 빨간색
-        yield return new WaitForSeconds(flashDuration); // 0.1초 대기
-        sr.color = Color.white; // 원상복구
+        sr.color = hitColor;
+        yield return new WaitForSeconds(flashDuration);
+        sr.color = Color.white;
     }
 
     IEnumerator AttackRoutine()
@@ -150,15 +141,19 @@ public class Boss_CardCaptain : MonoBehaviour
         isActing = true;
         StopMovement();
         animator.SetBool("IsSummoning", true);
+
         yield return new WaitForSeconds(1.0f);
 
         if (minionPrefabs != null && minionPrefabs.Length > 0)
         {
             for (int i = 0; i < minionPrefabs.Length; i++)
             {
+                if (minionPrefabs[i % minionPrefabs.Length] == null) continue;
+
                 Transform point = (summonPoints != null && summonPoints.Length > 0)
                                   ? summonPoints[i % summonPoints.Length]
                                   : transform;
+
                 Instantiate(minionPrefabs[i % minionPrefabs.Length], point.position, Quaternion.identity);
             }
         }
@@ -166,6 +161,7 @@ public class Boss_CardCaptain : MonoBehaviour
         lastSummonTime = Time.time;
         animator.SetBool("IsSummoning", false);
         yield return new WaitForSeconds(0.5f);
+
         isActing = false;
     }
 
@@ -195,7 +191,6 @@ public class Boss_CardCaptain : MonoBehaviour
     void Die()
     {
         StopAllCoroutines();
-        // 죽을 땐 원래 색으로 돌려놓기
         sr.color = Color.white;
 
         isActing = true;
@@ -205,12 +200,30 @@ public class Boss_CardCaptain : MonoBehaviour
         Destroy(gameObject, 2.0f);
     }
 
+    // ====================================================
+    // [수정] 플레이어 데미지 적용 함수 (애니메이션 이벤트용)
+    // ====================================================
     public void DealDamage()
     {
-        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, LayerMask.GetMask("Player"));
-        foreach (Collider2D p in hitPlayers)
+        // 1. 반경 내 모든 콜라이더 감지 (레이어 상관없이 일단 다 가져옴)
+        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+
+        foreach (Collider2D col in hitObjects)
         {
-            Debug.Log("플레이어 피격!");
+            // 2. 태그가 "Player"인지 직접 확인
+            if (col.CompareTag("Player"))
+            {
+                Debug.Log($"플레이어({col.name}) 감지됨! 데미지 {attackDamage} 적용 시도.");
+
+                // [방법 A] 플레이어 스크립트를 찾아서 TakeDamage 실행 (추천)
+                // 만약 플레이어 스크립트 이름이 PlayerController라면 아래 주석을 해제하고 쓰세요.
+                // PlayerController pc = col.GetComponent<PlayerController>();
+                // if (pc != null) pc.TakeDamage(attackDamage);
+
+                // [방법 B] 스크립트 이름을 몰라도 함수 이름만 맞으면 실행 (범용적)
+                // 플레이어 스크립트에 'public void TakeDamage(int damage)' 함수가 있어야 합니다.
+                col.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+            }
         }
     }
 

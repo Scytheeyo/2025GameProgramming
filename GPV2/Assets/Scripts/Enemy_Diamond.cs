@@ -13,6 +13,12 @@ public class Enemy_Diamond : EnemyController_2D
 
     private bool isDashing = false;
 
+    // 부모 클래스의 Start를 사용하여 Player와 기본 변수를 초기화합니다.
+    protected override void Start()
+    {
+        base.Start();
+    }
+
     protected override void Update()
     {
         if (isDead || player == null || isDashing) return;
@@ -22,6 +28,9 @@ public class Enemy_Diamond : EnemyController_2D
         // 플레이어 방향 보기
         if (transform.position.x > player.position.x) sr.flipX = true;
         else sr.flipX = false;
+
+        // [중요] 부모의 AttackPoint 방향도 같이 갱신해줘야 함 (필요 시)
+        UpdateAttackPointDirection();
 
         if (distance <= chaseRange)
         {
@@ -34,15 +43,13 @@ public class Enemy_Diamond : EnemyController_2D
             // 2. 쿨타임 중이면 -> 대기 (노려보기)
             else if (!isAttacking)
             {
-                // 쿨타임 동안은 움직이지 않고 제자리에서 대기합니다.
-                // 만약 쿨타임 동안에도 슬금슬금 다가오게 하려면 여기서 ChasePlayer();를 호출하세요.
                 rb.velocity = Vector2.zero;
-                animator?.SetFloat("Speed", 0);
+                if (animator != null) animator.SetFloat("Speed", 0);
             }
         }
         else
         {
-            // 아까는 여기가 ChasePlayer()여서 끝없이 쫓아왔던 겁니다.
+            // 추격 범위 밖이면 대기
             Idle();
         }
     }
@@ -52,32 +59,49 @@ public class Enemy_Diamond : EnemyController_2D
         // 1. 준비
         isAttacking = true;
         rb.velocity = Vector2.zero;
-        animator?.SetFloat("Speed", 0);
-        animator?.SetBool("IsAttacking", true);
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0);
+            animator.SetBool("IsAttacking", true);
+        }
+
+        // 깜빡이거나 준비 동작 딜레이
         yield return new WaitForSeconds(dashPrepTime);
 
-        // 2. 돌진
+        // 2. 돌진 시작
         isDashing = true;
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = dir * dashSpeed;
 
-        // 거리 기반 시간 계산
+        // 거리 기반 시간 계산 (속도 * 시간 = 거리 -> 시간 = 거리 / 속도)
         float calculatedDuration = dashDistance / dashSpeed;
+
+        // 돌진하는 동안 대기
         yield return new WaitForSeconds(calculatedDuration);
 
-        // 3. 정지
+        // 3. 정지 및 종료
         rb.velocity = Vector2.zero;
         isDashing = false;
         isAttacking = false;
-        animator?.SetBool("IsAttacking", false);
+
+        if (animator != null)
+            animator.SetBool("IsAttacking", false);
     }
 
+    // [수정됨] 충돌 시 데미지 적용 로직
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // 돌진 중에만 데미지를 줌
         if (isDashing && collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log($"[다이아몬드] 돌진 공격 성공! 데미지: {damage}");
+            Debug.Log($"[다이아몬드] 돌진 적중! 데미지: {damage}");
+
+            // 플레이어에게 데미지 전달 (부모 클래스의 damage 변수 사용)
+            collision.gameObject.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+
+            // 충돌 후 멈출지, 뚫고 지나갈지는 선택 (여기선 멈춤 처리)
             rb.velocity = Vector2.zero;
+            isDashing = false; // 충돌 즉시 돌진 상태 해제
         }
     }
 }

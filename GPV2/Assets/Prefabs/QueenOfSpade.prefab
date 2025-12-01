@@ -130,7 +130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5484006382098467773
 Transform:
   m_ObjectHideFlags: 0
@@ -288,13 +288,16 @@ MonoBehaviour:
   attackRange: 4
   maxHealth: 500
   currentHealth: 0
+  hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  flashDuration: 0.1
+  attackDamage: 20
   attackCooldown: 1.5
   summonCooldown: 30
   minionPrefabs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 5117330593268302136, guid: 6dcc7dae29173de4fbc6258600dcf269, type: 3}
+  - {fileID: 178167838244813783, guid: 997667387fba8a34d849db6348c235d2, type: 3}
+  - {fileID: 1081269191953349662, guid: 56d41a3d989460e45ac285485da19df7, type: 3}
+  - {fileID: 8428736245585864424, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
   summonPoints:
   - {fileID: 1206899557634726862}
   - {fileID: 8245977105379596117}
