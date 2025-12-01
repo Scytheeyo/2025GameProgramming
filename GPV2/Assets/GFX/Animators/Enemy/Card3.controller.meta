@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/Card3.controller.meta
 guid: c56e21e67b21a4446b5e9c7bac62b7a9
-========
-guid: b4551ed3ad99cfb4187202b2e3abce19
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/portalRings1_0.controller.meta
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 9100000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

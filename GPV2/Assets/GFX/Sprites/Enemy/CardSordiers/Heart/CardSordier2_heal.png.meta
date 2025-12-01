@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
 guid: d77266caeb735ac4a8cd790b9ffc561c
-========
-guid: 9cefabbbccb05e149bb69b23b43f196f
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -37,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +42,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -93,7 +89,6 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
   - serializedVersion: 3
     buildTarget: Android
     maxTextureSize: 2048
@@ -106,131 +101,9 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-========
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      name: CardSordier2_heal_0
-========
-      name: Alice_Walk-export-Sheet_0
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      spriteID: e4dfc56cafcb15244928a284e64842cd
-      internalID: 2129253638
-========
-      spriteID: daa3803bd0e94bd478797678a841ebfb
-      internalID: -2113688995
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      name: CardSordier2_heal_1
-========
-      name: Alice_Walk-export-Sheet_1
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      spriteID: 3a05eb0f55a853c4e8c39ae658a58795
-      internalID: -930273519
-========
-      spriteID: 15a1b4926edf1664ea3aa46d4fd08048
-      internalID: 391283881
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      name: CardSordier2_heal_2
-========
-      name: Alice_Walk-export-Sheet_2
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      spriteID: 88d4b5e20be0dcd4db0183fd62c2971a
-      internalID: 1565158055
-========
-      spriteID: bdcf1dcc8c55fd64a9353c6416c4aaf5
-      internalID: 468894300
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      name: CardSordier2_heal_3
-========
-      name: Alice_Walk-export-Sheet_3
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      spriteID: 337780155faa8954c9670dbe6f40c5cf
-      internalID: -1938130856
-========
-      spriteID: ab65743d03e4b284abd85ae10b530cac
-      internalID: -64794672
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -241,18 +114,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/CardSordiers/Heart/CardSordier2_heal.png.meta
-      CardSordier2_heal_0: 2129253638
-      CardSordier2_heal_1: -930273519
-      CardSordier2_heal_2: 1565158055
-      CardSordier2_heal_3: -1938130856
-========
-      Alice_Walk-export-Sheet_0: -2113688995
-      Alice_Walk-export-Sheet_1: 391283881
-      Alice_Walk-export-Sheet_2: 468894300
-      Alice_Walk-export-Sheet_3: -64794672
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Player/Alice_Walk-export-Sheet.png.meta
+    nameFileIdTable: {}
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
