@@ -1,28 +1,23 @@
 using UnityEngine;
 using System.Collections;
-
 public class SwordSkillManager : MonoBehaviour
 {
     private Player player;
     private bool isSpatialSlashing = false;
-
-    [Header("스킬 공통 설정")]
-    // ★ Inspector에서 Enemy와 Boss 레이어를 모두 체크(Mixed) 해주세요!
-    public LayerMask enemyLayer;
 
     [Header("Lv3: 가드 브레이크")]
     public GameObject SmashPrefab;
     public AudioSource SmashAttack;
     public float SmashRadius = 2.0f;
     public int guardBreakManaCost = 20;
-    // 일반 몹에게 주는 퍼센트 데미지 (0.5 = 50%)
-    public float normalEnemyDamagePercent = 0.5f;
-    // 보스 몹에게 주는 퍼센트 데미지 (0.1 = 10%)
-    public float bossEnemyDamagePercent = 0.1f;
+    public float guardBreakRange = 1.5f; // 전방 1.5m
+    public float normalEnemyDamagePercent = 0.5f; // 일반몹 50%
+    public float bossEnemyDamagePercent = 0.1f;  // 보스몹 10%
+    public LayerMask enemyLayer;
 
     [Header("Lv4: 검기")]
     public int swordAuraManaCost = 15;
-    public GameObject swordAuraProjectilePrefab; // 검기 프리팹 (AttackDamage 스크립트가 붙어있어야 함)
+    public GameObject swordAuraProjectilePrefab; // 검기 프리팹 
     public AudioSource SwordAuraAudio;
 
     [Header("Lv5: 공간참")]
@@ -31,7 +26,6 @@ public class SwordSkillManager : MonoBehaviour
     public GameObject spatialSlashEffectPrefab; // 공간참 이펙트 프리팹
     public float fadeDuration = 0.2f; // 암전/복구에 걸리는 시간
     public float effectDuration = 0.5f; // 이펙트가 보여지는 시간
-    public int spatialSlashBossDamage = 100; // 보스에게 들어가는 공간참 데미지
 
     void Start()
     {
@@ -87,81 +81,60 @@ public class SwordSkillManager : MonoBehaviour
             player.mana -= cost;
             return true;
         }
-        // Debug.Log("마나가 부족합니다!");
+        Debug.Log("마나가 부족합니다!");
         return false;
     }
 
     // --- 스킬 구현 ---
 
-    // 1. 가드 브레이크 (수정됨: 보스 데미지 적용)
+    // 1. 가드 브레이크
     void CastGuardBreak()
-    {
-        if (SmashAttack != null) SmashAttack.Play();
-
+{
+        SmashAttack.Play();
         player.PerformSkillSwing();
+        if (SmashPrefab == null) return;
 
-        if (SmashPrefab != null)
+        Vector3 spawnPosition = player.firePoint.position;
+        Vector3 effectScale = Vector3.one;
+        if (!player.isRight)
         {
-            Vector3 spawnPosition = player.firePoint.position;
-            Vector3 effectScale = Vector3.one;
-            if (!player.isRight)
-            {
-                effectScale.x = -1; // 이펙트 뒤집기
-            }
-            GameObject effectInstance = Instantiate(SmashPrefab, spawnPosition, Quaternion.identity);
-            effectInstance.transform.localScale = effectScale;
+            effectScale.x = -1; // 이펙트의 x 스케일을 -1로 만들어서 뒤집음
         }
-
-        // 범위 내 적 감지 (Enemy + Boss 레이어)
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(player.firePoint.position, SmashRadius, enemyLayer);
-
-        foreach (Collider2D hit in hitEnemies)
+        GameObject effectInstance = Instantiate(SmashPrefab, spawnPosition, Quaternion.identity);
+        effectInstance.transform.localScale = effectScale;
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPosition, SmashRadius, enemyLayer);
+        foreach (Collider2D enemyCollider in hitEnemies)
         {
-            // A. 일반 몬스터 처리
-            EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
+            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
             if (enemy != null)
             {
-                enemy.TakePercentDamage(normalEnemyDamagePercent);
-                Debug.Log($"일반 몹 {hit.name} 가드 브레이크 적중");
-            }
-
-            // B. [추가] 보스 몬스터 처리
-            Boss_CardCaptain boss = hit.GetComponent<Boss_CardCaptain>();
-            if (boss != null)
-            {
-                // 보스에게는 최대 체력의 n% 만큼 데미지 (혹은 고정 데미지로 변경 가능)
-                int dmg = Mathf.RoundToInt(boss.maxHealth * bossEnemyDamagePercent);
-                boss.TakeDamage(dmg);
-                Debug.Log($"보스 가드 브레이크 적중! 데미지: {dmg}");
+                float percent = enemy.isBoss ? bossEnemyDamagePercent : normalEnemyDamagePercent;
+                enemy.TakePercentDamage(percent);
             }
         }
     }
 
-    // 2. 검기 (투사체 발사)
+    // 2. 검기
     void CastSwordAura()
     {
         player.PerformSkillSwing();
         if (swordAuraProjectilePrefab == null) return;
 
-        if (SwordAuraAudio != null) SwordAuraAudio.Play();
-
+        SwordAuraAudio.Play();
         Vector3 firePos = player.firePoint.position;
-        Vector2 dir = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+        Vector2 dir = player.transform.localScale.x > 0 ? Vector2.right : Vector2.left;
 
         GameObject projObj = Instantiate(swordAuraProjectilePrefab, firePos, Quaternion.identity);
         Projectile projectile = projObj.GetComponent<Projectile>();
 
         if (projectile != null)
         {
-            // 검기는 넉백 없이 (0f) 설정
+            // 검기는 넉백 없이 (0f)
             projectile.Setup(dir, 0f);
         }
-
-        // ★ 중요: 발사되는 검기 프리팹(swordAuraProjectilePrefab)에 붙은
-        // AttackDamage.cs 스크립트가 보스를 인식하도록 수정되어 있어야 합니다.
     }
 
-    // 3. 공간참 (수정됨: 보스 데미지 적용)
+    // 3. 공간참
     void CastSpatialSlash()
     {
         if (isSpatialSlashing) return;
@@ -171,41 +144,22 @@ public class SwordSkillManager : MonoBehaviour
     IEnumerator SpatialSlashSequence()
     {
         isSpatialSlashing = true;
-
-        // 화면 암전 시작
         yield return StartCoroutine(FadeOverlay(true, fadeDuration));
 
-        // 이펙트 생성
         if (spatialSlashEffectPrefab != null)
         {
             Instantiate(spatialSlashEffectPrefab, Camera.main.transform.position + new Vector3(0, 0, 10), Quaternion.identity);
         }
-
         yield return new WaitForSeconds(effectDuration);
 
-        // A. 모든 일반 적 찾아서 즉사 (Die)
         EnemyController_2D[] allEnemies = FindObjectsOfType<EnemyController_2D>();
         foreach (var enemy in allEnemies)
         {
-            // 보스가 아닌 일반 몹만 즉사
             if (enemy != null && !enemy.isBoss)
             {
                 enemy.Die();
             }
         }
-
-        // B. [추가] 보스 찾아서 큰 데미지 (TakeDamage)
-        Boss_CardCaptain[] bosses = FindObjectsOfType<Boss_CardCaptain>();
-        foreach (var boss in bosses)
-        {
-            if (boss != null)
-            {
-                boss.TakeDamage(spatialSlashBossDamage); // 예: 100 데미지
-                Debug.Log("보스에게 공간참 적중! (대미지 적용)");
-            }
-        }
-
-        // 화면 복구
         yield return StartCoroutine(FadeOverlay(false, fadeDuration));
 
         isSpatialSlashing = false;
