@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    public static Player instance;
 
     [Header("이동 및 점프")]
     public float moveSpeed = 5f;
@@ -121,7 +123,35 @@ public class Player : MonoBehaviour
         health = maxHealth;
         mana = maxMana;
     }
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameObject startPoint = GameObject.Find("StartPoint");
+
+        if (startPoint != null)
+        {
+            transform.position = startPoint.transform.position;
+        }
+    }
     void Update()
     {
         if (isDead) return;
