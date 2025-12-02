@@ -58,6 +58,8 @@ public class Player : MonoBehaviour
     public AudioSource DoorOpen;
     public AudioSource normalAttack;
     public Weapon EquippedWeapon { get { return equippedWeapon; } }
+    [Header("무기 데이터베이스")]
+    public List<GameObject> allWeaponPrefabs = new List<GameObject>();
 
     [Header("전투 스킬 (Player1)")]
     public bool isManaGuardOn = false;
@@ -193,7 +195,7 @@ public class Player : MonoBehaviour
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
                         currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
-                        CastStrongAttack();
+                        CastStrongAttack(); 
                         currentAttackMultiplier = 1.0f;
                     }
                     else
@@ -250,7 +252,7 @@ public class Player : MonoBehaviour
             ToggleUI(inventoryUIManager.gameObject, invAnim, cardListWindow, optionWindow);
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             ToggleUI(cardListWindow, cardListAnimator, inventoryUIManager.gameObject, optionWindow);
         }
@@ -442,6 +444,7 @@ public class Player : MonoBehaviour
         rb.AddForce(new Vector2(0, finalJumpForce), ForceMode2D.Impulse);
 
         // anim.SetTrigger("doJump"); // 필요 시 주석 해제
+        // anim.SetBool("isGrounded", false);
         isGrounded = false;
         currentJumpCount++;
     }
@@ -613,6 +616,21 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Weapon"))
         {
             Weapon w = other.GetComponent<Weapon>();
+
+            // 인벤토리에 무기 추가
+            string weaponName = w.gameObject.name.Replace("(Clone)", "").Trim();
+            SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
+
+            if (sr != null && !knownItemSprites.ContainsKey(weaponName))
+            {
+                knownItemSprites.Add(weaponName, sr.sprite);
+            }
+            if (!inventory.ContainsKey(weaponName))
+            {
+                AddItemToInventory(weaponName, 1);
+            }
+            // 여기까지 무기 추가 코드
+
             if (w != null && w != equippedWeapon) EquipWeapon(w);
         }
 
@@ -769,24 +787,38 @@ public class Player : MonoBehaviour
         if (!inventory.ContainsKey(itemTag) || inventory[itemTag] <= 0) return;
 
         bool itemUsed = false;
-        switch (itemTag)
+        if (itemTag == "RedPotion")
         {
-            case "RedPotion":
-                if (health < maxHealth)
+            if (health < maxHealth) { health += 20; if (health > maxHealth) health = maxHealth; itemUsed = true; }
+        }
+        else if (itemTag == "BluePotion")
+        {
+            if (mana < maxMana) { mana += 20; if (mana > maxMana) mana = maxMana; itemUsed = true; }
+        }
+        else
+        {
+            GameObject weaponPrefab = allWeaponPrefabs.Find(w => w.name == itemTag);
+
+            if (weaponPrefab != null)
+            {
+                GameObject newWeaponObj = Instantiate(weaponPrefab);
+                newWeaponObj.name = weaponPrefab.name;
+
+                Weapon newWeapon = newWeaponObj.GetComponent<Weapon>();
+                if (newWeapon != null)
                 {
-                    health += 20;
-                    if (health > maxHealth) health = maxHealth;
-                    itemUsed = true;
+                    EquipWeapon(newWeapon);
+                    Debug.Log($"{itemTag} 장착 완료!");
+                    if (inventoryUIManager != null)
+                    {
+                        inventoryUIManager.RefreshEquippedWeaponUI();
+                    }
                 }
-                break;
-            case "BluePotion":
-                if (mana < maxMana)
-                {
-                    mana += 20;
-                    if (mana > maxMana) mana = maxMana;
-                    itemUsed = true;
-                }
-                break;
+            }
+            else
+            {
+                Debug.LogWarning($"무기 데이터를 찾을 수 없습니다: {itemTag}");
+            }
         }
 
         if (itemUsed)
