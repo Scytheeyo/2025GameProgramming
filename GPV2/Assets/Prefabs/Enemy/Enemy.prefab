@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1081269191008207674}
   - component: {fileID: 1081269191008207673}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: AttackPoint
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 1081269191953349649}
   - component: {fileID: 1081269191953349650}
   - component: {fileID: 1081269191953349648}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -219,8 +219,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  isBoss: 0
   moveSpeed: 3
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}

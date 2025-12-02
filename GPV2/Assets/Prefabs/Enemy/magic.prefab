@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8428736245585864423}
   - component: {fileID: 8428736245585864420}
   - component: {fileID: 6893270086099606016}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: magic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -174,6 +174,7 @@ MonoBehaviour:
   isBoss: 0
   moveSpeed: 3
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
@@ -195,7 +196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8428736246263011788}
   - component: {fileID: 8428736246263011791}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
