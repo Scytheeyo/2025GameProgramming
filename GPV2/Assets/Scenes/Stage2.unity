@@ -381,18 +381,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb04cc79d70a984aa42f79d8a8804cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &208753554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 52048512}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0f64bb500891464ead38dd0a52f66a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &264072650 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 590500314456719039, guid: 40e6d2332dd422d458d4241ff5029deb, type: 3}
@@ -2656,37 +2644,6 @@ TilemapCollider2D:
   m_CorrespondingSourceObject: {fileID: 2918221649861045524, guid: e89faf51966473441bc023010bf0b81d, type: 3}
   m_PrefabInstance: {fileID: 2918221650826029985}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1670234486
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1670234487}
-  m_Layer: 0
-  m_Name: SpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1670234487
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1670234486}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.21, y: -7.35, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 167125874}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1755908741 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9119022968066731769, guid: 294c3f162e708f54fa25f6c558c4c4ba, type: 3}
@@ -2706,11 +2663,6 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 862718920793661975, guid: b5773f9fc5b0dfb41acbd0ae41028132, type: 3}
   m_PrefabInstance: {fileID: 4043030961388036758}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1871878738 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4764822358509360062, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-  m_PrefabInstance: {fileID: 2066227457}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1904590827 stripped
 Transform:
@@ -3001,50 +2953,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 46523013}
     m_Modifications:
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: barrierPosition
-      value: 
-      objectReference: {fileID: 1871878738}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: barrierEndPrefab
-      value: 
-      objectReference: {fileID: 4788234262164930097, guid: 629b90d73efa2bc4fbd599e2284499b3, type: 3}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: barrierLoopPrefab
-      value: 
-      objectReference: {fileID: 7948040568535779260, guid: 18f2d4568f19f074188d4dafdcc5b170, type: 3}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: barrierStartPrefab
-      value: 
-      objectReference: {fileID: 4116776141771973902, guid: 826e679a2b4097d4d8dfbd89cea73412, type: 3}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: spawnPoints.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: monsterPrefabs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: spawnPoints.Array.data[0]
-      value: 
-      objectReference: {fileID: 1670234487}
-    - target: {fileID: 363720118, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: monsterPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 1081269191953349662, guid: 56d41a3d989460e45ac285485da19df7, type: 3}
-    - target: {fileID: 1206227790, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4654848577944157993, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4654848578307905065, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: m_ColliderPaths.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4654848579327593269, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -3093,29 +3001,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level11
       objectReference: {fileID: 0}
-    - target: {fileID: 4654848579327593274, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
---- !u!1 &2066227458 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4654848577944157997, guid: dfb52e0469f1ec041bf535864fa31c22, type: 3}
-  m_PrefabInstance: {fileID: 2066227457}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2066227459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2066227458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0f64bb500891464ead38dd0a52f66a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2146087981
 GameObject:
   m_ObjectHideFlags: 0
