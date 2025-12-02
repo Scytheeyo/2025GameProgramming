@@ -13,7 +13,7 @@ public class Room : MonoBehaviour
 
     public List<Door> exitDoors;    // 다음 방으로 가는 문들
 
-    private void OnEnable()
+    /*private void OnEnable()
     {
         CinemachineVirtualCamera vcam = GetComponentInChildren<CinemachineVirtualCamera>();
 
@@ -35,5 +35,5 @@ public class Room : MonoBehaviour
         {
             vcam.Priority = 0; // 혹은 10
         }
-    }
+    }*/
 }

@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 4654848577944157998}
   - component: {fileID: 4654848577944157999}
   - component: {fileID: 4654848577944157996}
-  - component: {fileID: 4654848577944157993}
+  - component: {fileID: 7534958493686405266}
   m_Layer: 0
   m_Name: Vcam2D_Level1
   m_TagString: Untagged
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 4654848578367358608}
   m_ConfineScreenEdges: 1
   m_Damping: 0
---- !u!114 &4654848577944157993
+--- !u!114 &7534958493686405266
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,7 +130,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4654848577944157997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 100dbeaafce34c447b7372c7f3ff4cf0, type: 3}
+  m_Script: {fileID: 11500000, guid: c0f64bb500891464ead38dd0a52f66a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4654848578307905074
@@ -3541,7 +3541,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2038067755
+  m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 9d1008c9bce9f2b4d997a9a22fe79076, type: 3}
@@ -3700,7 +3700,7 @@ GameObject:
   - component: {fileID: 4376209860961590685}
   m_Layer: 0
   m_Name: Level11
-  m_TagString: Untagged
+  m_TagString: LevelRoot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

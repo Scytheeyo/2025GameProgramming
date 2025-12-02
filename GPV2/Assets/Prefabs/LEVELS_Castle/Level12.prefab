@@ -4983,7 +4983,7 @@ GameObject:
   - component: {fileID: 8595425291771208935}
   - component: {fileID: 8595425291771208930}
   - component: {fileID: 8595425291771208929}
-  - component: {fileID: 8595425291771208928}
+  - component: {fileID: 3274848522130415649}
   m_Layer: 0
   m_Name: Vcam2D_Level2
   m_TagString: Untagged
@@ -5062,7 +5062,7 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 8595425293129714466}
   m_ConfineScreenEdges: 1
   m_Damping: 0
---- !u!114 &8595425291771208928
+--- !u!114 &3274848522130415649
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5071,7 +5071,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8595425291771208934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 100dbeaafce34c447b7372c7f3ff4cf0, type: 3}
+  m_Script: {fileID: 11500000, guid: c0f64bb500891464ead38dd0a52f66a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8595425292079345987
