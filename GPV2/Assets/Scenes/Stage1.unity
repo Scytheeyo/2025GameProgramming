@@ -1852,7 +1852,7 @@ PrefabInstance:
     - target: {fileID: 5382595869540809139, guid: 20ff0ee7dd352ed4ea3fc85b8a44548b, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 792233526}
+      objectReference: {fileID: 1854242438}
     - target: {fileID: 5382595869540809141, guid: 20ff0ee7dd352ed4ea3fc85b8a44548b, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -5196,6 +5196,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level1
       objectReference: {fileID: 0}
+    - target: {fileID: 6790762535341586647, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6790762535341586648, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -5240,10 +5244,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6790762536595420539, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790762536638293444, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
+      propertyPath: m_ColliderPaths.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790762536742063296, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6790762536742063298, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
       propertyPath: m_Follow
       value: 
       objectReference: {fileID: 1854242431}
+    - target: {fileID: 6790762536742063300, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
 --- !u!1001 &7857805281264867332

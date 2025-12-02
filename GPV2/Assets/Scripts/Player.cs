@@ -190,7 +190,7 @@ public class Player : MonoBehaviour
             fire1HoldTime += Time.deltaTime;
             float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-            if (effectiveTime >= 0.5f && chargeEffectInstance == null)
+            if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2)
             {
                 if (chargeEffectPrefab != null && effectiveTime < 2f)
                 {
@@ -228,9 +228,11 @@ public class Player : MonoBehaviour
                     }
                     else
                     {
+                            anim.SetTrigger("doAttack");
+                            Invoke("ActivateHitbox", attackDelay);
                         normalAttack.Play();
-                        currentAttackMultiplier = 1.0f;
-                        StartCoroutine(SwingWeapon());
+                        //currentAttackMultiplier = 1.0f;
+                        //StartCoroutine(SwingWeapon());
                     }
                 }
             }

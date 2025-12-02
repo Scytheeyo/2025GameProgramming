@@ -98,16 +98,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40c247c77f8dba94680418f41b3c04f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponName: "\uC804\uC124\uC758 \uC9C0\uD321\uC774"
-  damage: 10
+  weaponName: "\uB300\uB9C8\uBC95\uC0AC\uC758 \uC9C0\uD321\uC774"
+  damage: 15
   weaponLevel: 5
   swingDuration: 0.25
   swingStartAngle: 45
   swingEndAngle: -45
+  strongAttackMultiplier: 3
   projectilePrefab: {fileID: 5768103149254272704, guid: 59e715ed63b0d2c4b806d57f5ad34991, type: 3}
-  projectileSpeed: 20
-  fireRate: 10
-  ManaCost: 0
+  projectileSpeed: 30
+  fireRate: 20
+  ManaCost: 1
   weaponType: 1
   isSwinging: 0
 --- !u!60 &964982404
@@ -127,7 +128,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.32, y: 0.32}
+    oldSize: {x: 0.5, y: 0.5}
     newSize: {x: 0.5, y: 0.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

@@ -105,10 +105,10 @@ MonoBehaviour:
   swingStartAngle: 45
   swingEndAngle: -45
   strongAttackMultiplier: 3
-  projectilePrefab: {fileID: 5768103149254272704, guid: 59e715ed63b0d2c4b806d57f5ad34991, type: 3}
+  projectilePrefab: {fileID: 5768103149254272704, guid: 12da7ce437a74f2489badca13ca0ab6c, type: 3}
   projectileSpeed: 10
   fireRate: 4
-  ManaCost: 1
+  ManaCost: 2
   weaponType: 1
   isSwinging: 0
 --- !u!60 &964982404

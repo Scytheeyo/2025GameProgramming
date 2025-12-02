@@ -130,9 +130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40c247c77f8dba94680418f41b3c04f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponName: "\uAE30\uBCF8 \uAC80"
-  damage: 10
-  weaponLevel: 1
+  weaponName: "\uC2B9\uB9AC\uC758\uAC80"
+  damage: 25
+  weaponLevel: 3
   swingDuration: 0.25
   swingStartAngle: 45
   swingEndAngle: -45
