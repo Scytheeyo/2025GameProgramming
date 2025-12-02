@@ -134,7 +134,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 100
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
@@ -175,9 +175,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2.5
   chaseRange: 10
-  attackRange: 2
+  attackRange: 3
   maxHealth: 300
   currentHealth: 0
+  attackDamage: 15
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
   flashDuration: 0.1
   attackCooldown: 2

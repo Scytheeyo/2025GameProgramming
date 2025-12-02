@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
 guid: 6202f0e9a221e6840b0512a539d256a9
-========
-guid: a15ccc489a10f7c4cac28b8ae3289f1b
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -46,16 +42,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
   spritePixelsToUnits: 100
-========
-  spritePixelsToUnits: 16
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -91,7 +83,6 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -104,8 +95,6 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
-========
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -114,285 +103,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-========
-      name: Smash_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 384
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: 392e3a8481ffdda409025d348666f4da
-      internalID: 329256319
-========
-      spriteID: e57775be2b95a404991ddf86ddeed313
-      internalID: 1792314372
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_1
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-========
-      name: Smash_1
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 384
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: a2038fb2cbf3ed44eae4371af22e4ea7
-      internalID: 42682279
-========
-      spriteID: b43c9283282d1804aadb9387f1eebc2b
-      internalID: 1478870264
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_2
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-========
-      name: Smash_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 256
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: 7a88ced4a8a2db3499f085958af68954
-      internalID: -1026969092
-========
-      spriteID: a7d89e681dac6254882f94b9c2547eef
-      internalID: -1423984913
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_3
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-========
-      name: Smash_3
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 256
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: a7c723a65c30ca74cac851552fcf2d69
-      internalID: -936225015
-========
-      spriteID: 1efbefddaa6b338428bb0d56c1b9a376
-      internalID: 1694281305
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_4
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-========
-      name: Smash_4
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 128
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: 81ccf26609ca7b242b91ce64e0d96c83
-      internalID: 516260092
-========
-      spriteID: fdf2d3716ada28c45a85d57bf9df1a93
-      internalID: 940603227
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_5
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-========
-      name: Smash_5
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 128
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: b0f002578703e384f9afd02714fd6a58
-      internalID: 736756293
-========
-      spriteID: da362d9b104855843af8cc24006b2d3d
-      internalID: -1400728561
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_6
-      rect:
-        serializedVersion: 2
-        x: 768
-========
-      name: Smash_6
-      rect:
-        serializedVersion: 2
-        x: 0
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      pivot: {x: 0.5, y: 0.5}
-========
-      pivot: {x: 0, y: 0}
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: e600ce079a377574893a2d0d4dcf3dca
-      internalID: 1147649915
-========
-      spriteID: bdc1c41a27249d943bd84ca69a3e9499
-      internalID: 405584219
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      name: QueenOfSpade_Walk_7
-      rect:
-        serializedVersion: 2
-        x: 896
-========
-      name: Smash_7
-      rect:
-        serializedVersion: 2
-        x: 128
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      pivot: {x: 0.5, y: 0.5}
-========
-      pivot: {x: 0, y: 0}
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      spriteID: d9b51667ca379e745b45e3c31fc5b481
-      internalID: 1423914085
-========
-      spriteID: def5d0099888274468e7f367b58cfd07
-      internalID: -298216555
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -403,26 +114,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-<<<<<<<< HEAD:GPV2/Assets/GFX/Sprites/Enemy/QweenOfSpade/QueenOfSpade_Walk.png.meta
-      QueenOfSpade_Walk_0: 329256319
-      QueenOfSpade_Walk_1: 42682279
-      QueenOfSpade_Walk_2: -1026969092
-      QueenOfSpade_Walk_3: -936225015
-      QueenOfSpade_Walk_4: 516260092
-      QueenOfSpade_Walk_5: 736756293
-      QueenOfSpade_Walk_6: 1147649915
-      QueenOfSpade_Walk_7: 1423914085
-========
-      Smash_0: 1792314372
-      Smash_1: 1478870264
-      Smash_2: -1423984913
-      Smash_3: 1694281305
-      Smash_4: 940603227
-      Smash_5: -1400728561
-      Smash_6: 405584219
-      Smash_7: -298216555
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Sprites/Skills/Smash.png.meta
+    nameFileIdTable: {}
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

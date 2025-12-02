@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:GPV2/Assets/GFX/Animators/Enemy/Card2.controller.meta
 guid: 977a783cc3b7b2d4b851abbc97476829
-========
-guid: 4c361cda9f0c27a43bc27018db255ade
->>>>>>>> 2025GameProgramming_KYR_ItemWeapon:GPV2/Assets/GFX/Animators/slashspritesheet_0.controller.meta
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 9100000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
