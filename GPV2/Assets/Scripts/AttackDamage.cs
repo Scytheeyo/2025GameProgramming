@@ -7,9 +7,9 @@ public class AttackDamage : MonoBehaviour
     // AttackDamage.cs
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy")|| other.CompareTag("Boss"))
         {
-            EnemyController_2D enemy = other.GetComponent<EnemyController_2D>();
+            IDamageable enemy = other.GetComponent<IDamageable>();
 
             if (enemy != null)
             {

@@ -327,7 +327,7 @@ public class Boss_HeartQueen : MonoBehaviour
     void StopMovement() { rb.velocity = Vector2.zero; animator.SetFloat("Speed", 0); }
     void LookAtPlayer() { float sizeX = Mathf.Abs(transform.localScale.x); if (player.position.x > transform.position.x) transform.localScale = new Vector3(sizeX, transform.localScale.y, transform.localScale.z); else transform.localScale = new Vector3(-sizeX, transform.localScale.y, transform.localScale.z); }
 
-    void Die()
+    public void Die()
     {
         StopAllCoroutines();
         isActing = true;
@@ -346,5 +346,11 @@ public class Boss_HeartQueen : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
+    }
+    public void TakePercentDamage(float percent)
+    {
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
     }
 }

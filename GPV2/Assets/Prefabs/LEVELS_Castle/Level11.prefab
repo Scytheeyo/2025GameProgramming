@@ -3513,12 +3513,12 @@ SpriteRenderer:
   m_SortingLayerID: -2038067755
   m_SortingLayer: 0
   m_SortingOrder: -10
-  m_Sprite: {fileID: 21300000, guid: aee39768db706554c96d9718f6c36041, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9d1008c9bce9f2b4d997a9a22fe79076, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 88.032135, y: 42.8125}
+  m_Size: {x: 28.17028, y: 13.699999}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3705,7 +3705,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4654848579327593274}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f24e57ea4f31b0419797486a26d3131, type: 3}
+  m_Script: {fileID: 11500000, guid: 2bb04cc79d70a984aa42f79d8a8804cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   entrancePoint: {fileID: 4764822358509360062}
@@ -3919,7 +3919,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: portal
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6917713084530893759, guid: 8d31ea0dcbf86964796c9339f9488376, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 0d7ac7bcd1675d94d9c12aa5ad370265, type: 2}
+    m_RemovedComponents:
+    - {fileID: 2065108995, guid: 8d31ea0dcbf86964796c9339f9488376, type: 3}
+    - {fileID: 2065108991, guid: 8d31ea0dcbf86964796c9339f9488376, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8d31ea0dcbf86964796c9339f9488376, type: 3}
 --- !u!4 &1206227793 stripped
 Transform:

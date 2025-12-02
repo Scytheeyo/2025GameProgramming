@@ -4674,10 +4674,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: diamond
       objectReference: {fileID: 0}
-    - target: {fileID: 5117330593268302136, guid: 6dcc7dae29173de4fbc6258600dcf269, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5117330593268302138, guid: 6dcc7dae29173de4fbc6258600dcf269, type: 3}
       propertyPath: m_RootOrder
       value: 1

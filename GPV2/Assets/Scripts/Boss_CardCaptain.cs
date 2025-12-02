@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Boss_CardCaptain : MonoBehaviour
+public class Boss_CardCaptain : MonoBehaviour, IDamageable
 {
     [Header("기본 설정")]
     public float moveSpeed = 2.5f;
@@ -188,7 +188,7 @@ public class Boss_CardCaptain : MonoBehaviour
             transform.localScale = new Vector3(-sizeX, transform.localScale.y, transform.localScale.z);
     }
 
-    void Die()
+    public void Die()
     {
         StopAllCoroutines();
         sr.color = Color.white;
@@ -237,5 +237,11 @@ public class Boss_CardCaptain : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
+    }
+    public void TakePercentDamage(float percent)
+    {
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
     }
 }

@@ -576,8 +576,11 @@ public class Player : MonoBehaviour
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
-            if (enemy != null) enemy.TakeDamage(finalDamage);
+            IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target != null)
+            {
+                target.TakeDamage(finalDamage);
+            }
         }
     }
 
