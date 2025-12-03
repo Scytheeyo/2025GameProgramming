@@ -69,11 +69,9 @@ public class CheshireCat : EnemyController_2D
         }
         else if (currentState == State.AttackReady)
         {
-            // ★ [수정됨] 서서히 돌지 않고, 즉시 플레이어 방향으로 고정
             LookAtTargetImmediate();
 
             // 공격 시작 조건: 투명도가 완전히 찼는가?
-            // (방향은 이미 즉시 맞췄으므로 각도 체크는 불필요)
             if (bodyMat != null && bodyMat.color.a >= 0.99f)
             {
                 StartCoroutine(AttackRoutine());
@@ -116,9 +114,8 @@ public class CheshireCat : EnemyController_2D
 
         if (currentState == State.Attack && other.CompareTag("Player"))
         {
-            // 실제 데미지 적용 시 아래 주석 해제 및 수정
-            // other.GetComponent<PlayerController>()?.TakeDamage(damage);
-            Debug.Log($"😼 체셔 고양이의 돌진 공격! 데미지: {damage}");
+            other.GetComponent<Player>().TakeDamage(damage);
+            Debug.Log($"체셔 고양이의 돌진 공격! 데미지: {damage}");
         }
     }
 
