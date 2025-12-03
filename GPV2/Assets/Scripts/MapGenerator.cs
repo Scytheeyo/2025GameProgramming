@@ -97,21 +97,14 @@ public class MapGenerator : MonoBehaviour
             LinkTwoWay(targetRoom.exitDoors[1], deadEnd, 0);
         }
     }
-
-    // [업그레이드된 양방향 연결]
-    // entranceIndex: 다음 방(nextRoom)의 몇 번째 입구 문과 연결할 것인가?
     void LinkTwoWay(Door outDoor, Room nextRoom, int entranceIndex)
     {
         if (outDoor == null || nextRoom == null) return;
 
         // 1. 가는 길 (A -> B)
         outDoor.nextStage = nextRoom.gameObject;
-
-        // 중요: 도착 위치를 방 중앙이 아니라, '해당 입구 문 앞'으로 설정하면 더 자연스러움
-        // (만약 입구 문이 없다면 그냥 entrancePoint 사용)
         if (nextRoom.entranceDoors.Count > entranceIndex)
         {
-            // 그 문 앞으로 이동 (문의 자식으로 SpawnPoint가 있다면 .Find("SpawnPoint") 추천)
             outDoor.targetEntrance = nextRoom.entranceDoors[entranceIndex].transform;
         }
         else
@@ -119,16 +112,10 @@ public class MapGenerator : MonoBehaviour
             outDoor.targetEntrance = nextRoom.entrancePoint;
         }
 
-        // 2. 오는 길 (B -> A)
-        // nextRoom의 지정된 입구 문(entranceDoors[index])을 가져와서 되돌아가게 설정
         if (nextRoom.entranceDoors.Count > entranceIndex)
         {
             Door targetEntranceDoor = nextRoom.entranceDoors[entranceIndex];
-
-            // 되돌아갈 곳: 출발했던 문(outDoor)이 있는 방
             targetEntranceDoor.nextStage = outDoor.transform.parent.gameObject;
-
-            // 되돌아갈 위치: 출발했던 문(outDoor) 바로 앞
             targetEntranceDoor.targetEntrance = outDoor.transform;
         }
     }
@@ -138,8 +125,6 @@ public class MapGenerator : MonoBehaviour
         if (door == null || nextRoom == null) return;
 
         door.nextStage = nextRoom.gameObject;
-
-        // 만약 nextRoom에 entrancePoint가 할당 안 되어있으면 방 자체의 위치로 이동
         if (nextRoom.entrancePoint != null)
             door.targetEntrance = nextRoom.entrancePoint;
         else

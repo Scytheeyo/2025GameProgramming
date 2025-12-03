@@ -654,6 +654,9 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Weapon"))
         {
             Weapon w = other.GetComponent<Weapon>();
+            string weaponName = w.gameObject.name.Replace("(Clone)", "").Trim();
+            SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
+            AddItemToInventory(weaponName, 1, sr != null ? sr.sprite : null);
             if (w != null && w != equippedWeapon) EquipWeapon(w);
         }
 
@@ -789,10 +792,29 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void AddItemToInventory(string itemName, int amount)
+    public void AddItemToInventory(string itemName, int amount, Sprite itemSprite = null)
     {
-        if (inventory.ContainsKey(itemName)) inventory[itemName] += amount;
-        else inventory.Add(itemName, amount);
+        // 1. 스프라이트 정보가 같이 들어왔다면 등록 (OnTriggerEnter2D 로직 통합)
+        if (itemSprite != null && !knownItemSprites.ContainsKey(itemName))
+        {
+            knownItemSprites.Add(itemName, itemSprite);
+        }
+
+        // 2. 인벤토리 개수 추가
+        if (inventory.ContainsKey(itemName))
+        {
+            inventory[itemName] += amount;
+        }
+        else
+        {
+            inventory.Add(itemName, amount);
+        }
+
+        // 3. UI 갱신
+        if (inventoryUIManager != null)
+        {
+            inventoryUIManager.RefreshInventoryUI();
+        }
     }
 
     public void UpdateGamePauseState()
