@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1081269191008207674}
   - component: {fileID: 1081269191008207673}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: AttackPoint
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 1081269191953349649}
   - component: {fileID: 1081269191953349650}
   - component: {fileID: 1081269191953349648}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -123,8 +123,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1266883339
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 7f00389700a6e9b49890bc7f4f398691, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -219,8 +219,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  isBoss: 0
   moveSpeed: 3
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}

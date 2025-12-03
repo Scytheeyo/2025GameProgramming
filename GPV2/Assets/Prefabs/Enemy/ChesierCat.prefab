@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 907468451449547757}
   - component: {fileID: 907468451449547756}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 907468451843598891}
   - component: {fileID: 907468451843598890}
   - component: {fileID: 856663785}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ChesierCat
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -181,8 +181,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1266883339
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -225,8 +225,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  isBoss: 0
   moveSpeed: 2.5
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
@@ -273,7 +275,7 @@ GameObject:
   m_Component:
   - component: {fileID: 907468451954027459}
   - component: {fileID: 907468451954027458}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}

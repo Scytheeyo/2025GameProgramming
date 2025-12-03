@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponName: "\uC804\uC124 \uAC80"
-  damage: 10
+  damage: 30
   weaponLevel: 5
   swingDuration: 0.25
   swingStartAngle: 45
