@@ -270,8 +270,8 @@ public class StaffSkillManager : MonoBehaviour
         }
 
         // (팁: 적의 투사체도 멈추고 싶다면 여기서 Tag로 찾아서 Rigidbody를 멈추세요)
-        // GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
-        // foreach (var bullet in enemyBullets) { ... }
+        //GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
+        //foreach (var bullet in enemyBullets) { ... }
 
         yield return new WaitForSeconds(timeStopDuration);
 

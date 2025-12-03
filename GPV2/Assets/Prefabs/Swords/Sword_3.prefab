@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7584661380627569469}
   - component: {fileID: 2012559425}
   m_Layer: 8
-  m_Name: normalSword
+  m_Name: Sword_3
   m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: e23ea5844aada9f4cb45df16782eeb74, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 04ba8a6c8964b25488fc0c4bfbed34ab, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130,9 +130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40c247c77f8dba94680418f41b3c04f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponName: "\uAE30\uBCF8 \uAC80"
-  damage: 10
-  weaponLevel: 1
+  weaponName: "\uC2B9\uB9AC\uC758\uAC80"
+  damage: 25
+  weaponLevel: 3
   swingDuration: 0.25
   swingStartAngle: 45
   swingEndAngle: -45

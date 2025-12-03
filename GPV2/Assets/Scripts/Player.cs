@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    public static Player instance;
 
     [Header("이동 및 점프")]
     public float moveSpeed = 5f;
@@ -123,7 +125,35 @@ public class Player : MonoBehaviour
         health = maxHealth;
         mana = maxMana;
     }
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameObject startPoint = GameObject.Find("StartPoint");
+
+        if (startPoint != null)
+        {
+            transform.position = startPoint.transform.position;
+        }
+    }
     void Update()
     {
         if (isDead) return;
@@ -162,7 +192,7 @@ public class Player : MonoBehaviour
             fire1HoldTime += Time.deltaTime;
             float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-            if (effectiveTime >= 0.5f && chargeEffectInstance == null)
+            if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2)
             {
                 if (chargeEffectPrefab != null && effectiveTime < 2f)
                 {
@@ -200,9 +230,11 @@ public class Player : MonoBehaviour
                     }
                     else
                     {
+                            anim.SetTrigger("doAttack");
+                            Invoke("ActivateHitbox", attackDelay);
                         normalAttack.Play();
-                        currentAttackMultiplier = 1.0f;
-                        StartCoroutine(SwingWeapon());
+                        //currentAttackMultiplier = 1.0f;
+                        //StartCoroutine(SwingWeapon());
                     }
                 }
             }
@@ -579,8 +611,11 @@ public class Player : MonoBehaviour
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
-            if (enemy != null) enemy.TakeDamage(finalDamage);
+            IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target != null)
+            {
+                target.TakeDamage(finalDamage);
+            }
         }
     }
 
@@ -597,16 +632,22 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
         {
-            isGrounded = true;
-            currentJumpCount = 0;
+            if (collision.GetContact(0).normal.y > 0.7f)
+            {
+                isGrounded = true;
+                currentJumpCount = 0;
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
+        {
+            isGrounded = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

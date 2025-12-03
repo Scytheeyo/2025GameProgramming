@@ -33,28 +33,29 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy")|| other.CompareTag("Boss"))
         {
-            EnemyController_2D enemy = other.GetComponent<EnemyController_2D>();
+            IDamageable enemy = other.GetComponent<IDamageable>();
 
             if (enemy != null)
             {
                 // 데미지 적용
                 enemy.TakeDamage(damage);
 
-                // 넉백 적용 (힘이 0보다 클 때만)
                 if (knockbackForce > 0)
                 {
-                    // 1. 밀려날 방향 계산 (적 위치 - 투사체 위치)
-                    Vector2 knockbackDir = (other.transform.position - transform.position).normalized;
+                    // 문법 설명: "enemy가 만약 EnemyController_2D 타입이라면, 그 정보를 targetEnemy 변수에 담고 true를 반환해라"
+                    if (enemy is EnemyController_2D targetEnemy)
+                    {
+                        Vector2 knockbackDir = (other.transform.position - transform.position).normalized;
 
-                    // 2. EnemyController의 함수 호출 (방향과 힘을 전달)
-                    // 기존 코드의 enemy.BeginKnockback(0.3f) 에러 수정됨
-                    enemy.BeginKnockback(knockbackDir, knockbackForce);
+                        // 이제 targetEnemy는 EnemyController_2D 타입이므로 BeginKnockback을 사용할 수 있습니다.
+                        targetEnemy.BeginKnockback(knockbackDir, knockbackForce);
+                    }
                 }
+                Destroy(gameObject);
+                PlayExplosion();
             }
-            Destroy(gameObject);
-            PlayExplosion();
         }
         else if (other.CompareTag("Ground"))
         {
@@ -69,4 +70,5 @@ public class Projectile : MonoBehaviour
         GameObject explosion = (GameObject)Instantiate(ExplosionGo);
         explosion.transform.position = transform.position;
     }
+    
 }

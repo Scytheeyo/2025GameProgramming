@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class Room : MonoBehaviour
 {
@@ -11,4 +12,28 @@ public class Room : MonoBehaviour
     public List<Door> entranceDoors;
 
     public List<Door> exitDoors;    // 다음 방으로 가는 문들
+
+    /*private void OnEnable()
+    {
+        CinemachineVirtualCamera vcam = GetComponentInChildren<CinemachineVirtualCamera>();
+
+        if (vcam != null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                vcam.Follow = player.transform;
+                vcam.Priority = 100;
+            }
+        }
+    }
+    private void OnDisable()
+    {
+        CinemachineVirtualCamera vcam = GetComponentInChildren<CinemachineVirtualCamera>();
+        if (vcam != null)
+        {
+            vcam.Priority = 0; // 혹은 10
+        }
+    }*/
 }

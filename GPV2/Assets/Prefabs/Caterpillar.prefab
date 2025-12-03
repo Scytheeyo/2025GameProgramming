@@ -116,8 +116,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1266883339
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: -1966041912, guid: 110dc0dc3a6cee44eb935e37653f1546, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -144,8 +144,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  isBoss: 0
   moveSpeed: 3
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
