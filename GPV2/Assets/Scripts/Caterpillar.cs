@@ -143,6 +143,7 @@ public class Caterpillar : EnemyController_2D
 
         if (other.CompareTag("Player"))
         {
+            other.GetComponent<Player>().TakeDamage(damage);
             Debug.Log($"🐛 애벌레 몸통 박치기! 데미지: {damage}");
         }
     }
