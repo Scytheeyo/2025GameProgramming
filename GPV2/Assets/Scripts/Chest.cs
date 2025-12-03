@@ -12,7 +12,6 @@ public class Chest : MonoBehaviour
     void Start()
     {
         player = FindObjectOfType<Player>();
-        choicePanel = GameObject.Find("choicePanel");
         animator = this.GetComponent<Animator>();
     }
 

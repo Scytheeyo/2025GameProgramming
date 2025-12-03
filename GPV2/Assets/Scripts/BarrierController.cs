@@ -42,28 +42,18 @@ public class BarrierController : MonoBehaviour
     private IEnumerator SequenceRoutine()
     {
         isActivated = true; // 중복 실행 방지
-
-        // ==========================================
-        // 1. 장벽 생성 (Start) & 몬스터 소환
-        // ==========================================
         GameObject startInstance = Instantiate(barrierStartPrefab, barrierPosition.position, barrierPosition.rotation);
 
         // *몬스터 소환 실행*
         SpawnMonsters();
 
-        // Start 애니메이션 길이만큼 대기
         float startDuration = GetEffectDuration(startInstance);
         yield return new WaitForSeconds(startDuration);
 
         Destroy(startInstance);
 
-        // ==========================================
-        // 2. 장벽 유지 (Loop) & 전투 단계
-        // ==========================================
         GameObject loopInstance = Instantiate(barrierLoopPrefab, barrierPosition.position, barrierPosition.rotation);
 
-        // 소환된 몬스터들이 다 죽을 때까지 대기
-        // (Enemy 태그 전체를 찾는 게 아니라, *이 기믹에서 소환된 애들*만 감시합니다)
         while (AreMonstersAlive())
         {
             yield return new WaitForSeconds(0.5f);
@@ -71,9 +61,6 @@ public class BarrierController : MonoBehaviour
 
         Destroy(loopInstance);
 
-        // ==========================================
-        // 3. 장벽 해제 (End)
-        // ==========================================
         if (barrierEndPrefab != null)
         {
             GameObject endInstance = Instantiate(barrierEndPrefab, barrierPosition.position, barrierPosition.rotation);
@@ -88,28 +75,23 @@ public class BarrierController : MonoBehaviour
     // 몬스터 소환 함수
     private void SpawnMonsters()
     {
-        // 설정된 스폰 포인트 개수만큼 돌거나, 몬스터 프리팹 개수만큼 돕니다.
-        // 여기서는 '스폰 포인트' 개수를 기준으로 합니다.
+
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            // 소환할 몬스터 결정 (프리팹 배열에서 순서대로 혹은 랜덤으로)
-            // 여기서는 순서대로 하되, 프리팹이 부족하면 첫 번째 몬스터를 계속 씁니다.
+
             GameObject prefabToSpawn = (i < monsterPrefabs.Length) ? monsterPrefabs[i] : monsterPrefabs[0];
 
             if (prefabToSpawn != null && spawnPoints[i] != null)
             {
                 GameObject newMonster = Instantiate(prefabToSpawn, spawnPoints[i].position, spawnPoints[i].rotation);
 
-                // 추적 리스트에 추가
                 spawnedMonsters.Add(newMonster);
             }
         }
     }
 
-    // 소환된 몬스터가 살아있는지 체크하는 함수
     private bool AreMonstersAlive()
     {
-        // 리스트를 역순으로 돌면서 죽은(null이 된) 몬스터는 리스트에서 뺍니다.
         for (int i = spawnedMonsters.Count - 1; i >= 0; i--)
         {
             if (spawnedMonsters[i] == null)
@@ -117,8 +99,6 @@ public class BarrierController : MonoBehaviour
                 spawnedMonsters.RemoveAt(i);
             }
         }
-
-        // 리스트에 남은 몬스터가 0마리보다 많으면 아직 살아있는 것
         return spawnedMonsters.Count > 0;
     }
 

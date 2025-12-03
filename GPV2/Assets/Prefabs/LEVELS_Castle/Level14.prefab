@@ -5537,10 +5537,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 32, y: 19}
-      - {x: -58, y: 19}
-      - {x: -58, y: -25}
-      - {x: 32, y: -25}
+    - - {x: 26, y: 0}
+      - {x: -35, y: 0}
+      - {x: -35, y: -25.12857}
+      - {x: 26, y: -25}
 --- !u!1 &590500315018396875
 GameObject:
   m_ObjectHideFlags: 0
@@ -5640,6 +5640,10 @@ PrefabInstance:
     - target: {fileID: 2191019866367144203, guid: 9206732c01c776043bc6535842629516, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2191019866367144304, guid: 9206732c01c776043bc6535842629516, type: 3}
+      propertyPath: choicePanel
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9206732c01c776043bc6535842629516, type: 3}

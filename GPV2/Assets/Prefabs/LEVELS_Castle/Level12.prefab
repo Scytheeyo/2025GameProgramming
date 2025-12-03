@@ -57,8 +57,8 @@ MonoBehaviour:
   entranceDoors:
   - {fileID: 527486058072060305}
   exitDoors:
-  - {fileID: 8081926594624052895}
   - {fileID: 8081926593686130178}
+  - {fileID: 8081926594624052895}
 --- !u!1 &8595425291257377900
 GameObject:
   m_ObjectHideFlags: 0
@@ -4999,7 +4999,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8595425291771208934}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3421259, y: 23.866444, z: -1.5669498}
+  m_LocalPosition: {x: -14.527874, y: -6.42356, z: -1.5669498}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5377,7 +5377,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864426, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.709596
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864426, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5439,7 +5439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864426, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.709596
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864426, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_LocalRotation.w
