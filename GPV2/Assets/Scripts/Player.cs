@@ -631,14 +631,20 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = true;
-            currentJumpCount = 0;
+            if (collision.GetContact(0).normal.y > 0.7f)
+            {
+                isGrounded = true;
+                currentJumpCount = 0;
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

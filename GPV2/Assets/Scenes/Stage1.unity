@@ -10004,6 +10004,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: choicePanel
       objectReference: {fileID: 0}
+    - target: {fileID: 8435952628388921512, guid: 1b06504e5348df14786d268decff9357, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8435952628658420311, guid: 1b06504e5348df14786d268decff9357, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
