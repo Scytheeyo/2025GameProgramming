@@ -7,36 +7,36 @@ public class SwordSkillManager : MonoBehaviour
     private Animator playerAnim;
     private Rigidbody2D playerRb;
 
+    // 내부 로직용
     public bool isSpatialSlashing = false;
 
     [Header("Dependencies")]
     public CameraFX cameraFX;
 
     // ========================================================================
-    // [Lv3: 가드 브레이크 설정]
+    // [Lv3: 가드 브레이크]
     // ========================================================================
-    [Header("Lv3: 가드 브레이크 설정")]
+    [Header("Lv3: 가드 브레이크")]
     public int guardBreakManaCost = 20;
-    public float guardBreakCastDelay = 0.1f; // 찌르는 모션 타이밍 (프레임 5->6 넘어가는 시간)
-
-    [Tooltip("찌르기 공격의 범위 (가로, 세로)")]
+    public float guardBreakCastDelay = 0.1f;
     public Vector2 guardBreakBoxSize = new Vector2(2.5f, 1.0f);
-
-    [Tooltip("적중 시 생성될 이펙트 (이미지 7~8번 프리팹)")]
     public GameObject guardBreakHitEffectPrefab;
-
-    public AudioSource SmashAttack; // 찌르기 사운드 (변수명 재사용)
+    public AudioSource SmashAttack;
     public LayerMask enemyLayer;
-    // ========================================================================
 
-    [Header("Lv4: 검기 설정")]
+    // ========================================================================
+    // [Lv4: 검기]
+    // ========================================================================
+    [Header("Lv4: 검기")]
     public int swordAuraManaCost = 15;
     public GameObject swordAuraProjectilePrefab;
     public AudioSource SwordAuraAudio;
     public float auraCastDelay = 0.2f;
-    public bool reverseAuraDirection = true;
 
-    [Header("Lv5: 공간참 설정")]
+    // ========================================================================
+    // [Lv5: 공간참]
+    // ========================================================================
+    [Header("Lv5: 공간참")]
     public int spatialSlashManaCost = 80;
     public CanvasGroup screenOverlay;
     public GameObject spatialSlashEffectPrefab;
@@ -45,17 +45,13 @@ public class SwordSkillManager : MonoBehaviour
     public float hitStopDuration = 0.2f;
     public float chargeTime = 0.5f;
     public float dashDuration = 0.1f;
-    public bool reverseDashDirection = true;
-
     public bool spawnAtCameraCenter = true;
 
-    // 애니메이션 파라미터 해시
+    // 애니메이션 해시
     private static readonly int AnimCharge = Animator.StringToHash("Charge");
     private static readonly int AnimSlash = Animator.StringToHash("Slash");
     private static readonly int AnimRecovery = Animator.StringToHash("Recovery");
     private static readonly int AnimSwordAura = Animator.StringToHash("SwordAura");
-
-    // [추가] 가드 브레이크 애니메이션 파라미터
     private static readonly int AnimGuardBreak = Animator.StringToHash("GuardBreak");
 
     void Start()
@@ -91,77 +87,57 @@ public class SwordSkillManager : MonoBehaviour
     }
 
     // ========================================================================
-    // [Lv3: 가드 브레이크 로직 구현]
+    // [Lv3: 가드 브레이크]
     // ========================================================================
-    void CastGuardBreak()
-    {
-        StartCoroutine(GuardBreakSequence());
-    }
+    void CastGuardBreak() { StartCoroutine(GuardBreakSequence()); }
 
     IEnumerator GuardBreakSequence()
     {
-        // 1. 플레이어 애니메이션 재생 (이미지 5~6번)
-        // Animator에 "GuardBreak" Trigger 파라미터가 있어야 합니다.
-        if (playerAnim) playerAnim.SetTrigger(AnimGuardBreak);
+        // [핵심] 스킬 도중 움직임/방향전환 차단
+        player.isSkillActive = true;
+        player.VelocityZero();
 
-        // 2. 사운드 재생
+        if (playerAnim) playerAnim.SetTrigger(AnimGuardBreak);
         if (SmashAttack != null) SmashAttack.Play();
 
-        // 3. 찌르는 타이밍 대기 (칼을 뻗는 순간까지)
         yield return new WaitForSeconds(guardBreakCastDelay);
 
-        // 4. 공격 범위 계산 (플레이어 앞쪽 네모난 범위)
-        float dirX = player.transform.localScale.x > 0 ? 1f : -1f;
+        // 방향 확인 (별도 변수 없이 현재 플레이어 상태 그대로 따라감)
+        float dirX = Mathf.Sign(player.transform.localScale.x);
 
-        // 박스 중심점: 플레이어 위치에서 앞쪽으로 조금(1.0f) 이동한 곳
         Vector2 boxCenter = (Vector2)player.transform.position + new Vector2(dirX * 1.0f, 0);
-
-        // 범위 내 적 감지
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(boxCenter, guardBreakBoxSize, 0f, enemyLayer);
 
-        // 5. 적 처리
         foreach (Collider2D enemyCollider in hitEnemies)
         {
             EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
             if (enemy != null)
             {
-                // 데미지 주기 (기본 공격력의 1.5배 등 설정 가능)
-                int dmg = Mathf.RoundToInt(30 * 1.5f); // 예시 데미지
-                enemy.TakeDamage(dmg);
-
-                // [핵심] 적 위치에 '방패 파괴 이펙트(7~8번)' 생성
+                enemy.TakeDamage(Mathf.RoundToInt(30 * 1.5f));
                 if (guardBreakHitEffectPrefab != null)
                 {
-                    // 적의 몸통(Center) 위치에 생성
                     Vector3 hitPos = enemy.transform.position + new Vector3(0, 0.5f, 0);
                     GameObject effect = Instantiate(guardBreakHitEffectPrefab, hitPos, Quaternion.identity);
-
-                    // 0.5초 뒤 삭제
                     Destroy(effect, 0.5f);
                 }
             }
         }
+
+        yield return new WaitForSeconds(0.3f);
+        player.isSkillActive = false;
     }
 
-    // (기즈모: 에디터에서 공격 범위를 눈으로 확인하는 용도)
-    void OnDrawGizmosSelected()
-    {
-        if (player != null)
-        {
-            Gizmos.color = Color.red;
-            float dirX = player.transform.localScale.x > 0 ? 1f : -1f;
-            Vector3 center = player.transform.position + new Vector3(dirX * 1.0f, 0, 0);
-            Gizmos.DrawWireCube(center, guardBreakBoxSize);
-        }
-    }
     // ========================================================================
-
-
-    // --- Lv4: 검기 ---
+    // [Lv4: 검기]
+    // ========================================================================
     void CastSwordAura() { StartCoroutine(SwordAuraSequence()); }
 
     IEnumerator SwordAuraSequence()
     {
+        // 검기는 이동하면서 쏠 수 있게 하려면 isSkillActive를 켜지 않습니다.
+        // 만약 검기 쏠 때도 멈추게 하고 싶으면 아래 주석을 해제하세요.
+        // player.isSkillActive = true; player.VelocityZero();
+
         if (playerAnim) playerAnim.SetTrigger(AnimSwordAura);
         if (SwordAuraAudio != null) SwordAuraAudio.Play();
         yield return new WaitForSeconds(auraCastDelay);
@@ -170,28 +146,31 @@ public class SwordSkillManager : MonoBehaviour
         {
             Vector3 spawnPos = player.transform.position + new Vector3(0, 0.5f, 0);
             GameObject aura = Instantiate(swordAuraProjectilePrefab, spawnPos, Quaternion.identity);
+
             SwordAuraProjectile projScript = aura.GetComponent<SwordAuraProjectile>();
             if (projScript != null)
             {
-                float dirX = player.transform.localScale.x > 0 ? 1f : -1f;
-                if (reverseAuraDirection) dirX *= -1f;
+                float dirX = Mathf.Sign(player.transform.localScale.x);
                 projScript.Setup(new Vector2(dirX, 0));
             }
         }
+
+        // player.isSkillActive = false;
     }
 
-    // --- Lv5: 공간참 ---
+    // ========================================================================
+    // [Lv5: 공간참]
+    // ========================================================================
     void CastSpatialSlash() { StartCoroutine(SpatialSlashSequence()); }
 
-    // (Lv5 공간참 관련 코드는 기존 그대로 유지 - 너무 길어서 생략하지만 위쪽 코드 그대로 두시면 됩니다)
     IEnumerator SpatialSlashSequence()
     {
         isSpatialSlashing = true;
+        // [핵심] 스킬 도중 움직임/방향전환 차단
         player.isSkillActive = true;
         player.VelocityZero();
 
-        float scaleDir = player.transform.localScale.x > 0 ? 1f : -1f;
-        float finalDirection = reverseDashDirection ? -scaleDir : scaleDir;
+        float dirX = Mathf.Sign(player.transform.localScale.x);
 
         StartCoroutine(FadeOverlay(true, 0.2f));
         if (playerAnim) playerAnim.SetTrigger(AnimCharge);
@@ -200,13 +179,16 @@ public class SwordSkillManager : MonoBehaviour
         if (playerAnim) playerAnim.SetTrigger(AnimSlash);
         yield return new WaitForSeconds(0.05f);
 
+        // 돌진
         if (playerRb != null)
         {
             float dashSpeed = dashDistance / dashDuration;
-            playerRb.velocity = new Vector2(finalDirection * dashSpeed, 0);
+            playerRb.velocity = new Vector2(dirX * dashSpeed, 0);
         }
         yield return new WaitForSeconds(dashDuration);
 
+        // Player.cs에서 FixedUpdate에 isSkillActive 체크를 넣었으므로
+        // 여기서 속도를 0으로 만들어도 Player Update문과 충돌하지 않습니다.
         if (playerRb != null) playerRb.velocity = Vector2.zero;
         if (cameraFX != null) cameraFX.Shake(0.3f, 0.5f);
 
@@ -217,7 +199,7 @@ public class SwordSkillManager : MonoBehaviour
         {
             GameObject tear = Instantiate(spatialSlashEffectPrefab, spawnPos, Quaternion.identity);
             Vector3 scale = tear.transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * finalDirection;
+            scale.x = Mathf.Abs(scale.x) * dirX;
             tear.transform.localScale = scale;
         }
 
@@ -261,5 +243,16 @@ public class SwordSkillManager : MonoBehaviour
             yield return null;
         }
         screenOverlay.alpha = endAlpha;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (player != null)
+        {
+            Gizmos.color = Color.red;
+            float dirX = Mathf.Sign(player.transform.localScale.x);
+            Vector3 center = player.transform.position + new Vector3(dirX * 1.0f, 0, 0);
+            Gizmos.DrawWireCube(center, guardBreakBoxSize);
+        }
     }
 }

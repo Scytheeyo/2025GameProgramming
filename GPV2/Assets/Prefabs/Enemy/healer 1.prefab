@@ -222,6 +222,7 @@ MonoBehaviour:
   isBoss: 0
   moveSpeed: 3
   chaseRange: 10
+  attackRange: 1
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
@@ -229,6 +230,9 @@ MonoBehaviour:
   player: {fileID: 0}
   attackPoint: {fileID: 178167837030253811}
   dropItemPrefab: {fileID: 0}
+  enemySuit: 1
+  cardDropChance: 1
+  maxCardNumber: 13
   isDead: 0
   healAmount: 30
   healInterval: 5

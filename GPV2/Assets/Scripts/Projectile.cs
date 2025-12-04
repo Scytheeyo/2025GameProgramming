@@ -2,71 +2,73 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public GameObject ExplosionGo;
+    [Header("투사체 설정")]
+    public float speed = 10f;      // 날아가는 속도
+    public int damage = 10;        // 데미지
+    public float lifeTime = 2.0f;  // 자동 삭제 시간
 
-    [Header("기본 설정")]
-    public float speed = 20f;
-    public int damage = 15;
-    public float lifeTime = 3f;
+    [Header("이펙트 (선택)")]
+    public GameObject hitEffect;   // 맞았을 때 터지는 이펙트 프리팹
 
-    [Header("넉백 설정")]
-    public float knockbackForce = 0f;
+    private Vector2 moveDirection;
 
-    private Rigidbody2D rb;
-
-    void Awake()
+    // Player.cs에서 호출하는 함수입니다.
+    public void Setup(Vector2 dir)
     {
-        rb = GetComponent<Rigidbody2D>();
-    }
+        moveDirection = dir;
 
-    // 기본값 설정 수정: knockbackValue가 없으면 0으로 초기화
-    public void Setup(Vector2 moveDirection, float knockbackValue = 0f)
-    {
-        rb.velocity = moveDirection.normalized * speed;
-        knockbackForce = knockbackValue;
+        // 왼쪽을 보고 쏘면 이미지도 좌우 반전
+        if (moveDirection.x < 0)
+        {
+            Vector3 scale = transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * -1;
+            transform.localScale = scale;
+        }
 
-        float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
+        // 일정 시간 후 자동 삭제 (메모리 관리)
         Destroy(gameObject, lifeTime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void Update()
     {
-        if (other.CompareTag("Enemy"))
+        // 설정된 방향으로 계속 이동
+        transform.Translate(moveDirection * speed * Time.deltaTime);
+    }
+
+    // Is Trigger가 켜진 콜라이더와 충돌했을 때 실행
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 적과 충돌했는지 확인
+        if (collision.CompareTag("Enemy"))
         {
-            EnemyController_2D enemy = other.GetComponent<EnemyController_2D>();
+            EnemyController_2D enemy = collision.GetComponent<EnemyController_2D>();
+
+            // 만약 Collider가 자식에 있다면 부모에서 스크립트 찾기
+            if (enemy == null) enemy = collision.GetComponentInParent<EnemyController_2D>();
 
             if (enemy != null)
             {
-                // 데미지 적용
-                enemy.TakeDamage(damage);
-
-                // 넉백 적용 (힘이 0보다 클 때만)
-                if (knockbackForce > 0)
-                {
-                    // 1. 밀려날 방향 계산 (적 위치 - 투사체 위치)
-                    Vector2 knockbackDir = (other.transform.position - transform.position).normalized;
-
-                    // 2. EnemyController의 함수 호출 (방향과 힘을 전달)
-                    // 기존 코드의 enemy.BeginKnockback(0.3f) 에러 수정됨
-                    enemy.BeginKnockback(knockbackDir, knockbackForce);
-                }
+                enemy.TakeDamage(damage); // 데미지 주기
             }
-            Destroy(gameObject);
-            PlayExplosion();
+
+            HitAndDestroy();
         }
-        else if (other.CompareTag("Ground"))
+        // 땅이나 벽에 닿았을 때
+        else if (collision.CompareTag("Ground"))
         {
-            Destroy(gameObject);
+            HitAndDestroy();
         }
     }
 
-    void PlayExplosion()
+    void HitAndDestroy()
     {
-        if (ExplosionGo == null) return; // 폭발 프리팹이 없으면 리턴 (안전장치)
+        // 피격 이펙트가 있다면 생성
+        if (hitEffect != null)
+        {
+            Instantiate(hitEffect, transform.position, Quaternion.identity);
+        }
 
-        GameObject explosion = (GameObject)Instantiate(ExplosionGo);
-        explosion.transform.position = transform.position;
+        // 투사체 삭제
+        Destroy(gameObject);
     }
 }

@@ -12,23 +12,20 @@ public class StaffSkillManager : MonoBehaviour
     public LayerMask enemyLayer;
     public LayerMask groundLayer;
 
+    [Header("스프라이트 설정 (중요)")]
+    [Tooltip("플레이어 캐릭터의 원본 그림이 왼쪽을 보고 있다면 체크하세요.")]
+    public bool defaultSpriteFaceLeft = true; // [추가] 기본값 True
+
     // ========================================================================
-    // [Lv2: 마력 폭발 (심플 버전)]
+    // [Lv2: 마력 폭발]
     // ========================================================================
     [Header("Lv2: 마력 폭발")]
     public int explosionManaCost = 15;
     public int explosionDamage = 20;
-
-    [Tooltip("폭발 범위 (반지름)")]
     public float explosionRadius = 3.0f;
-
-    [Tooltip("X축으로 밀어내는 힘")]
     public float explosionKnockback = 15f;
-
     public AudioClip explosionSound;
-    public float explosionHitTiming = 0.2f; // 3~4번 이미지가 나오는 타이밍
-
-    // (이펙트 프리팹 변수 삭제함 - 플레이어 애니메이션으로 처리하니까 필요 없음)
+    public float explosionHitTiming = 0.2f;
 
     // ========================================================================
     // [Lv3: 마나 가드]
@@ -50,7 +47,6 @@ public class StaffSkillManager : MonoBehaviour
     public float laserGrowSpeed = 50f;
     public float laserCastDelay = 0.2f;
     public float laserThickness = 1.0f;
-    public bool reverseLaserDirection = false;
     public Vector2 laserOffset = new Vector2(0.5f, 0.2f);
     public AudioClip laserSound;
     public GameObject laserPrefab;
@@ -73,7 +69,7 @@ public class StaffSkillManager : MonoBehaviour
     private static readonly int AnimLaserShot = Animator.StringToHash("LaserShot");
     private static readonly int AnimExplosion = Animator.StringToHash("Explosion");
 
-    // (호환성용 - 안 씀)
+    // (사용 안 함, 호환성 유지용)
     public LineRenderer laserLine;
     public GameObject explosionProjectilePrefab;
 
@@ -118,9 +114,20 @@ public class StaffSkillManager : MonoBehaviour
             if (TryConsumeMana(explosionManaCost)) StartCoroutine(CastExplosionSequence());
         }
 
-        if (level >= 3 && Input.GetKeyDown(KeyCode.Alpha2)) { ToggleManaGuard(); }
-        if (level >= 4 && Input.GetKeyDown(KeyCode.Alpha3)) { if (TryConsumeMana(laserManaCost)) StartCoroutine(CastLaserSequence()); }
-        if (level >= 5 && Input.GetKeyDown(KeyCode.Alpha4)) { if (!isTimeStopped && TryConsumeMana(timeStopManaCost)) StartCoroutine(CastTimeStop()); }
+        if (level >= 3 && Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            ToggleManaGuard();
+        }
+
+        if (level >= 4 && Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            if (TryConsumeMana(laserManaCost)) StartCoroutine(CastLaserSequence());
+        }
+
+        if (level >= 5 && Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            if (!isTimeStopped && TryConsumeMana(timeStopManaCost)) StartCoroutine(CastTimeStop());
+        }
     }
 
     bool TryConsumeMana(int cost)
@@ -129,50 +136,68 @@ public class StaffSkillManager : MonoBehaviour
         return false;
     }
 
+    // [헬퍼 함수] 방향 계산 (왼쪽 원본 스프라이트 고려)
+    // Scale.x가 양수(1)일 때: 원본이 왼쪽이면 왼쪽(-1), 원본이 오른쪽이면 오른쪽(1)
+    float GetFacingDirection()
+    {
+        float scaleX = player.transform.localScale.x;
+        // 스케일 부호(1 or -1)
+        float sign = Mathf.Sign(scaleX);
+
+        // 원본이 왼쪽을 보고 있다면, 스케일이 양수일 때 왼쪽(-1)이 됨
+        if (defaultSpriteFaceLeft) return sign * -1f;
+
+        return sign;
+    }
+
     // ========================================================================
-    // [Lv2: 마력 폭발 로직 (완전 심플 버전)]
+    // [Lv2: 마력 폭발]
     // ========================================================================
     IEnumerator CastExplosionSequence()
     {
-        // 1. 플레이어 멈춤
+        // [방향 고정용] 현재 스케일 저장
+        Vector3 lockedScale = player.transform.localScale;
+
         if (player != null)
         {
             player.isSkillActive = true;
             player.VelocityZero();
         }
 
-        // 2. 애니메이션 재생 (1~4번 프레임 통합 재생)
         if (playerAnim != null) playerAnim.SetTrigger(AnimExplosion);
         if (audioSource != null && explosionSound != null) audioSource.PlayOneShot(explosionSound);
 
-        // 3. 폭발 타이밍 대기 (1, 2번 프레임 지나고 3번 나올 때쯤)
-        yield return new WaitForSeconds(explosionHitTiming);
+        float elapsed = 0f;
+        bool hasExploded = false;
 
-        // 4. 범위 내 적 감지 (원형)
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer);
-
-        foreach (Collider2D hit in hits)
+        // 애니메이션 재생 중 방향 고정 루프
+        while (elapsed < 0.4f) // 전체 시간
         {
-            EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
-            if (enemy != null)
+            elapsed += Time.deltaTime;
+
+            // [핵심] 매 프레임 방향을 강제로 고정해서 애니메이션이 뒤집는 걸 막음
+            if (player != null) player.transform.localScale = lockedScale;
+
+            if (!hasExploded && elapsed >= explosionHitTiming)
             {
-                // 데미지 적용
-                enemy.TakeDamage(explosionDamage);
-
-                // [핵심] X축 넉백 (Y축은 아주 살짝만 띄움)
-                // 적이 플레이어보다 오른쪽에 있으면 1, 왼쪽에 있으면 -1
-                float pushDirX = (enemy.transform.position.x > transform.position.x) ? 1f : -1f;
-
-                // 대각선 위로 살짝 날아가야 자연스러우므로 Y에 0.5 정도 줌
-                Vector2 knockbackDir = new Vector2(pushDirX, 0.5f).normalized;
-
-                // EnemyController에 있는 넉백 함수 호출
-                enemy.BeginKnockback(knockbackDir, explosionKnockback);
+                hasExploded = true;
+                // 폭발 처리
+                Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer);
+                foreach (Collider2D hit in hits)
+                {
+                    EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
+                    if (enemy != null)
+                    {
+                        enemy.TakeDamage(explosionDamage);
+                        float pushDirX = (enemy.transform.position.x > transform.position.x) ? 1f : -1f;
+                        Vector2 knockbackDir = new Vector2(pushDirX, 0.5f).normalized;
+                        enemy.BeginKnockback(knockbackDir, explosionKnockback);
+                    }
+                }
             }
+            yield return null;
         }
 
-        // 5. 애니메이션 끝날 때까지 대기 후 복구
-        yield return new WaitForSeconds(0.4f); // 전체 애니메이션 길이만큼 대기
         if (player != null) player.isSkillActive = false;
     }
 
@@ -199,28 +224,45 @@ public class StaffSkillManager : MonoBehaviour
         manaGuardCoroutine = null;
     }
 
-    // --- Lv4: 레이저 ---
+    // ========================================================================
+    // [Lv4: 레이저 로직] (수정됨)
+    // ========================================================================
     IEnumerator CastLaserSequence()
     {
+        // [중요] 시작할 때의 스케일(방향)을 저장
+        Vector3 lockedScale = player.transform.localScale;
+
+        // [수정] 그림판에서 이미지를 돌렸으므로, 복잡한 계산 없이 현재 플레이어의 Scale 방향을 그대로 믿습니다.
+        // Scale X가 1이면 오른쪽(1), -1이면 왼쪽(-1)으로 설정
+        float facingDir = Mathf.Sign(player.transform.localScale.x);
+
+        Vector2 direction = new Vector2(facingDir, 0);
+
+        // 1. 플레이어 멈춤
         if (player != null)
         {
-            player.isSkillActive = true; player.VelocityZero();
-            if (reverseLaserDirection) { Vector3 s = player.transform.localScale; s.x *= -1; player.transform.localScale = s; }
+            player.isSkillActive = true;
+            player.VelocityZero();
         }
 
+        // 2. 애니메이션 재생
         if (playerAnim != null) playerAnim.SetTrigger(AnimLaserShot);
         if (audioSource != null && laserSound != null) audioSource.PlayOneShot(laserSound);
 
         yield return new WaitForSeconds(laserCastDelay);
 
-        float facingDir = player.transform.localScale.x > 0 ? 1f : -1f;
-        Vector2 direction = new Vector2(facingDir, 0);
+        // 발사 위치 계산 (facingDir가 정직하게 플레이어 방향을 가리킴)
         Vector3 spawnPos = player.transform.position + new Vector3(laserOffset.x * facingDir, laserOffset.y, 0);
 
+        // 5. 레이저 생성 및 늘리기
         if (laserPrefab != null)
         {
             GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
-            if (facingDir < 0) laser.transform.rotation = Quaternion.Euler(0, 180, 0); else laser.transform.rotation = Quaternion.identity;
+
+            // 레이저 회전 (Pivot: Left 기준이라고 가정)
+            // 오른쪽(1)이면 0도, 왼쪽(-1)이면 180도 회전
+            if (facingDir < 0) laser.transform.rotation = Quaternion.Euler(0, 180, 0);
+            else laser.transform.rotation = Quaternion.identity;
 
             float targetDistance = laserMaxRange;
             RaycastHit2D hit = Physics2D.Raycast(spawnPos, direction, laserMaxRange, groundLayer);
@@ -232,17 +274,34 @@ public class StaffSkillManager : MonoBehaviour
                 currentLength += laserGrowSpeed * Time.deltaTime;
                 if (currentLength > targetDistance) currentLength = targetDistance;
                 laser.transform.localScale = new Vector3(currentLength, laserThickness, 1);
+
+                // 늘어나는 동안 플레이어 방향 고정
+                if (player != null) player.transform.localScale = lockedScale;
+
                 yield return null;
             }
 
+            // 데미지 판정
             Vector2 boxCenter = (Vector2)spawnPos + (direction * (targetDistance / 2));
             Vector2 boxSize = new Vector2(targetDistance, laserThickness);
             debugBoxCenter = boxCenter; debugBoxSize = boxSize;
 
             Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, enemyLayer);
-            foreach (Collider2D col in hits) { EnemyController_2D enemy = col.GetComponent<EnemyController_2D>(); if (enemy != null) enemy.TakeDamage(laserDamage); }
+            foreach (Collider2D col in hits)
+            {
+                EnemyController_2D enemy = col.GetComponent<EnemyController_2D>();
+                if (enemy != null) enemy.TakeDamage(laserDamage);
+            }
 
-            yield return new WaitForSeconds(laserDuration);
+            // 유지 시간
+            float elapsed = 0f;
+            while (elapsed < laserDuration)
+            {
+                elapsed += Time.deltaTime;
+                if (player != null) player.transform.localScale = lockedScale;
+                yield return null;
+            }
+
             Destroy(laser);
         }
 
@@ -271,12 +330,13 @@ public class StaffSkillManager : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // 레이저 범위
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(debugBoxCenter, debugBoxSize);
 
-        // [확인] 마력 폭발 범위 (노란색 원)
-        Gizmos.color = Color.yellow;
-        if (player != null) Gizmos.DrawWireSphere(player.transform.position, explosionRadius);
+        if (player != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(player.transform.position, explosionRadius);
+        }
     }
 }

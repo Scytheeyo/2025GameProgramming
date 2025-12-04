@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
 
-    // [핵심] 스킬 사용 중인지 체크하는 변수
+    // [핵심] 스킬 매니저에서 제어하는 변수
     [HideInInspector] public bool isSkillActive = false;
 
     [Header("이동 및 점프")]
@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
     public float chargehold = 2f;
     public float currentAttackMultiplier = 1.0f;
 
-    // [중요] 강한 공격 이펙트 (이미지 3~4번 프리팹)
+    // [중요] 강한 공격 이펙트
     public GameObject strongAttackEffectPrefab;
     public float strongAttackRadius = 2.0f;
     public LayerMask enemyLayer;
@@ -80,16 +80,12 @@ public class Player : MonoBehaviour
     private GameObject chargedEffectInstance = null;
     private SpriteRenderer sr;
 
-    // --------------------------------------------------------------------------------
-    // [추가됨] 강한 공격 위치/방향 세부 설정
-    // --------------------------------------------------------------------------------
     [Header("강한 공격 세부 설정")]
     [Tooltip("체크하면 공격 이펙트의 생성 방향과 이미지를 반대로 뒤집습니다.")]
     public bool reverseStrongAttackDir = false;
 
     [Tooltip("플레이어 몸체 중심에서 얼마나 떨어진 곳에 생성할지 설정 (X: 앞쪽 거리, Y: 높이)")]
-    public Vector2 strongAttackOffset = new Vector2(1.5f, -0.8f); // 기본값: 앞쪽 1.5, 아래로 -0.8
-    // --------------------------------------------------------------------------------
+    public Vector2 strongAttackOffset = new Vector2(1.5f, -0.8f);
 
     [Header("덱 시너지 효과")]
     public bool hasResurrection = false;
@@ -112,7 +108,6 @@ public class Player : MonoBehaviour
     public GameObject optionWindow;
     private Animator optionUIAnimator;
 
-    // 애니메이션 해시 (최적화)
     private static readonly int AnimStrongAttack = Animator.StringToHash("doStrongAttack");
 
     void Start()
@@ -134,12 +129,15 @@ public class Player : MonoBehaviour
     {
         if (isDead) return;
 
-        // 스킬 사용 중이면 입력 차단
+        // ---------------------------------------------------------
+        // [수정됨] 스킬 사용 중이면 이동 입력 차단 (가장 중요)
+        // ---------------------------------------------------------
         if (isSkillActive)
         {
             anim.SetBool("isMoving", false);
             return;
         }
+        // ---------------------------------------------------------
 
         HandleUIInput();
 
@@ -188,7 +186,7 @@ public class Player : MonoBehaviour
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
                         currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
-                        StartStrongAttack(); // [수정] 강한 공격 호출
+                        StartStrongAttack();
                         currentAttackMultiplier = 1.0f;
                     }
                     else { normalAttack.Play(); currentAttackMultiplier = 1.0f; StartCoroutine(SwingWeapon()); }
@@ -211,11 +209,18 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        // ---------------------------------------------------------
+        // [수정됨] 스킬 사용 중이면 물리 이동 및 Flip 차단
+        // ---------------------------------------------------------
         if (isDead || IsUIOpen() || isSkillActive)
         {
+            // 스킬 중에는 SwordSkillManager가 속도를 제어할 수 있도록
+            // Player에서는 속도를 0으로 초기화하지 않고 그냥 return만 합니다.
+            // 단, UI가 켜졌거나 죽었을 때는 멈춰야 하므로 예외 처리합니다.
             if (!isSkillActive) rb.velocity = Vector2.zero;
             return;
         }
+        // ---------------------------------------------------------
 
         rb.velocity = new Vector2(hMove * moveSpeed, rb.velocity.y);
         Flip(hMove);
@@ -234,57 +239,31 @@ public class Player : MonoBehaviour
 
     public void VelocityZero() { rb.velocity = Vector2.zero; }
 
-    // --------------------------------------------------------------------------------
-    // [핵심 로직] 강한 공격 (FirePoint 미사용, Offset 사용)
-    // --------------------------------------------------------------------------------
-    void StartStrongAttack()
-    {
-        StartCoroutine(StrongAttackSequence());
-    }
+    void StartStrongAttack() { StartCoroutine(StrongAttackSequence()); }
 
     IEnumerator StrongAttackSequence()
     {
         isSwinging = true;
-
-        // 1. 애니메이션 재생
         anim.SetTrigger(AnimStrongAttack);
-
-        // 2. 사운드
         if (StrongAttack != null) StrongAttack.Play();
 
-        // 3. 타이밍 대기 (칼 내려치는 순간까지)
         yield return new WaitForSeconds(0.15f);
 
-        // ------------------------------------------------------------------
-        // [위치 계산] Player 위치 기준 Offset 적용
-        // ------------------------------------------------------------------
-        // 현재 보는 방향 (오른쪽 1, 왼쪽 -1)
         float facingDir = transform.localScale.x > 0 ? 1f : -1f;
-
-        // 반전 체크박스 적용
         if (reverseStrongAttackDir) facingDir *= -1;
 
-        // 생성 위치: 내 위치 + (앞쪽 거리 * 방향) + 높이
         Vector3 spawnPos = transform.position + new Vector3(strongAttackOffset.x * facingDir, strongAttackOffset.y, 0);
-        // ------------------------------------------------------------------
 
-        // 4. 이펙트 생성
         if (strongAttackEffectPrefab != null)
         {
             GameObject effectInstance = Instantiate(strongAttackEffectPrefab, spawnPos, Quaternion.identity);
-
-            // 이펙트 이미지 좌우 반전 (방향에 맞게)
             Vector3 scale = effectInstance.transform.localScale;
             scale.x = Mathf.Abs(scale.x) * facingDir;
             effectInstance.transform.localScale = scale;
-
-            // 0.5초 뒤 삭제
             Destroy(effectInstance, 0.5f);
         }
 
-        // 5. 데미지 판정 (생성된 위치 spawnPos 기준)
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPos, strongAttackRadius, enemyLayer);
-
         float baseDmg = equippedWeapon.damage + currentAttackDamage;
         if (hasDoubleStrike) baseDmg *= 2.0f;
         int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
@@ -295,15 +274,11 @@ public class Player : MonoBehaviour
             if (enemy != null) enemy.TakeDamage(finalDamage);
         }
 
-        // 6. 후딜레이
         yield return new WaitForSeconds(attackDelay);
-
         isSwinging = false;
         currentAttackMultiplier = 1.0f;
     }
-    // --------------------------------------------------------------------------------
 
-    // --- (이하 나머지 코드는 기존과 동일) ---
     void HandleUIInput() { if (Input.GetKeyDown(KeyCode.I)) { Animator invAnim = inventoryUIManager.GetComponent<Animator>(); if (invAnim == null && inventoryUIManager.uiAnimator != null) invAnim = inventoryUIManager.uiAnimator; ToggleUI(inventoryUIManager.gameObject, invAnim, cardListWindow, optionWindow); } if (Input.GetKeyDown(KeyCode.S)) ToggleUI(cardListWindow, cardListAnimator, inventoryUIManager.gameObject, optionWindow); if (Input.GetKeyDown(KeyCode.Escape)) { if (optionWindow != null && optionWindow.activeSelf) { OptionPage optionScript = optionWindow.GetComponent<OptionPage>(); if (optionScript != null) optionScript.ClickConfirm(); Animator optAnim = optionWindow.GetComponent<Animator>(); if (optAnim != null) optAnim.SetTrigger("doClose"); else optionWindow.SetActive(false); } else { if (inventoryUIManager.gameObject.activeSelf) inventoryUIManager.gameObject.SetActive(false); if (cardListWindow.activeSelf) cardListWindow.SetActive(false); optionWindow.SetActive(true); if (optionUIAnimator != null) optionUIAnimator.SetTrigger("doOpen"); UpdateGamePauseState(); } } }
     void ToggleUI(GameObject targetUI, Animator targetAnim, GameObject otherUI1, GameObject otherUI2) { if (targetUI.activeSelf) { ResetCombatTriggers(); if (targetAnim != null) targetAnim.SetTrigger("doClose"); else { targetUI.SetActive(false); UpdateGamePauseState(); } } else { if (otherUI1 != null) otherUI1.SetActive(false); if (otherUI2 != null) otherUI2.SetActive(false); targetUI.SetActive(true); if (targetAnim != null) targetAnim.SetTrigger("doOpen"); UpdateGamePauseState(); } }
     void ResetCombatTriggers() { if (anim != null) anim.ResetTrigger("doAttack"); isCharging = false; isSwinging = false; if (chargeEffectInstance != null) Destroy(chargeEffectInstance); if (chargedEffectInstance != null) Destroy(chargedEffectInstance); }

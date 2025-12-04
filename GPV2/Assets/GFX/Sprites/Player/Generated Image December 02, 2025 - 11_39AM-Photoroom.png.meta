@@ -96,7 +96,7 @@ TextureImporter:
       name: Generated Image December 02, 2025 - 11_39AM-Photoroom_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 1096
         y: 0
         width: 121
         height: 157
@@ -117,7 +117,7 @@ TextureImporter:
       name: Generated Image December 02, 2025 - 11_39AM-Photoroom_1
       rect:
         serializedVersion: 2
-        x: 148
+        x: 894
         y: 0
         width: 174
         height: 157
@@ -138,7 +138,7 @@ TextureImporter:
       name: Generated Image December 02, 2025 - 11_39AM-Photoroom_2
       rect:
         serializedVersion: 2
-        x: 358
+        x: 678
         y: 0
         width: 180
         height: 157
@@ -159,7 +159,7 @@ TextureImporter:
       name: Generated Image December 02, 2025 - 11_39AM-Photoroom_3
       rect:
         serializedVersion: 2
-        x: 540
+        x: 0
         y: 30
         width: 677
         height: 76
