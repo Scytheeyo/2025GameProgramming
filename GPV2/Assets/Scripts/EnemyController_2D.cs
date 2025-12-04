@@ -42,7 +42,7 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null)
             {
-                player = p.transform;
+                player = p.transform.Find("PlayerObject");
             }
             else
             {
