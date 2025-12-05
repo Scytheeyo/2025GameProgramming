@@ -1,72 +1,85 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Security.Cryptography;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; // 씬 관리 필수
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] stages;
-    public int stageIndex;
+    public static GameManager instance;
+
+    [Header("현재 상태 정보")]
     public Player player;
-    public Exit  exit;
-    public Entrance entrance;
+    public GameObject currentStage;
 
-    void Start()
+    void Awake()
     {
-        player = FindObjectOfType<Player>();
-    }
-
-    public void NextStage()
-    {
-        if (stageIndex < stages.Length - 1)
+        if (instance == null)
         {
-            stages[stageIndex].SetActive(false);
-            stageIndex++;
-            stages[stageIndex].SetActive(true);
-
-            ExitReposition();
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            SceneManager.LoadScene("Stage2");
+            Destroy(gameObject);
+            return;
         }
-
+    }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void PreviousStage()
+    void OnDisable()
     {
-        if (stageIndex > 0)
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log(scene.name + " 씬이 로드되었습니다. 초기화 시작...");
+        StartCoroutine(FindPlayerAndLevel());
+    }
+
+    IEnumerator FindPlayerAndLevel()
+    {
+        yield return null;
+        if (player == null)
         {
-            stages[stageIndex].SetActive(false);
-            stageIndex--;
-            stages[stageIndex].SetActive(true);
-            EntranceReposition();
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) player = playerObj.GetComponent<Player>();
+        }
+
+        GameObject foundLevel = GameObject.FindGameObjectWithTag("LevelRoot");
+
+        if (foundLevel != null)
+        {
+            currentStage = foundLevel;
+            Debug.Log($"현재 스테이지 설정 완료: {currentStage.name}");
         }
         else
         {
-          return;
+            Debug.LogWarning("LevelRoot 태그가 달린 오브젝트를 찾지 못했습니다.");
         }
     }
-
-    void Update()
+    public void MoveToNextStage(Door transitionDoor)
     {
-        
+        if (transitionDoor.nextStage == null)
+        {
+            return;
+        }
+        if (currentStage != null)
+        {
+            currentStage.SetActive(false);
+        }
+        GameObject newStage = transitionDoor.nextStage;
+        newStage.SetActive(true);
+        currentStage = newStage;
+        RepositionPlayer(transitionDoor.targetEntrance.position);
     }
 
-    void ExitReposition()
+    void RepositionPlayer(Vector3 targetPosition)
     {
-        exit = FindObjectOfType<Exit>();
         player.VelocityZero();
-        player.transform.position = exit.getCurrentPosition() + new Vector3 (0, -1.5f, 0);
+        player.transform.position = targetPosition;
     }
 
-    void EntranceReposition()
-    {
-        entrance = FindObjectOfType<Entrance>();
-        player.VelocityZero();
-        player.transform.position = entrance.getCurrentPosition() + new Vector3(0, -1.5f, 0);
-    }
 }

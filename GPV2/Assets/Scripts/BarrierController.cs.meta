@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a7fd263edb958c0489a3d695ab9a0300
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - barrierStartPrefab: {fileID: 4116776141771973902, guid: 826e679a2b4097d4d8dfbd89cea73412, type: 3}
+  - barrierLoopPrefab: {fileID: 7948040568535779260, guid: 18f2d4568f19f074188d4dafdcc5b170, type: 3}
+  - barrierEndPrefab: {fileID: 4788234262164930097, guid: 629b90d73efa2bc4fbd599e2284499b3, type: 3}
+  - barrierPosition: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
