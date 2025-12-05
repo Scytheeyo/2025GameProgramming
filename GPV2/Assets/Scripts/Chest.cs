@@ -45,9 +45,19 @@ public class Chest : MonoBehaviour
         {
             int randomIndex = Random.Range(0, weaponPool.Length);
             GameObject selectedWeaponPrefab = weaponPool[randomIndex];
-            string weaponName = selectedWeaponPrefab.name;
+
+            GameObject weaponInstance = Instantiate(selectedWeaponPrefab);
+            weaponInstance.name = selectedWeaponPrefab.name;
+            string weaponName = weaponInstance.name;
+            Weapon newWeapon = weaponInstance.GetComponent<Weapon>();
+
+            if (newWeapon != null)
+            {
+                player.EquipWeapon(newWeapon);
+            }
+
             Sprite weaponSprite = null;
-            SpriteRenderer sr = selectedWeaponPrefab.GetComponent<SpriteRenderer>();
+            SpriteRenderer sr = selectedWeaponPrefab.GetComponent<SpriteRenderer>(); 
 
             if (sr != null)
             {
@@ -58,10 +68,9 @@ public class Chest : MonoBehaviour
                 sr = selectedWeaponPrefab.GetComponentInChildren<SpriteRenderer>();
                 if (sr != null) weaponSprite = sr.sprite;
             }
-
             player.AddItemToInventory(weaponName, 1, weaponSprite);
 
-            Debug.Log($"상자에서 획득: {weaponName}");
+            Debug.Log($"상자에서 획득 및 장착: {weaponName}");
         }
 
         CloseChestUI();

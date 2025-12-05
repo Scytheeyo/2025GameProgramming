@@ -530,7 +530,7 @@ public class Player : MonoBehaviour
         attackHitbox.SetActive(false);
     }
 
-    private void EquipWeapon(Weapon w)
+    public void EquipWeapon(Weapon w)
     {
         if (equippedWeapon != null) Destroy(equippedWeapon.gameObject);
 
@@ -538,7 +538,11 @@ public class Player : MonoBehaviour
         if (w != null) w.SetOwner(this);
 
         w.transform.SetParent(swordSlot);
-
+        SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.enabled = false;
+        }
         if (w.weaponType == WeaponType.Ranged)
             w.transform.localPosition = new Vector3(0.35f, 0.1f, 0f);
         else
