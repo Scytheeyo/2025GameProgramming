@@ -45,6 +45,10 @@ public class OptionPage : MonoBehaviour
     {
         LoadCurrentSettings(); // 현재 설정 및 저장된 값 불러오기
         UpdateUI();            // UI를 불러온 값으로 갱신
+        if (uiAnimator != null)
+        {
+            uiAnimator.SetTrigger("doOpen");
+        }
     }
 
     // 1. 해상도 목록 생성

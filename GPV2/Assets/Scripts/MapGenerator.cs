@@ -1,161 +1,223 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
+using System.Text;
 
 public class MapGenerator : MonoBehaviour
 {
-    [Header("°íÁ¤ ¹æ")]
+    [Header("ê³ ì • ë£¸")]
     public Room room1_Start;
-    public Room room9_PreEnd; // ¡Ú ÀÎ½ºÆåÅÍ¿¡¼­ EntranceDoors¿¡ ¹® 2°³ ³Ö¾ú´ÂÁö È®ÀÎ!
+    public Room room9_PreEnd;
     public Room room10_End;
 
-    [Header("·£´ı ¹æ ±×·ì")]
-    public List<Room> typeA_Rooms;
-    public List<Room> typeB_Rooms;
-    public List<Room> typeC_Rooms;
-
-    void Awake()
+    [Header("ëœë¤ ë£¸ (ê°œìˆ˜ í•„ìˆ˜!)")]
+    public List<Room> typeA_Rooms; // 3ê°œ (2, 3, 5)
+    public List<Room> typeB_Rooms; // 2ê°œ (7, 8)
+    public List<Room> typeC_Rooms; // 2ê°œ (4, 6)
+    [Header("ì‹œë“œ ì„¤ì •")]
+    public int currentSeed; // í˜„ì¬ ë§µì˜ ì‹œë“œ (ì €ì¥ ëŒ€ìƒ)
+    public static int seedToLoad = 0; // ë¡œë“œí•  ë•Œ ì™¸ë¶€ì—ì„œ ê°’ì„ ë„£ì–´ì£¼ëŠ” ë³€ìˆ˜
+    void Start()
     {
-        ConnectMap();
+        // â˜… 1. ì‹œë“œ ê²°ì • ë¡œì§
+        if (seedToLoad != 0)
+        {
+            currentSeed = seedToLoad; // ë¡œë“œëœ ì‹œë“œ ì‚¬ìš©
+            seedToLoad = 0; // ì‚¬ìš© í›„ ì´ˆê¸°í™”
+        }
+        else
+        {
+            currentSeed = Random.Range(0, int.MaxValue); // ìƒˆ ê²Œì„: ëœë¤ ì‹œë“œ
+        }
+
+        // â˜… 2. ë‚œìˆ˜í‘œ ê³ ì • (ì´ê²Œ ì œì¼ ì¤‘ìš”!)
+        // ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ë©´ ì´í›„ì˜ Random.RangeëŠ” í•­ìƒ ë˜‘ê°™ì€ ìˆœì„œë¡œ ë‚˜ì˜µë‹ˆë‹¤.
+        Random.InitState(currentSeed);
+
+        if (CheckDependencies()) ConnectMap();
+        else Debug.LogError("ë°© ê°œìˆ˜ ë¶€ì¡±!");
     }
 
     void ConnectMap()
     {
-        // 1. ÃÊ±âÈ­ & ¼ÅÇÃ (ÀÌÀü°ú µ¿ÀÏ)
+        // 1. ì´ˆê¸°í™”
         DeactivateList(typeA_Rooms);
         DeactivateList(typeB_Rooms);
         DeactivateList(typeC_Rooms);
         room9_PreEnd.gameObject.SetActive(false);
         room10_End.gameObject.SetActive(false);
-        room1_Start.gameObject.SetActive(true);
+        room1_Start.gameObject.SetActive(false);
 
+        // 2. ì…”í”Œ
         Shuffle(typeA_Rooms);
         Shuffle(typeB_Rooms);
         Shuffle(typeC_Rooms);
 
-        // 2. ¿ªÇÒ ¹èÁ¤ (´ÙÀÌ¾Æ¸óµå ±¸Á¶)
+        // 3. êµ¬ì¡° í• ë‹¹
         Room splitter = typeA_Rooms[0];
 
-        List<Room> pathPool = new List<Room> { typeA_Rooms[1], typeA_Rooms[2], typeB_Rooms[0], typeB_Rooms[1] };
-        Shuffle(pathPool);
+        List<Room> leftPath = new List<Room> { typeA_Rooms[1], typeB_Rooms[0] };
+        Room leftDeadEnd = typeC_Rooms[0];
 
-        Room left1 = pathPool[0];
-        Room left2 = pathPool[1];
-        Room right1 = pathPool[2];
-        Room right2 = pathPool[3];
+        List<Room> rightPath = new List<Room> { typeA_Rooms[2], typeB_Rooms[1] };
+        Room rightDeadEnd = typeC_Rooms[1];
 
-        Queue<Room> deadEnds = new Queue<Room>(typeC_Rooms);
+        Shuffle(leftPath);
+        Shuffle(rightPath);
 
-        // (1) 1¹ø -> ºĞ±âÁ¡ (ÀÏ¹İ ¿¬°á: ÀÔ±¸ ÀÎµ¦½º 0)
+        // 4. ì—°ê²°
+        // (1) ì‹œì‘ -> ë¶„ê¸°ì 
         LinkTwoWay(room1_Start.exitDoors[0], splitter, 0);
 
-        // (2) ¿ŞÂÊ ·çÆ®
-        ConnectComplexStep(splitter.exitDoors[0], left1, deadEnds);
-        ConnectComplexStep(GetForwardExit(left1), left2, deadEnds);
+        // (2) ì™¼ìª½ ë£¨íŠ¸
+        ConnectPathSequence(splitter.exitDoors[0], leftPath, leftDeadEnd, room9_PreEnd, 0);
 
-        // ¡Ú ¿ŞÂÊ ·çÆ® ³¡ -> 9¹ø ¹æÀÇ [0¹ø ÀÔ±¸]¿Í ¿¬°á
-        LinkTwoWay(GetForwardExit(left2), room9_PreEnd, 0);
+        // (3) ì˜¤ë¥¸ìª½ ë£¨íŠ¸
+        ConnectPathSequence(splitter.exitDoors[1], rightPath, rightDeadEnd, room9_PreEnd, 1);
 
-
-        // (3) ¿À¸¥ÂÊ ·çÆ®
-        ConnectComplexStep(splitter.exitDoors[1], right1, deadEnds);
-        ConnectComplexStep(GetForwardExit(right1), right2, deadEnds);
-
-        // ¡Ú ¿À¸¥ÂÊ ·çÆ® ³¡ -> 9¹ø ¹æÀÇ [1¹ø ÀÔ±¸]¿Í ¿¬°á
-        LinkTwoWay(GetForwardExit(right2), room9_PreEnd, 1);
-
-
-        // (4) 9¹ø -> 10¹ø (ÀÏ¹æÅëÇà, º¸½º¹æ ÀÔ±¸´Â ÇÏ³ª¶ó°í °¡Á¤)
+        // (4) ë³´ìŠ¤ë°© ì—°ê²°
         if (room9_PreEnd.exitDoors.Count > 0)
-        {
             Link(room9_PreEnd.exitDoors[0], room10_End);
+
+        // 5. ê²°ê³¼ ì¶œë ¥ (ìˆ˜ì •ë¨: ëª¨ë“  ê²½ë¡œ ì¶œë ¥)
+        Debug.Log("<color=cyan>=== [ ë§µ ìƒì„± ì™„ë£Œ : ëª¨ë“  ê²½ë¡œ ì¶œë ¥ ] ===</color>");
+
+        // íŠ¸ë¦¬ êµ¬ì¡° ë¨¼ì € ì¶œë ¥
+        PrintMapHierarchy();
+        // â˜… ëª¨ë“  ê²½ë¡œ(ë§‰ë‹¤ë¥¸ ê¸¸ í¬í•¨) ë°°ì—´ ì¶œë ¥ â˜…
+        PrintAllPaths();
+
+        // 6. ì‹œì‘
+        room1_Start.gameObject.SetActive(true);
+        if (GameManager.instance != null) GameManager.instance.currentStage = room1_Start.gameObject;
+    }
+
+    // =========================================================
+    // [ìˆ˜ì •ë¨] ëª¨ë“  ë£¨íŠ¸ë¥¼ ì°¾ì•„ë‚´ëŠ” ì¶œë ¥ í•¨ìˆ˜
+    // =========================================================
+    void PrintAllPaths()
+    {
+        Debug.Log("<color=yellow>=== [ Detected Routes (Main & Side) ] ===</color>");
+        List<string> currentPath = new List<string>();
+        FindAndPrintAllPathsRecursive(room1_Start, currentPath);
+    }
+
+    void FindAndPrintAllPathsRecursive(Room currentRoom, List<string> path)
+    {
+        if (currentRoom == null) return;
+
+        path.Add(currentRoom.name);
+        bool isLeafNode = true; // ë” ì´ìƒ ê°ˆ ê³³ì´ ì—†ëŠ” ëì¸ì§€ ì²´í¬
+
+        // 1. ë³´ìŠ¤ë°© ë„ì°© (ìŠ¹ë¦¬ ë£¨íŠ¸)
+        if (currentRoom == room10_End)
+        {
+            PrintPathLog(path, "<color=green>[MAIN BOSS ROUTE]</color>");
+            isLeafNode = false; // ì²˜ë¦¬í–ˆìœ¼ë¯€ë¡œ ë¦¬í”„ ë…¸ë“œ ë¡œì§ ê±´ë„ˆëœ€
         }
         else
         {
-            Debug.LogError("9¹ø ¹æ(PreEnd)¿¡ Ãâ±¸ ¹®(Exit Door)ÀÌ ¾ø½À´Ï´Ù! ÀÎ½ºÆåÅÍ¸¦ È®ÀÎÇÏ¼¼¿ä.");
+            // 2. ì—°ê²°ëœ ë¬¸ íƒìƒ‰
+            foreach (var door in currentRoom.exitDoors)
+            {
+                if (door != null && door.nextStage != null)
+                {
+                    Room nextRoom = door.nextStage.GetComponent<Room>();
+
+                    // ì´ë¯¸ ë°©ë¬¸í•œ ê²½ë¡œê°€ ì•„ë‹ˆë¼ë©´ (ë¬´í•œë£¨í”„ ë°©ì§€) íƒìƒ‰ ê³„ì†
+                    if (!path.Contains(nextRoom.name))
+                    {
+                        isLeafNode = false; // ê°ˆ ê³³ì´ ìˆìœ¼ë¯€ë¡œ ëì´ ì•„ë‹˜
+                        FindAndPrintAllPathsRecursive(nextRoom, path);
+                    }
+                }
+            }
         }
 
-
-        if (GameManager.instance != null)
+        // 3. ë” ì´ìƒ ê°ˆ ê³³ì´ ì—†ëŠ” ë§‰ë‹¤ë¥¸ ë°© (ì‚¬ì´ë“œ ë£¨íŠ¸)
+        // ë³´ìŠ¤ë°©ë„ ì•„ë‹ˆê³ , ê°ˆ ìˆ˜ ìˆëŠ” ë¬¸ë„ ì—†ë‹¤ë©´ ì—¬ê¸°ê°€ ëì…ë‹ˆë‹¤.
+        if (isLeafNode && currentRoom != room10_End)
         {
-            GameManager.instance.currentStage = room1_Start.gameObject;
+            PrintPathLog(path, "<color=orange>[SIDE / DEAD END]</color>");
         }
+
+        // ë°±íŠ¸ë˜í‚¹
+        path.RemoveAt(path.Count - 1);
     }
 
-    // ---------------------------------------------------------
-    // ÇÙ½É ÇÔ¼öµé
-    // ---------------------------------------------------------
-
-    void ConnectComplexStep(Door fromDoor, Room targetRoom, Queue<Room> deadEnds)
+    // ê²½ë¡œ ì˜ˆì˜ê²Œ ì¶œë ¥í•˜ëŠ” í—¬í¼ í•¨ìˆ˜
+    void PrintPathLog(List<string> path, string label)
     {
-        // ÀÏ¹İÀûÀÎ ¹æ ¿¬°áÀº ¹«Á¶°Ç 0¹ø ÀÔ±¸¸¦ »ç¿ë
-        LinkTwoWay(fromDoor, targetRoom, 0);
-
-        if (targetRoom.exitDoors.Count >= 2 && deadEnds.Count > 0)
+        StringBuilder sb = new StringBuilder();
+        sb.Append($"{label}: ");
+        for (int i = 0; i < path.Count; i++)
         {
-            Room deadEnd = deadEnds.Dequeue();
-            // ¸·´Ù¸¥ ¹æ ¿¬°á (0¹ø ÀÔ±¸ »ç¿ë)
-            LinkTwoWay(targetRoom.exitDoors[1], deadEnd, 0);
+            sb.Append($"[{path[i]}]");
+            if (i < path.Count - 1) sb.Append(" -> ");
         }
+        Debug.Log(sb.ToString());
     }
 
-    // [¾÷±×·¹ÀÌµåµÈ ¾ç¹æÇâ ¿¬°á]
-    // entranceIndex: ´ÙÀ½ ¹æ(nextRoom)ÀÇ ¸î ¹øÂ° ÀÔ±¸ ¹®°ú ¿¬°áÇÒ °ÍÀÎ°¡?
+    // ---------------------------------------------------------
+    // ê¸°ì¡´ ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜ë“¤ (ë³€ê²½ ì—†ìŒ)
+    // ---------------------------------------------------------
+    void ConnectPathSequence(Door startDoor, List<Room> pathRooms, Room deadEndRoom, Room finalDestination, int finalDestEntranceIndex)
+    {
+        Door currentExit = startDoor;
+        foreach (Room room in pathRooms)
+        {
+            LinkTwoWay(currentExit, room, 0);
+            if (room.exitDoors.Count >= 2 && deadEndRoom != null)
+            {
+                LinkTwoWay(room.exitDoors[1], deadEndRoom, 0);
+                deadEndRoom = null;
+            }
+            currentExit = room.exitDoors[0];
+        }
+        LinkTwoWay(currentExit, finalDestination, finalDestEntranceIndex);
+    }
+
+    // í•„ìˆ˜ í•¨ìˆ˜ë“¤ ì¶•ì•½ (ë³µì‚¬í•´ì„œ ê·¸ëŒ€ë¡œ ì“°ì‹œë©´ ë©ë‹ˆë‹¤)
+    bool CheckDependencies() { return room1_Start && room9_PreEnd && room10_End && typeA_Rooms.Count >= 3 && typeB_Rooms.Count >= 2 && typeC_Rooms.Count >= 2; }
     void LinkTwoWay(Door outDoor, Room nextRoom, int entranceIndex)
     {
-        if (outDoor == null || nextRoom == null) return;
-
-        // 1. °¡´Â ±æ (A -> B)
+        if (!outDoor || !nextRoom) return;
         outDoor.nextStage = nextRoom.gameObject;
-
-        // Áß¿ä: µµÂø À§Ä¡¸¦ ¹æ Áß¾ÓÀÌ ¾Æ´Ï¶ó, 'ÇØ´ç ÀÔ±¸ ¹® ¾Õ'À¸·Î ¼³Á¤ÇÏ¸é ´õ ÀÚ¿¬½º·¯¿ò
-        // (¸¸¾à ÀÔ±¸ ¹®ÀÌ ¾ø´Ù¸é ±×³É entrancePoint »ç¿ë)
+        if (nextRoom.entranceDoors.Count > entranceIndex) outDoor.targetEntrance = nextRoom.entranceDoors[entranceIndex].transform;
+        else if (nextRoom.entrancePoint != null) outDoor.targetEntrance = nextRoom.entrancePoint;
         if (nextRoom.entranceDoors.Count > entranceIndex)
         {
-            // ±× ¹® ¾ÕÀ¸·Î ÀÌµ¿ (¹®ÀÇ ÀÚ½ÄÀ¸·Î SpawnPoint°¡ ÀÖ´Ù¸é .Find("SpawnPoint") ÃßÃµ)
-            outDoor.targetEntrance = nextRoom.entranceDoors[entranceIndex].transform;
-        }
-        else
-        {
-            outDoor.targetEntrance = nextRoom.entrancePoint;
-        }
-
-        // 2. ¿À´Â ±æ (B -> A)
-        // nextRoomÀÇ ÁöÁ¤µÈ ÀÔ±¸ ¹®(entranceDoors[index])À» °¡Á®¿Í¼­ µÇµ¹¾Æ°¡°Ô ¼³Á¤
-        if (nextRoom.entranceDoors.Count > entranceIndex)
-        {
-            Door targetEntranceDoor = nextRoom.entranceDoors[entranceIndex];
-
-            // µÇµ¹¾Æ°¥ °÷: Ãâ¹ßÇß´ø ¹®(outDoor)ÀÌ ÀÖ´Â ¹æ
-            targetEntranceDoor.nextStage = outDoor.transform.parent.gameObject;
-
-            // µÇµ¹¾Æ°¥ À§Ä¡: Ãâ¹ßÇß´ø ¹®(outDoor) ¹Ù·Î ¾Õ
-            targetEntranceDoor.targetEntrance = outDoor.transform;
+            Door target = nextRoom.entranceDoors[entranceIndex];
+            target.nextStage = outDoor.transform.parent.gameObject;
+            target.targetEntrance = outDoor.transform;
         }
     }
-
     void Link(Door door, Room nextRoom)
     {
-        if (door == null || nextRoom == null) return;
-
+        if (!door || !nextRoom) return;
         door.nextStage = nextRoom.gameObject;
-
-        // ¸¸¾à nextRoom¿¡ entrancePoint°¡ ÇÒ´ç ¾È µÇ¾îÀÖÀ¸¸é ¹æ ÀÚÃ¼ÀÇ À§Ä¡·Î ÀÌµ¿
-        if (nextRoom.entrancePoint != null)
-            door.targetEntrance = nextRoom.entrancePoint;
-        else
-            door.targetEntrance = nextRoom.transform;
+        if (nextRoom.entrancePoint != null) door.targetEntrance = nextRoom.entrancePoint;
+        else door.targetEntrance = nextRoom.transform;
     }
 
-    Door GetForwardExit(Room room) { return room.exitDoors[0]; }
-    void DeactivateList(List<Room> rooms) { foreach (var r in rooms) if (r) r.gameObject.SetActive(false); }
-    void Shuffle<T>(List<T> list)
+    void PrintMapHierarchy()
     {
-        for (int i = 0; i < list.Count; i++)
+        Debug.Log("<color=green>=== [ Map Tree Structure ] ===</color>");
+        HashSet<Room> visited = new HashSet<Room>();
+        PrintRoomRecursive(room1_Start, "", visited);
+    }
+    void PrintRoomRecursive(Room currentRoom, string indent, HashSet<Room> visited)
+    {
+        if (!currentRoom) return;
+        if (visited.Contains(currentRoom)) { Debug.Log($"{indent}â””â”€ <color=yellow>[{currentRoom.name}]</color> (Join)"); return; }
+        visited.Add(currentRoom);
+        string status = currentRoom.gameObject.activeSelf ? "(ON)" : "(OFF)";
+        Debug.Log($"{indent}â””â”€ <b>[{currentRoom.name}]</b> {status}");
+        foreach (var exit in currentRoom.exitDoors)
         {
-            T temp = list[i];
-            int rand = Random.Range(i, list.Count);
-            list[i] = list[rand];
-            list[rand] = temp;
+            if (exit && exit.nextStage) PrintRoomRecursive(exit.nextStage.GetComponent<Room>(), indent + "    ", visited);
         }
     }
+
+    void DeactivateList(List<Room> rooms) { foreach (var r in rooms) if (r) r.gameObject.SetActive(false); }
+    void Shuffle<T>(List<T> list) { for (int i = 0; i < list.Count; i++) { T t = list[i]; int r = Random.Range(i, list.Count); list[i] = list[r]; list[r] = t; } }
 }
