@@ -537,8 +537,9 @@ MonoBehaviour:
   laserPrefab: {fileID: 8111728160188848583, guid: e8b410f1f6d277f44a0a9fdb0a04d9a1, type: 3}
   timeStopManaCost: 1
   timeStopDuration: 10
+  fadeDuration: 1
   timeStopSound: {fileID: 8300000, guid: 053298f60cd0a0d42b46eeaea7fe8a8b, type: 3}
-  timeStopBackgroundObject: {fileID: 0}
+  timeStopOverlay: {fileID: 0}
   TimeStopEffect: {fileID: 6772283622003340269, guid: 70692f01ce0495440acf36b532507ab3, type: 3}
   laserLine: {fileID: 0}
   explosionProjectilePrefab: {fileID: 0}

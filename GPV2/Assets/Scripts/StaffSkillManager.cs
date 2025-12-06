@@ -59,10 +59,11 @@ public class StaffSkillManager : MonoBehaviour
     [Header("Lv5: 시간 정지")]
     public int timeStopManaCost = 60;
     public float timeStopDuration = 10f;
-    public AudioClip timeStopSound;
-    public GameObject timeStopBackgroundObject;
-    public GameObject TimeStopEffect;
     private bool isTimeStopped = false;
+    public float fadeDuration = 1f;
+    public AudioClip timeStopSound;
+    public CanvasGroup timeStopOverlay;
+    public GameObject TimeStopEffect;
 
     // 애니메이션 해시
     private static readonly int AnimTimeStop = Animator.StringToHash("TimeStop");
@@ -80,9 +81,15 @@ public class StaffSkillManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
 
-        if (timeStopBackgroundObject != null) timeStopBackgroundObject.SetActive(false);
+        //if (timeStopOverlay != null) timeStopOverlay.SetActive(false);
         if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
         if (laserLine != null) laserLine.enabled = false;
+
+        if (timeStopOverlay != null)
+        {
+            timeStopOverlay.alpha = 0f;
+            timeStopOverlay.gameObject.SetActive(true); // 오브젝트는 켜둬야 함
+        }
     }
 
     void Update()
@@ -301,20 +308,44 @@ public class StaffSkillManager : MonoBehaviour
     // ========================================================================
     IEnumerator CastTimeStop()
     {
-        if (isTimeStopped) yield break;
+        if (isTimeStopped) yield break; // 중복 실행 방지
+
+        if (TimeStopEffect != null)
+        {
+            Instantiate(TimeStopEffect, Camera.main.transform.position + new Vector3(0, 0, 10), Quaternion.identity);
+        }
+
         isTimeStopped = true;
+        // 1. 사운드 재생
+        if (audioSource != null && timeStopSound != null)
+        {
+            audioSource.PlayOneShot(timeStopSound);
+        }
 
-        if (playerAnim != null) playerAnim.SetTrigger(AnimTimeStop);
-        if (audioSource != null && timeStopSound != null) audioSource.PlayOneShot(timeStopSound);
-        if (timeStopBackgroundObject != null) timeStopBackgroundObject.SetActive(true);
-        if (TimeStopEffect != null) Instantiate(TimeStopEffect, transform.position, Quaternion.identity);
+        // 2. 화면 암전 (Fade In)
+        StartCoroutine(FadeOverlay(true, fadeDuration));
+        yield return new WaitForSeconds(fadeDuration); // 페이드인 완료까지 대기
 
+        // 3. 모든 적 찾아서 얼리기 (EnemyController_2D.cs의 FreezeEnemy 함수 필요)
         EnemyController_2D[] enemies = FindObjectsOfType<EnemyController_2D>();
-        foreach (var enemy in enemies) { if (enemy != null) enemy.FreezeEnemy(timeStopDuration); }
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                enemy.FreezeEnemy(timeStopDuration);
+            }
+        }
+
+        // (팁: 적의 투사체도 멈추고 싶다면 여기서 Tag로 찾아서 Rigidbody를 멈추세요)
+        //GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
+        //foreach (var bullet in enemyBullets) { ... }
 
         yield return new WaitForSeconds(timeStopDuration);
 
-        if (timeStopBackgroundObject != null) timeStopBackgroundObject.SetActive(false);
+
+        StartCoroutine(FadeOverlay(false, fadeDuration));
+        yield return new WaitForSeconds(fadeDuration); // 페이드아웃 완료까지 대기
+
         isTimeStopped = false;
     }
 
@@ -329,4 +360,24 @@ public class StaffSkillManager : MonoBehaviour
             Gizmos.DrawWireSphere(player.transform.position, explosionRadius);
         }
     }
+
+    IEnumerator FadeOverlay(bool fadeIn, float duration)
+    {
+        if (timeStopOverlay == null) yield break;
+
+        float startAlpha = fadeIn ? 0f : timeStopOverlay.alpha;
+        float endAlpha = fadeIn ? 1f : 0f;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float normalizedTime = time / duration;
+            timeStopOverlay.alpha = Mathf.Lerp(startAlpha, endAlpha, normalizedTime);
+            yield return null;
+        }
+
+        timeStopOverlay.alpha = endAlpha;
+    }
+
 }
