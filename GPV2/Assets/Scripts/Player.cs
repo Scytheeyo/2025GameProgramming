@@ -241,6 +241,7 @@ public class Player : MonoBehaviour
             if (isCharging)
             {
                 isCharging = false;
+                // (이펙트 제거 로직 생략...)
                 if (chargeEffectInstance != null) { Destroy(chargeEffectInstance); chargeEffectInstance = null; }
                 if (chargedEffectInstance != null) { Destroy(chargedEffectInstance); chargedEffectInstance = null; }
 
@@ -248,44 +249,59 @@ public class Player : MonoBehaviour
                 {
                     float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-                    // 강공격 (차징) 조건 우선 체크
+                    // 강공격 로직
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
-                        // 강공격은 스윙 중이 아닐 때만 발동
                         if (!isSwinging)
                         {
                             currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
-                            StartStrongAttack();
+                            StartStrongAttack(); // 강공격은 별도 코루틴에서 처리하므로 여기서는 ActivateHitbox 호출 안 함
                             currentAttackMultiplier = 1.0f;
                         }
                     }
                     else
                     {
-                        // [수정된 부분] 콤보 및 기본 공격 로직
-
+                        // [기본 공격 및 콤보 로직]
                         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+                        bool isAttackTriggered = false;
 
-                        // 1. 현재 'Alice_Attack1' 애니메이션이 재생 중이라면 -> 2타(콤보) 발동
-                        // (isSwinging 여부와 상관없이 애니메이션 상태를 최우선으로 확인)
                         if (stateInfo.IsName("Alice_Attack1"))
                         {
-                            Debug.Log("Combo Triggered: Attack 1 -> Attack 2");
+                            Debug.Log("Combo: Attack 1 -> Attack 2");
                             anim.SetTrigger(AnimDoAttack2);
-
-                            // 무기 오브젝트의 물리적 회전도 다시 시작
                             StopCoroutine("SwingWeapon");
                             StartCoroutine(SwingWeapon());
+                            isAttackTriggered = true;
                         }
-                        // 2. 공격 중이 아닐 때 (기본 상태) -> 1타 발동
-                        // (혹시 모를 중복 실행 방지를 위해 Attack2 상태도 아닐 때만)
                         else if (!isSwinging && !stateInfo.IsName("Alice_Attack2"))
                         {
                             Debug.Log("Normal Attack: Attack 1");
                             normalAttack.Play();
                             currentAttackMultiplier = 1.0f;
-
                             anim.SetTrigger(AnimDoAttack1);
                             StartCoroutine(SwingWeapon());
+                            isAttackTriggered = true;
+                        }
+
+                        // [핵심 추가] 공격이 발동됐다면 데미지 계산 후 히트박스 켜기
+                        if (isAttackTriggered)
+                        {
+                            // 1. 현재 스탯 기반 데미지 계산
+                            float weaponDmg = (equippedWeapon != null) ? equippedWeapon.damage : 0f;
+                            float baseDmg = weaponDmg + currentAttackDamage; // 기본공격력 + 무기공격력 + 카드스탯
+                            if (hasDoubleStrike) baseDmg *= 2.0f; // 시너지 효과
+
+                            int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
+
+                            // 2. AttackDamage 스크립트에 데미지 전달
+                            AttackDamage hitScript = attackHitbox.GetComponent<AttackDamage>();
+                            if (hitScript != null)
+                            {
+                                hitScript.UpdateDamage(finalDamage);
+                            }
+
+                            // 3. 히트박스 활성화
+                            Invoke("ActivateHitbox", 0.5f);
                         }
                     }
                 }
