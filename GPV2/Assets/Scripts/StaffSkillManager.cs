@@ -337,16 +337,8 @@ public class StaffSkillManager : MonoBehaviour
         }
 
         // (팁: 적의 투사체도 멈추고 싶다면 여기서 Tag로 찾아서 Rigidbody를 멈추세요)
-        CloverProjectile[] enemyBullets = FindObjectsOfType<CloverProjectile>();
-
-        foreach (var bullet in enemyBullets)
-        {
-            if (bullet != null)
-            {
-                // 방금 만든 함수 호출
-                bullet.FreezeEnemyBullet(timeStopDuration);
-            }
-        }
+        //GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
+        //foreach (var bullet in enemyBullets) { ... }
 
         yield return new WaitForSeconds(timeStopDuration);
 
