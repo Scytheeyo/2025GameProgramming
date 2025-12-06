@@ -21,6 +21,7 @@ public class Enemy_Diamond : EnemyController_2D
 
     protected override void Update()
     {
+        if (isFrozen) return;
         // ... (나머지 코드는 기존과 동일) ...
         if (isDead || player == null || isDashing) return;
 

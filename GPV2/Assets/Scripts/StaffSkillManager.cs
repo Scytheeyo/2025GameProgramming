@@ -340,6 +340,16 @@ public class StaffSkillManager : MonoBehaviour
         //GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
         //foreach (var bullet in enemyBullets) { ... }
 
+        CloverProjectile[] enemyBullets = FindObjectsOfType<CloverProjectile>();
+        foreach (var bullet in enemyBullets)
+        {
+            if (bullet != null)
+            {
+                // 방금 만든 함수 호출
+                bullet.FreezeEnemyBullet(timeStopDuration);
+            }
+        }
+
         yield return new WaitForSeconds(timeStopDuration);
 
 
