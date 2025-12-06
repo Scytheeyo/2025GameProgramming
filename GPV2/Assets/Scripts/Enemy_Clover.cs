@@ -14,6 +14,8 @@ public class Enemy_Clover : EnemyController_2D
         // 1. 죽었거나, 공격 중(마법 시전 중)이면 아무것도 안 함
         if (isDead || player == null || isAttacking) return;
 
+        
+
         // 플레이어 거리 및 방향 계산
         float distance = Vector2.Distance(transform.position, player.position);
 
@@ -26,6 +28,7 @@ public class Enemy_Clover : EnemyController_2D
         // 2. 추격 범위 안에 있을 때
         if (distance <= chaseRange)
         {
+            if (isFrozen) return;
             rb.velocity = Vector2.zero; // 발사할 땐 멈춤
             animator?.SetFloat("Speed", 0);
 
@@ -54,9 +57,21 @@ public class Enemy_Clover : EnemyController_2D
         // (원하시면 Trigger로 유지해도 되지만, isAttacking 상태 표현엔 Bool이 유리)
         animator?.SetBool("IsAttacking", true);
 
-        // ★ [대기]: 애니메이션이 끝날 때까지 기다림
-        // 인스펙터에서 'Cast Time'을 애니메이션 길이와 똑같이 맞춰주세요!
-        yield return new WaitForSeconds(castTime);
+        float timer = 0f;
+        while (timer < castTime)
+        {
+            if (!isFrozen) // 얼어있지 않을 때만 시간 흐름
+            {
+                timer += Time.deltaTime;
+            }
+            yield return null; // 한 프레임 대기
+        }
+
+        // ★ 발사 직전에 한 번 더 체크 (얼어있다면 풀릴 때까지 대기)
+        while (isFrozen)
+        {
+            yield return null;
+        }
 
         // === [투사체 발사] ===
         Fire();
@@ -64,6 +79,8 @@ public class Enemy_Clover : EnemyController_2D
         // === [공격 종료] ===
         animator?.SetBool("IsAttacking", false); // 애니메이션 끄기
         isAttacking = false;           // 상태 해제 (다시 행동 가능)
+
+        lastShootTime = Time.time;
     }
 
     void Fire()

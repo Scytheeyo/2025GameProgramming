@@ -2323,10 +2323,6 @@ PrefabInstance:
       propertyPath: timeStopOverlay
       value: 
       objectReference: {fileID: 1610271365}
-    - target: {fileID: 1854242429, guid: 4c3eb6d715a3dc84a8d97c3cc3dcf3e0, type: 3}
-      propertyPath: timeStopBackgroundObject
-      value: 
-      objectReference: {fileID: 1610271364}
     - target: {fileID: 3989535347563536488, guid: 4c3eb6d715a3dc84a8d97c3cc3dcf3e0, type: 3}
       propertyPath: DoorOpen
       value: 
@@ -2628,11 +2624,6 @@ MonoBehaviour:
 TilemapCollider2D:
   m_CorrespondingSourceObject: {fileID: 1808664465234741858, guid: 9459ae0753a45a64eb6fc76cbf7ef085, type: 3}
   m_PrefabInstance: {fileID: 1808664466172462219}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1610271364 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7178412025646815302, guid: 65d201f9068be1849957d0e33dcba287, type: 3}
-  m_PrefabInstance: {fileID: 749031163}
   m_PrefabAsset: {fileID: 0}
 --- !u!225 &1610271365 stripped
 CanvasGroup:
