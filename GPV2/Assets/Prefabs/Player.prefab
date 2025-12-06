@@ -252,10 +252,10 @@ SpriteRenderer:
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 0.96, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &3989535347563536469
@@ -368,14 +368,25 @@ MonoBehaviour:
   equippedWeapon: {fileID: 0}
   DoorOpen: {fileID: 0}
   normalAttack: {fileID: 0}
+  allWeaponPrefabs:
+  - {fileID: 4399605849035345117, guid: 66f4e3c92ffedb74abcc7f2094fedd92, type: 3}
+  - {fileID: 4399605849035345117, guid: 5a1abc5408fde87499d68b1d06a90d73, type: 3}
+  - {fileID: 4399605849035345117, guid: c0c0a20cf0d958249b0e6e8fa3b38385, type: 3}
+  - {fileID: 4399605849035345117, guid: e26fb22a2443b4a4e9d0df296883f85a, type: 3}
+  - {fileID: 4399605849035345117, guid: 57e493159a4c3954a8ff013a5c086374, type: 3}
+  - {fileID: 8455175751847013663, guid: 186cd0e85dde40b45a70853c1a010924, type: 3}
+  - {fileID: 8455175751847013663, guid: 01715cbaa73f59f4f8274bc5a7faa1ff, type: 3}
+  - {fileID: 8455175751847013663, guid: 9338401b1070ec34b8e83d9ef1c93e07, type: 3}
+  - {fileID: 8455175751847013663, guid: 882554c4a062de945bff508d8023e58c, type: 3}
+  - {fileID: 8455175751847013663, guid: ec38c5753fcc8ce4aa08ce333b15c2cd, type: 3}
   isManaGuardOn: 0
   chargehold: 2
   currentAttackMultiplier: 1
-  strongAttackEffectPrefab: {fileID: 6950782497905815279, guid: 8f983a7f62612d94e90257815f03136b, type: 3}
+  strongAttackEffectPrefab: {fileID: 1752500828355390132, guid: 693f8d39fde4b28428858b7660ef6853, type: 3}
   strongAttackRadius: 2
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 584
+    m_Bits: 512
   chargeEffectPrefab: {fileID: 4320417006652936281, guid: 1fdb3ad5b6b52914abe2ab3eff503c63, type: 3}
   chargedEffectPrefab: {fileID: 2303079793076922087, guid: e7b3796c6cea77b4d9fb7db5456af87e, type: 3}
   StrongAttack: {fileID: 0}
@@ -513,7 +524,7 @@ MonoBehaviour:
   explosionHitTiming: 0.2
   manaGuardDuration: 10
   manaGuardCostPerSec: 1
-  guardShieldEffect: {fileID: 0}
+  guardShieldEffect: {fileID: 4534949006398314489}
   laserManaCost: 1
   laserDamage: 50
   laserMaxRange: 40
@@ -528,7 +539,7 @@ MonoBehaviour:
   timeStopDuration: 10
   timeStopSound: {fileID: 8300000, guid: 053298f60cd0a0d42b46eeaea7fe8a8b, type: 3}
   timeStopBackgroundObject: {fileID: 0}
-  TimeStopEffect: {fileID: 0}
+  TimeStopEffect: {fileID: 6772283622003340269, guid: 70692f01ce0495440acf36b532507ab3, type: 3}
   laserLine: {fileID: 0}
   explosionProjectilePrefab: {fileID: 0}
 --- !u!114 &1854242437
@@ -655,6 +666,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d929ef29e3552304284b4955e7db6552, type: 3}
+--- !u!1 &4534949006398314489 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4534949007077511193, guid: d929ef29e3552304284b4955e7db6552, type: 3}
+  m_PrefabInstance: {fileID: 1505511392}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4534949006398314490 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4534949007077511194, guid: d929ef29e3552304284b4955e7db6552, type: 3}
