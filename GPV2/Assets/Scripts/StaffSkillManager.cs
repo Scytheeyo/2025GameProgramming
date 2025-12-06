@@ -14,7 +14,7 @@ public class StaffSkillManager : MonoBehaviour
 
     [Header("스프라이트 설정 (중요)")]
     [Tooltip("플레이어 캐릭터의 원본 그림이 왼쪽을 보고 있다면 체크하세요.")]
-    public bool defaultSpriteFaceLeft = true; // [추가] 기본값 True
+    public bool defaultSpriteFaceLeft = true;
 
     // ========================================================================
     // [Lv2: 마력 폭발]
@@ -87,7 +87,12 @@ public class StaffSkillManager : MonoBehaviour
 
     void Update()
     {
-        if (player.EquippedWeapon == null || player.EquippedWeapon.weaponType != WeaponType.Ranged) return;
+        // 무기 조건이 맞지 않으면 (무기 교체 등) 마나 가드를 강제 종료하고 리턴
+        if (player.EquippedWeapon == null || player.EquippedWeapon.weaponType != WeaponType.Ranged)
+        {
+            if (player.isManaGuardOn) TurnOffManaGuard();
+            return;
+        }
 
         CheckSkillInput();
 
@@ -97,12 +102,9 @@ public class StaffSkillManager : MonoBehaviour
             if (player.mana <= 0)
             {
                 player.mana = 0;
-                player.isManaGuardOn = false;
-                if (manaGuardCoroutine != null) StopCoroutine(manaGuardCoroutine);
+                TurnOffManaGuard(); // 마나 부족 시 종료
             }
         }
-
-        if (guardShieldEffect != null) guardShieldEffect.SetActive(player.isManaGuardOn);
     }
 
     void CheckSkillInput()
@@ -136,26 +138,11 @@ public class StaffSkillManager : MonoBehaviour
         return false;
     }
 
-    // [헬퍼 함수] 방향 계산 (왼쪽 원본 스프라이트 고려)
-    // Scale.x가 양수(1)일 때: 원본이 왼쪽이면 왼쪽(-1), 원본이 오른쪽이면 오른쪽(1)
-    float GetFacingDirection()
-    {
-        float scaleX = player.transform.localScale.x;
-        // 스케일 부호(1 or -1)
-        float sign = Mathf.Sign(scaleX);
-
-        // 원본이 왼쪽을 보고 있다면, 스케일이 양수일 때 왼쪽(-1)이 됨
-        if (defaultSpriteFaceLeft) return sign * -1f;
-
-        return sign;
-    }
-
     // ========================================================================
     // [Lv2: 마력 폭발]
     // ========================================================================
     IEnumerator CastExplosionSequence()
     {
-        // [방향 고정용] 현재 스케일 저장
         Vector3 lockedScale = player.transform.localScale;
 
         if (player != null)
@@ -170,18 +157,15 @@ public class StaffSkillManager : MonoBehaviour
         float elapsed = 0f;
         bool hasExploded = false;
 
-        // 애니메이션 재생 중 방향 고정 루프
-        while (elapsed < 0.4f) // 전체 시간
+        while (elapsed < 0.4f)
         {
             elapsed += Time.deltaTime;
 
-            // [핵심] 매 프레임 방향을 강제로 고정해서 애니메이션이 뒤집는 걸 막음
             if (player != null) player.transform.localScale = lockedScale;
 
             if (!hasExploded && elapsed >= explosionHitTiming)
             {
                 hasExploded = true;
-                // 폭발 처리
                 Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer);
                 foreach (Collider2D hit in hits)
                 {
@@ -201,66 +185,73 @@ public class StaffSkillManager : MonoBehaviour
         if (player != null) player.isSkillActive = false;
     }
 
-    // --- Lv3: 마나 가드 ---
+    // ========================================================================
+    // [Lv3: 마나 가드] (수정됨)
+    // ========================================================================
     void ToggleManaGuard()
     {
         if (player.isManaGuardOn == false)
         {
             player.isManaGuardOn = true;
+
+            // 켤 때 확실하게 이펙트 활성화
+            if (guardShieldEffect != null) guardShieldEffect.SetActive(true);
+
             if (manaGuardCoroutine != null) StopCoroutine(manaGuardCoroutine);
             manaGuardCoroutine = StartCoroutine(ManaGuardTimer());
         }
         else
         {
-            player.isManaGuardOn = false;
-            if (manaGuardCoroutine != null) { StopCoroutine(manaGuardCoroutine); manaGuardCoroutine = null; }
+            TurnOffManaGuard();
+        }
+    }
+
+    void TurnOffManaGuard()
+    {
+        player.isManaGuardOn = false;
+
+        // 끌 때 확실하게 이펙트 비활성화
+        if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
+
+        if (manaGuardCoroutine != null)
+        {
+            StopCoroutine(manaGuardCoroutine);
+            manaGuardCoroutine = null;
         }
     }
 
     IEnumerator ManaGuardTimer()
     {
         yield return new WaitForSeconds(manaGuardDuration);
-        player.isManaGuardOn = false;
-        manaGuardCoroutine = null;
+        TurnOffManaGuard();
     }
 
     // ========================================================================
-    // [Lv4: 레이저 로직] (수정됨)
+    // [Lv4: 레이저 로직]
     // ========================================================================
     IEnumerator CastLaserSequence()
     {
-        // [중요] 시작할 때의 스케일(방향)을 저장
         Vector3 lockedScale = player.transform.localScale;
-
-        // [수정] 그림판에서 이미지를 돌렸으므로, 복잡한 계산 없이 현재 플레이어의 Scale 방향을 그대로 믿습니다.
-        // Scale X가 1이면 오른쪽(1), -1이면 왼쪽(-1)으로 설정
         float facingDir = Mathf.Sign(player.transform.localScale.x);
-
         Vector2 direction = new Vector2(facingDir, 0);
 
-        // 1. 플레이어 멈춤
         if (player != null)
         {
             player.isSkillActive = true;
             player.VelocityZero();
         }
 
-        // 2. 애니메이션 재생
         if (playerAnim != null) playerAnim.SetTrigger(AnimLaserShot);
         if (audioSource != null && laserSound != null) audioSource.PlayOneShot(laserSound);
 
         yield return new WaitForSeconds(laserCastDelay);
 
-        // 발사 위치 계산 (facingDir가 정직하게 플레이어 방향을 가리킴)
         Vector3 spawnPos = player.transform.position + new Vector3(laserOffset.x * facingDir, laserOffset.y, 0);
 
-        // 5. 레이저 생성 및 늘리기
         if (laserPrefab != null)
         {
             GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
 
-            // 레이저 회전 (Pivot: Left 기준이라고 가정)
-            // 오른쪽(1)이면 0도, 왼쪽(-1)이면 180도 회전
             if (facingDir < 0) laser.transform.rotation = Quaternion.Euler(0, 180, 0);
             else laser.transform.rotation = Quaternion.identity;
 
@@ -275,13 +266,11 @@ public class StaffSkillManager : MonoBehaviour
                 if (currentLength > targetDistance) currentLength = targetDistance;
                 laser.transform.localScale = new Vector3(currentLength, laserThickness, 1);
 
-                // 늘어나는 동안 플레이어 방향 고정
                 if (player != null) player.transform.localScale = lockedScale;
 
                 yield return null;
             }
 
-            // 데미지 판정
             Vector2 boxCenter = (Vector2)spawnPos + (direction * (targetDistance / 2));
             Vector2 boxSize = new Vector2(targetDistance, laserThickness);
             debugBoxCenter = boxCenter; debugBoxSize = boxSize;
@@ -293,7 +282,6 @@ public class StaffSkillManager : MonoBehaviour
                 if (enemy != null) enemy.TakeDamage(laserDamage);
             }
 
-            // 유지 시간
             float elapsed = 0f;
             while (elapsed < laserDuration)
             {
@@ -308,7 +296,9 @@ public class StaffSkillManager : MonoBehaviour
         if (player != null) player.isSkillActive = false;
     }
 
-    // --- Lv5: 시간 정지 ---
+    // ========================================================================
+    // [Lv5: 시간 정지]
+    // ========================================================================
     IEnumerator CastTimeStop()
     {
         if (isTimeStopped) yield break;

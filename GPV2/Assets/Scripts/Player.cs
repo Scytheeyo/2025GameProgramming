@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
     public AudioSource DoorOpen;
     public AudioSource normalAttack;
     public Weapon EquippedWeapon { get { return equippedWeapon; } }
-    
+
     [Header("무기 데이터베이스")]
     public List<GameObject> allWeaponPrefabs = new List<GameObject>();
 
@@ -113,7 +113,28 @@ public class Player : MonoBehaviour
     public GameObject optionWindow;
     private Animator optionUIAnimator;
 
-    private static readonly int AnimStrongAttack = Animator.StringToHash("doStrongAttack");
+    // ---------------------------------------------------------
+    // 애니메이터 파라미터 해시값 캐싱
+    // ---------------------------------------------------------
+    private static readonly int AnimIsMoving = Animator.StringToHash("isMoving");
+    private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
+    private static readonly int AnimDoJump = Animator.StringToHash("doJump");
+    private static readonly int AnimDoLand = Animator.StringToHash("doLand");
+    private static readonly int AnimDoAttack1 = Animator.StringToHash("doAttack1");
+    private static readonly int AnimDoAttack2 = Animator.StringToHash("doAttack2");
+    private static readonly int AnimDoShoot = Animator.StringToHash("doShoot");
+    private static readonly int AnimDoStrongAttack = Animator.StringToHash("doStrongAttack");
+
+    // 스킬 관련 파라미터
+    private static readonly int AnimCharge = Animator.StringToHash("Charge");
+    private static readonly int AnimSlash = Animator.StringToHash("Slash");
+    private static readonly int AnimRecovery = Animator.StringToHash("Recovery");
+    private static readonly int AnimSwordAura = Animator.StringToHash("SwordAura");
+    private static readonly int AnimGuardBreak = Animator.StringToHash("GuardBreak");
+    private static readonly int AnimTimeStop = Animator.StringToHash("TimeStop");
+    private static readonly int AnimLaserShot = Animator.StringToHash("LaserShot");
+    private static readonly int AnimExplosion = Animator.StringToHash("Explosion");
+
 
     void Start()
     {
@@ -165,21 +186,17 @@ public class Player : MonoBehaviour
     {
         if (isDead) return;
 
-        // ---------------------------------------------------------
-        // [수정됨] 스킬 사용 중이면 이동 입력 차단
-        // ---------------------------------------------------------
         if (isSkillActive)
         {
-            anim.SetBool("isMoving", false);
+            anim.SetBool(AnimIsMoving, false);
             return;
         }
-        // ---------------------------------------------------------
 
         HandleUIInput();
 
         if (IsUIOpen() || IsPointerOverUI())
         {
-            anim.SetBool("isMoving", false);
+            anim.SetBool(AnimIsMoving, false);
             return;
         }
 
@@ -187,18 +204,18 @@ public class Player : MonoBehaviour
 
         CheckDeckSynergy();
 
-        if (Input.GetButtonDown("Jump")) 
-        { 
-            if (isGrounded || currentJumpCount < maxJumpCount) DoJump(); 
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isGrounded || currentJumpCount < maxJumpCount) DoJump();
         }
 
-        if (Input.GetButtonDown("Fire1")) 
-        { 
-            if (!isSwinging && equippedWeapon != null) 
-            { 
-                isCharging = true; 
-                fire1HoldTime = 0f; 
-            } 
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (equippedWeapon != null)
+            {
+                isCharging = true;
+                fire1HoldTime = 0f;
+            }
         }
 
         if (isCharging)
@@ -206,7 +223,6 @@ public class Player : MonoBehaviour
             fire1HoldTime += Time.deltaTime;
             float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-            // [병합] 무기 레벨 체크(HEAD)와 시간/null 체크(cyj) 통합
             if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2 && chargeEffectPrefab != null && effectiveTime < 2f)
             {
                 chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
@@ -228,22 +244,49 @@ public class Player : MonoBehaviour
                 if (chargeEffectInstance != null) { Destroy(chargeEffectInstance); chargeEffectInstance = null; }
                 if (chargedEffectInstance != null) { Destroy(chargedEffectInstance); chargedEffectInstance = null; }
 
-                if (!isSwinging && equippedWeapon != null)
+                if (equippedWeapon != null)
                 {
                     float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
-                    
-                    // 강공격 조건 충족 시
+
+                    // 강공격 (차징) 조건 우선 체크
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
-                        currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
-                        StartStrongAttack(); // cyj 버전의 코루틴 방식 사용
-                        currentAttackMultiplier = 1.0f;
+                        // 강공격은 스윙 중이 아닐 때만 발동
+                        if (!isSwinging)
+                        {
+                            currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
+                            StartStrongAttack();
+                            currentAttackMultiplier = 1.0f;
+                        }
                     }
                     else
                     {
-                        normalAttack.Play();
-                        currentAttackMultiplier = 1.0f;
-                        StartCoroutine(SwingWeapon());
+                        // [수정된 부분] 콤보 및 기본 공격 로직
+
+                        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+                        // 1. 현재 'Alice_Attack1' 애니메이션이 재생 중이라면 -> 2타(콤보) 발동
+                        // (isSwinging 여부와 상관없이 애니메이션 상태를 최우선으로 확인)
+                        if (stateInfo.IsName("Alice_Attack1"))
+                        {
+                            Debug.Log("Combo Triggered: Attack 1 -> Attack 2");
+                            anim.SetTrigger(AnimDoAttack2);
+
+                            // 무기 오브젝트의 물리적 회전도 다시 시작
+                            StopCoroutine("SwingWeapon");
+                            StartCoroutine(SwingWeapon());
+                        }
+                        // 2. 공격 중이 아닐 때 (기본 상태) -> 1타 발동
+                        // (혹시 모를 중복 실행 방지를 위해 Attack2 상태도 아닐 때만)
+                        else if (!isSwinging && !stateInfo.IsName("Alice_Attack2"))
+                        {
+                            Debug.Log("Normal Attack: Attack 1");
+                            normalAttack.Play();
+                            currentAttackMultiplier = 1.0f;
+
+                            anim.SetTrigger(AnimDoAttack1);
+                            StartCoroutine(SwingWeapon());
+                        }
                     }
                 }
             }
@@ -257,16 +300,13 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z) && hasUltimate) CastUltimate();
 
-        anim.SetBool("isMoving", hMove != 0);
-        anim.SetBool("isGrounded", isGrounded);
+        anim.SetBool(AnimIsMoving, hMove != 0);
+        anim.SetBool(AnimIsGrounded, isGrounded);
         if (Input.GetKeyDown(KeyCode.W) && isAtEvent) Interaction = true;
     }
 
     void FixedUpdate()
     {
-        // ---------------------------------------------------------
-        // [수정됨] 스킬 사용 중, UI 오픈 시 물리 이동 및 Flip 차단
-        // ---------------------------------------------------------
         if (isDead || IsUIOpen() || isSkillActive)
         {
             if (!isSkillActive) rb.velocity = Vector2.zero;
@@ -347,7 +387,11 @@ public class Player : MonoBehaviour
     {
         if (anim != null)
         {
-            anim.ResetTrigger("doAttack");
+            anim.ResetTrigger(AnimDoAttack1);
+            anim.ResetTrigger(AnimDoAttack2);
+            anim.ResetTrigger(AnimDoShoot);
+            anim.ResetTrigger(AnimDoStrongAttack);
+            anim.ResetTrigger(AnimCharge);
         }
         isCharging = false;
         isSwinging = false;
@@ -478,6 +522,8 @@ public class Player : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(new Vector2(0, finalJumpForce), ForceMode2D.Impulse);
 
+        anim.SetTrigger(AnimDoJump);
+
         isGrounded = false;
         currentJumpCount++;
     }
@@ -514,6 +560,8 @@ public class Player : MonoBehaviour
 
         GameObject prefab = GetCurrentProjectilePrefab();
         if (prefab == null) return;
+
+        anim.SetTrigger(AnimDoShoot);
 
         GameObject projectileObject = Instantiate(prefab, firePoint.position, Quaternion.identity);
         Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
@@ -612,7 +660,7 @@ public class Player : MonoBehaviour
     IEnumerator StrongAttackSequence()
     {
         isSwinging = true;
-        anim.SetTrigger(AnimStrongAttack);
+        anim.SetTrigger(AnimDoStrongAttack);
         if (StrongAttack != null) StrongAttack.Play();
 
         yield return new WaitForSeconds(0.15f);
@@ -638,7 +686,6 @@ public class Player : MonoBehaviour
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            // 인터페이스와 직접 참조 방식 모두 호환
             IDamageable target = enemyCollider.GetComponent<IDamageable>();
             if (target != null)
             {
@@ -646,7 +693,6 @@ public class Player : MonoBehaviour
             }
             else
             {
-                // Fallback: cyj 브랜치의 EnemyController_2D 방식
                 var enemy = enemyCollider.GetComponent<EnemyController_2D>();
                 if (enemy != null) enemy.SendMessage("TakeDamage", finalDamage, SendMessageOptions.DontRequireReceiver);
             }
@@ -659,13 +705,13 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 접지 판정 개선 (cyj 버전)
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
         {
             if (collision.GetContact(0).normal.y > 0.7f)
             {
                 isGrounded = true;
                 currentJumpCount = 0;
+                anim.SetTrigger(AnimDoLand);
             }
         }
     }
@@ -685,9 +731,7 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Weapon"))
         {
             Weapon w = other.GetComponent<Weapon>();
-            
-            // [병합 해결] temp_kyr의 스프라이트 전달 방식 사용
-            // AddItemToInventory 함수 내부에서 스프라이트 등록과 인벤토리 추가를 모두 처리하므로 HEAD의 중복 로직 제거
+
             string weaponName = w.gameObject.name.Replace("(Clone)", "").Trim();
             SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
             AddItemToInventory(weaponName, 1, sr != null ? sr.sprite : null);
@@ -696,7 +740,6 @@ public class Player : MonoBehaviour
         }
         else if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
-            // [병합] cyj 버전의 포션 습득 및 인벤토리 등록 로직 통합
             string itemTag = other.tag;
             if (itemTag == "RedPotion") TakeRedPotion();
             else if (itemTag == "BluePotion") TakeBluePotion();
@@ -773,7 +816,6 @@ public class Player : MonoBehaviour
     void Die()
     {
         isDead = true;
-        // anim.SetTrigger("doDie");
         Debug.Log("플레이어 사망");
     }
 
@@ -826,13 +868,11 @@ public class Player : MonoBehaviour
 
     public void AddItemToInventory(string itemName, int amount, Sprite itemSprite = null)
     {
-        // 1. 스프라이트 정보가 같이 들어왔다면 등록 (OnTriggerEnter2D 로직 통합)
         if (itemSprite != null && !knownItemSprites.ContainsKey(itemName))
         {
             knownItemSprites.Add(itemName, itemSprite);
         }
 
-        // 2. 인벤토리 개수 추가
         if (inventory.ContainsKey(itemName))
         {
             inventory[itemName] += amount;
@@ -842,7 +882,6 @@ public class Player : MonoBehaviour
             inventory.Add(itemName, amount);
         }
 
-        // 3. UI 갱신
         if (inventoryUIManager != null)
         {
             inventoryUIManager.RefreshInventoryUI();
@@ -874,7 +913,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // HEAD의 무기 장착 로직
             GameObject weaponPrefab = allWeaponPrefabs.Find(w => w.name == itemTag);
 
             if (weaponPrefab != null)
@@ -924,4 +962,17 @@ public class Player : MonoBehaviour
             Debug.Log(newCard.suit + " " + newCard.number + " 카드는 이미 보유 중이라 무시합니다.");
         }
     }
+
+    // --------------------------------------------------------------------------------
+    // 스킬 매니저나 외부 스크립트에서 호출할 애니메이션 트리거 메서드들
+    // --------------------------------------------------------------------------------
+
+    public void TriggerSlash() { anim.SetTrigger(AnimSlash); }
+    public void TriggerCharge() { anim.SetTrigger(AnimCharge); }
+    public void TriggerRecovery() { anim.SetTrigger(AnimRecovery); }
+    public void TriggerSwordAura() { anim.SetTrigger(AnimSwordAura); }
+    public void TriggerGuardBreak() { anim.SetTrigger(AnimGuardBreak); }
+    public void TriggerTimeStop() { anim.SetTrigger(AnimTimeStop); }
+    public void TriggerLaserShot() { anim.SetTrigger(AnimLaserShot); }
+    public void TriggerExplosion() { anim.SetTrigger(AnimExplosion); }
 }
