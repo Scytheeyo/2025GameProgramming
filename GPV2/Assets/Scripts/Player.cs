@@ -535,7 +535,7 @@ public class Player : MonoBehaviour
         attackHitbox.SetActive(false);
     }
 
-    private void EquipWeapon(Weapon w)
+    public void EquipWeapon(Weapon w)
     {
         if (equippedWeapon != null) Destroy(equippedWeapon.gameObject);
 
@@ -543,7 +543,11 @@ public class Player : MonoBehaviour
         if (w != null) w.SetOwner(this);
 
         w.transform.SetParent(swordSlot);
-
+        SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.enabled = false;
+        }
         if (w.weaponType == WeaponType.Ranged)
             w.transform.localPosition = new Vector3(0.35f, 0.1f, 0f);
         else
@@ -681,19 +685,12 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Weapon"))
         {
             Weapon w = other.GetComponent<Weapon>();
-
-            // [병합] HEAD의 인벤토리 및 도감 등록 로직
+            
+            // [병합 해결] temp_kyr의 스프라이트 전달 방식 사용
+            // AddItemToInventory 함수 내부에서 스프라이트 등록과 인벤토리 추가를 모두 처리하므로 HEAD의 중복 로직 제거
             string weaponName = w.gameObject.name.Replace("(Clone)", "").Trim();
             SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
-
-            if (sr != null && !knownItemSprites.ContainsKey(weaponName))
-            {
-                knownItemSprites.Add(weaponName, sr.sprite);
-            }
-            if (!inventory.ContainsKey(weaponName))
-            {
-                AddItemToInventory(weaponName, 1);
-            }
+            AddItemToInventory(weaponName, 1, sr != null ? sr.sprite : null);
 
             if (w != null && w != equippedWeapon) EquipWeapon(w);
         }
@@ -827,10 +824,29 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void AddItemToInventory(string itemName, int amount)
+    public void AddItemToInventory(string itemName, int amount, Sprite itemSprite = null)
     {
-        if (inventory.ContainsKey(itemName)) inventory[itemName] += amount;
-        else inventory.Add(itemName, amount);
+        // 1. 스프라이트 정보가 같이 들어왔다면 등록 (OnTriggerEnter2D 로직 통합)
+        if (itemSprite != null && !knownItemSprites.ContainsKey(itemName))
+        {
+            knownItemSprites.Add(itemName, itemSprite);
+        }
+
+        // 2. 인벤토리 개수 추가
+        if (inventory.ContainsKey(itemName))
+        {
+            inventory[itemName] += amount;
+        }
+        else
+        {
+            inventory.Add(itemName, amount);
+        }
+
+        // 3. UI 갱신
+        if (inventoryUIManager != null)
+        {
+            inventoryUIManager.RefreshInventoryUI();
+        }
     }
 
     public void UpdateGamePauseState()
