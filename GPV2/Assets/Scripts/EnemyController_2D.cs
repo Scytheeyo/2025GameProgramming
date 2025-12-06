@@ -52,8 +52,14 @@ public class EnemyController_2D : MonoBehaviour
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) player = p.transform;
-            else Debug.LogError("씬에 'Player' 태그를 가진 오브젝트가 없습니다!");
+            if (p != null)
+            {
+                player = p.transform.Find("PlayerObject");
+            }
+            else
+            {
+                Debug.LogError("씬에 'Player' 태그를 가진 오브젝트가 없습니다!");
+            }
         }
 
         rb = GetComponent<Rigidbody2D>();
