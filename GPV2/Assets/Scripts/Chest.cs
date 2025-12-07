@@ -27,6 +27,7 @@ public class Chest : MonoBehaviour
             if (player.Interaction && !choicePanel.activeSelf)
             {
                 animator.SetBool("Open", true);
+                player.Interaction = false;
             }
         }
     }
