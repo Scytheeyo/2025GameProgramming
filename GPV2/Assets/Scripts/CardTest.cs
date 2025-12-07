@@ -40,4 +40,6 @@ public class CardTest : EnemyController_2D
     }
 
     protected override void Update(){ }
+
+    public override void Die() { }
 }
