@@ -162,7 +162,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9249eef789208174b8e5f4cbdac8df03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
 --- !u!1 &3989535347563536464
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,7 +537,7 @@ MonoBehaviour:
   timeStopManaCost: 1
   timeStopDuration: 10
   fadeDuration: 1
-  timeStopSound: {fileID: 8300000, guid: 053298f60cd0a0d42b46eeaea7fe8a8b, type: 3}
+  timeStopSound: {fileID: 8300000, guid: 333118c2d42ba86428b8134cc3cc420f, type: 3}
   timeStopOverlay: {fileID: 0}
   TimeStopEffect: {fileID: 6772283622003340269, guid: 70692f01ce0495440acf36b532507ab3, type: 3}
   laserLine: {fileID: 0}
@@ -587,6 +586,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3989535347859282008}
+  - component: {fileID: 1393382874}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -610,6 +610,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1393382874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3989535347859282009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de31cdd3b651e044a8395a5c758cdc06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1505511392
 PrefabInstance:
   m_ObjectHideFlags: 0
