@@ -161,6 +161,7 @@ MonoBehaviour:
   - {fileID: 8626722652616571629}
   exitDoors:
   - {fileID: 54749249723826578}
+  roomID: 0
 --- !u!1 &550374352175218120
 GameObject:
   m_ObjectHideFlags: 0
@@ -4625,6 +4626,10 @@ PrefabInstance:
     - target: {fileID: 1046916423244976108, guid: 982d24b96012d2943bbadda696dda9d6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6553788577630798298, guid: 982d24b96012d2943bbadda696dda9d6, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 982d24b96012d2943bbadda696dda9d6, type: 3}
