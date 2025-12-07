@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Boss_CardCaptain : MonoBehaviour
+public class Boss_CardCaptain : MonoBehaviour, IDamageable
 {
     [Header("기본 설정")]
     public float moveSpeed = 2.5f;
@@ -46,6 +46,12 @@ public class Boss_CardCaptain : MonoBehaviour
         if (rb != null) rb.velocity = Vector2.zero;
     }
 
+    public void TakePercentDamage(float percent)
+    {
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
+    }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
