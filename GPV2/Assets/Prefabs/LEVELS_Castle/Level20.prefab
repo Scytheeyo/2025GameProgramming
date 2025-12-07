@@ -243,6 +243,7 @@ MonoBehaviour:
   entrancePoint: {fileID: 862718920793661975}
   entranceDoors: []
   exitDoors: []
+  roomID: 0
 --- !u!1 &4043030961505224096
 GameObject:
   m_ObjectHideFlags: 0
@@ -3558,7 +3559,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -2038067755
+  m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 9d1008c9bce9f2b4d997a9a22fe79076, type: 3}
@@ -3627,6 +3628,10 @@ PrefabInstance:
     - target: {fileID: 5484006382098467763, guid: 21a5ca09e543c4d4cb857986aca09527, type: 3}
       propertyPath: m_Name
       value: QueenOfSpade
+      objectReference: {fileID: 0}
+    - target: {fileID: 5484006382098467763, guid: 21a5ca09e543c4d4cb857986aca09527, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5484006382098467773, guid: 21a5ca09e543c4d4cb857986aca09527, type: 3}
       propertyPath: m_RootOrder
