@@ -342,6 +342,14 @@ public class Boss_HeartQueen : MonoBehaviour, IDamageable
         animator.SetTrigger("Die");
         rb.velocity = Vector2.zero;
         if (myCollider != null) myCollider.enabled = false;
+
+        IEnumerator TransitionToEndingScene()
+        {
+            yield return new WaitForSeconds(2.0f);
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Ending");
+        }
+        StartCoroutine(TransitionToEndingScene());
     }
 
     void OnDrawGizmos()
