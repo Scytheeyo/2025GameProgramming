@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SwordSkillManager : MonoBehaviour
 {
@@ -222,12 +223,33 @@ public class SwordSkillManager : MonoBehaviour
     {
         Camera cam = Camera.main;
         if (cam == null) return;
-        EnemyController_2D[] allEnemies = FindObjectsOfType<EnemyController_2D>();
-        foreach (var enemy in allEnemies)
+
+        Vector2 min = cam.ViewportToWorldPoint(new Vector3(0, 0, 0));
+        Vector2 max = cam.ViewportToWorldPoint(new Vector3(1, 1, 0));
+
+        Collider2D[] hits = Physics2D.OverlapAreaAll(min, max);
+        HashSet<GameObject> processedObjects = new HashSet<GameObject>();
+        foreach (Collider2D hit in hits)
         {
-            if (enemy == null || enemy.isBoss) continue;
-            Vector3 viewPos = cam.WorldToViewportPoint(enemy.transform.position);
-            if (viewPos.x >= -0.1f && viewPos.x <= 1.1f && viewPos.y >= -0.1f && viewPos.y <= 1.1f) enemy.Die();
+            if (processedObjects.Contains(hit.gameObject)) continue;
+            processedObjects.Add(hit.gameObject);
+            IDamageable target = hit.GetComponent<IDamageable>();
+            if (target != null)
+            {
+                EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
+                if (enemy == null) enemy = hit.GetComponentInParent<EnemyController_2D>();
+                if (enemy != null)
+                {
+                    if (!enemy.isBoss)
+                    {
+                        enemy.Die();
+                    }
+                }
+                else
+                {
+                    target.TakePercentDamage(0.5f);
+                }
+            }
         }
     }
 
