@@ -155,7 +155,7 @@ public class Boss_HeartQueen : MonoBehaviour, IDamageable
         }
 
         // ���� ���� �ߵ� üũ
-        if (currentHealth <= nextJumpHealth)
+        if (currentHealth <= nextJumpHealth && 100 <= currentHealth )
         {
             nextJumpHealth -= 100;
             StopAllCoroutines();
@@ -342,6 +342,13 @@ public class Boss_HeartQueen : MonoBehaviour, IDamageable
         animator.SetTrigger("Die");
         rb.velocity = Vector2.zero;
         if (myCollider != null) myCollider.enabled = false;
+
+        IEnumerator TransitionToEndingScene()
+        {
+            yield return new WaitForSeconds(2.0f);
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Ending");
+        }
+        StartCoroutine(TransitionToEndingScene());
     }
 
     void OnDrawGizmos()
