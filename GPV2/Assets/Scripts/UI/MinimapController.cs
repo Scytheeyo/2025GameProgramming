@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MinimapController : MonoBehaviour
 {
@@ -23,10 +24,44 @@ public class MinimapController : MonoBehaviour
         if (instance == null) instance = this;
     }
 
-    void Start() { Invoke(nameof(GenerateMinimap), 0.2f); }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void Start()
+    {
+        FindAndInitMapGenerator();
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FindAndInitMapGenerator();
+    }
+
+    void FindAndInitMapGenerator()
+    {
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
+
+        CancelInvoke(nameof(GenerateMinimap));
+        Invoke(nameof(GenerateMinimap), 0.2f);
+    }
 
     public void GenerateMinimap()
     {
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
+
         if (mapGenerator == null || mapGenerator.room1_Start == null) return;
 
         foreach (Transform child in mapContainer) Destroy(child.gameObject);
@@ -49,7 +84,6 @@ public class MinimapController : MonoBehaviour
             {
                 uiScript.InitState();
 
-                // 방 종류 설정 (보스/아이템 등)
                 if (room == mapGenerator.room10_End) uiScript.SetRoomType(1);
                 else if (mapGenerator.typeC_Rooms.Contains(room)) uiScript.SetRoomType(2);
                 else uiScript.SetRoomType(0);
@@ -59,13 +93,9 @@ public class MinimapController : MonoBehaviour
         }
 
         UpdateBridges();
-        // UI 생성 직후 시작 방 갱신
         OnPlayerEnterRoom(mapGenerator.room1_Start);
     }
 
-    // =================================================================================
-    // [수정됨] 좌표 계산 알고리즘 (대각선 배치 제거 -> 직각 배치 사용)
-    // =================================================================================
     void CalculateCoordinates(Room startRoom)
     {
         Queue<(Room room, Vector2Int pos)> queue = new Queue<(Room, Vector2Int)>();
@@ -91,39 +121,28 @@ public class MinimapController : MonoBehaviour
 
                 Vector2Int nextPos = curPos;
 
-                // -------------------------------------------------------------
-                // ★ [핵심 수정] 배치 규칙 변경
-                // -------------------------------------------------------------
-
-                // 1. 합류점 (PreEnd): 중앙 라인 복귀 시도
                 if (nextRoom == mapGenerator.room9_PreEnd)
                 {
-                    // 왼쪽이나 오른쪽에서 왔다면 다시 0축으로, 높이는 하나 위로
                     nextPos = new Vector2Int(0, curPos.y + 1);
                 }
-                // 2. 분기점 (Splitter - TypeA[0]): 대각선 대신 완전 좌/우로 벌림
                 else if (mapGenerator.typeA_Rooms.Count > 0 && curRoom == mapGenerator.typeA_Rooms[0])
                 {
-                    if (i == 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y); // 왼쪽 (-1, 0)
-                    else nextPos = new Vector2Int(curPos.x + 1, curPos.y); // 오른쪽 (+1, 0)
+                    if (i == 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y);
+                    else nextPos = new Vector2Int(curPos.x + 1, curPos.y);
                 }
-                // 3. 그 외 일반 방들 (진행 중)
                 else
                 {
-                    // 0번 출구 (직진): 위로 쌓기 (Y + 1)
                     if (i == 0)
                     {
                         nextPos = new Vector2Int(curPos.x, curPos.y + 1);
                     }
-                    // 1번 출구 (옆길/막다른 방): 현재 진행 방향 바깥으로 벌리기
                     else
                     {
-                        if (curPos.x < 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y); // 왼쪽이면 더 왼쪽
-                        else nextPos = new Vector2Int(curPos.x + 1, curPos.y); // 오른쪽이면 더 오른쪽
+                        if (curPos.x < 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y);
+                        else nextPos = new Vector2Int(curPos.x + 1, curPos.y);
                     }
                 }
 
-                // 좌표 충돌 방지 및 등록
                 if (!roomToCoord.ContainsKey(nextRoom))
                 {
                     roomToCoord.Add(nextRoom, nextPos);
@@ -140,7 +159,6 @@ public class MinimapController : MonoBehaviour
         {
             Vector2Int pos = pair.Key;
             MinimapRoomUI ui = pair.Value;
-            // 상하좌우 확인
             bool up = coordToUI.ContainsKey(pos + Vector2Int.up);
             bool down = coordToUI.ContainsKey(pos + Vector2Int.down);
             bool left = coordToUI.ContainsKey(pos + Vector2Int.left);
@@ -164,7 +182,6 @@ public class MinimapController : MonoBehaviour
         currentUI.SetVisited();
         currentUI.SetPlayerIcon(true);
 
-        // 상하좌우 이웃 밝히기 (이제 분기점이 좌/우 이므로 여기서 감지됨!)
         RevealNeighbor(currentPlayerCoord + Vector2Int.up);
         RevealNeighbor(currentPlayerCoord + Vector2Int.down);
         RevealNeighbor(currentPlayerCoord + Vector2Int.left);
