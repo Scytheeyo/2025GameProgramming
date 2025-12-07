@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Boss_HeartQueen : MonoBehaviour
+public class Boss_HeartQueen : MonoBehaviour, IDamageable
 {
     [Header("�⺻ ����")]
     public float moveSpeed = 3f;

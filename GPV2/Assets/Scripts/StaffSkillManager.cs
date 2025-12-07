@@ -176,13 +176,19 @@ public class StaffSkillManager : MonoBehaviour
                 Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer);
                 foreach (Collider2D hit in hits)
                 {
-                    EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
-                    if (enemy != null)
+                    IDamageable target = hit.GetComponent<IDamageable>();
+
+                    if (target != null)
                     {
-                        enemy.TakeDamage(explosionDamage);
-                        float pushDirX = (enemy.transform.position.x > transform.position.x) ? 1f : -1f;
-                        Vector2 knockbackDir = new Vector2(pushDirX, 0.5f).normalized;
-                        enemy.BeginKnockback(knockbackDir, explosionKnockback);
+                        target.TakeDamage(explosionDamage);
+
+                        EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
+                        if (enemy != null)
+                        {
+                            float pushDirX = (enemy.transform.position.x > transform.position.x) ? 1f : -1f;
+                            Vector2 knockbackDir = new Vector2(pushDirX, 0.5f).normalized;
+                            enemy.BeginKnockback(knockbackDir, explosionKnockback);
+                        }
                     }
                 }
             }
@@ -285,8 +291,8 @@ public class StaffSkillManager : MonoBehaviour
             Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, enemyLayer);
             foreach (Collider2D col in hits)
             {
-                EnemyController_2D enemy = col.GetComponent<EnemyController_2D>();
-                if (enemy != null) enemy.TakeDamage(laserDamage);
+                IDamageable target = col.GetComponent<IDamageable>();
+                if (target != null) target.TakeDamage(laserDamage);
             }
 
             float elapsed = 0f;

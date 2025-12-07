@@ -386,7 +386,7 @@ MonoBehaviour:
   strongAttackRadius: 2
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 576
   chargeEffectPrefab: {fileID: 4320417006652936281, guid: 1fdb3ad5b6b52914abe2ab3eff503c63, type: 3}
   chargedEffectPrefab: {fileID: 2303079793076922087, guid: e7b3796c6cea77b4d9fb7db5456af87e, type: 3}
   StrongAttack: {fileID: 0}
