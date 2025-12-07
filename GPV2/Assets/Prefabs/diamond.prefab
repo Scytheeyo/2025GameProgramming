@@ -230,6 +230,9 @@ MonoBehaviour:
   player: {fileID: 0}
   attackPoint: {fileID: 5117330592053247516}
   dropItemPrefab: {fileID: 0}
+  enemySuit: 2
+  cardDropChance: 1
+  maxCardNumber: 13
   isDead: 0
   dashSpeed: 20
   dashDistance: 5

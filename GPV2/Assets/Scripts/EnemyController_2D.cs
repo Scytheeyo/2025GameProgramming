@@ -11,7 +11,7 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
     [Header("Settings")]
     public float moveSpeed = 3f;
     public float chaseRange = 10f;
-    public float attackRange = 1.0f; // [신규] 공격 판정 범위 (Gizmos로 확인 가능)
+    public float attackRange = 1.0f; // 공격 판정 범위 (반지름)
     public float attackCooldown = 1f;
     public int damage = 10;
 
@@ -22,8 +22,14 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
 
     [Header("References")]
     public Transform player;
-    public Transform attackPoint;
+    public Transform attackPoint; // [유지] 자식 클래스(클로버 등)에서 발사 위치로 사용
     public GameObject dropItemPrefab;
+
+    [Header("Card Drop Settings")]
+    [Tooltip("이 적이 주는 카드의 문양 (기본: 스페이드)")]
+    public CardSuit enemySuit = CardSuit.Spade;
+    public float cardDropChance = 1.0f;
+    public int maxCardNumber = 13;
 
     protected Rigidbody2D rb;
     protected Animator animator;
@@ -35,6 +41,12 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
     protected bool playerInAttackRange = false;
     protected float lastAttackTime = 0f;
 
+    // [유지] AttackPoint 반전용 변수
+    private float attackPointAbsX;
+
+    protected bool isKnockbacked = false;
+    protected bool isFrozen = false;
+
     protected virtual void Start()
     {
         if (player == null)
@@ -42,7 +54,7 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null)
             {
-                player = p.transform;
+                player = p.transform.Find("PlayerObject");
             }
             else
             {
@@ -56,19 +68,24 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
         myCollider = GetComponent<Collider2D>();
         currentHealth = maxHealth;
 
+        // [유지] AttackPoint가 없으면 자기 자신을 할당 (에러 방지)
         if (attackPoint == null) attackPoint = transform;
+
+        // [유지] 초기 X 거리 저장 (반전을 위해)
+        attackPointAbsX = Mathf.Abs(attackPoint.localPosition.x);
     }
 
     protected virtual void Update()
     {
         if (isDead || player == null) return;
+        if (isKnockbacked || isFrozen) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
 
-        // 공격 중이 아닐 때만 바라보는 방향 전환
         if (!isAttacking)
         {
             sr.flipX = (player.position.x < transform.position.x);
+            // [유지] 방향에 따라 AttackPoint 반전 (클로버 등이 올바르게 쏘기 위해 필요)
             UpdateAttackPointDirection();
         }
 
@@ -78,7 +95,8 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
             return;
         }
 
-        if (playerInAttackRange)
+        // 거리 기반 공격 판정 (Collider Trigger 대신 사용)
+        if (distance <= attackRange)
         {
             TryAttack();
         }
@@ -91,8 +109,16 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
             Idle();
         }
 
-        // 테스트용
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
+    }
+
+    // [유지] AttackPoint 위치 반전 로직
+    protected void UpdateAttackPointDirection()
+    {
+        if (attackPoint == null || attackPoint == transform) return;
+
+        float newX = sr.flipX ? -attackPointAbsX : attackPointAbsX;
+        attackPoint.localPosition = new Vector3(newX, attackPoint.localPosition.y, 0);
     }
 
     protected void Idle()
@@ -113,45 +139,10 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
         rb.velocity = new Vector2(dir.x * moveSpeed, rb.velocity.y);
     }
 
-    public void Heal(int amount)
-    {
-        if (isDead) return;
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        Debug.Log($"{name}이(가) {amount} 회복됨. 현재 체력: {currentHealth}/{maxHealth}");
-    }
-
-    protected void UpdateAttackPointDirection()
-    {
-        if (attackPoint == null) return;
-        float xOffset = Mathf.Abs(attackPoint.localPosition.x);
-        attackPoint.localPosition = sr.flipX
-            ? new Vector3(-xOffset, attackPoint.localPosition.y, 0)
-            : new Vector3(xOffset, attackPoint.localPosition.y, 0);
-    }
-
-    protected virtual void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInAttackRange = true;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInAttackRange = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInAttackRange = false;
-        }
-    }
+    // Trigger 함수들은 거리 계산 방식으로 대체되었으나 호환성을 위해 남겨둠
+    protected virtual void OnTriggerEnter2D(Collider2D other) { if (other.CompareTag("Player")) playerInAttackRange = true; }
+    private void OnTriggerStay2D(Collider2D other) { if (other.CompareTag("Player")) playerInAttackRange = true; }
+    private void OnTriggerExit2D(Collider2D other) { if (other.CompareTag("Player")) playerInAttackRange = false; }
 
     void TryAttack()
     {
@@ -166,53 +157,41 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
     {
         isAttacking = true;
         rb.velocity = Vector2.zero;
-
         animator.SetBool("IsAttacking", true);
         animator.SetFloat("Speed", 0);
 
-        // 플레이어와 충돌 무시는 선택 사항 (필요 없으면 삭제 가능)
-        Collider2D playerCol = player.GetComponent<Collider2D>();
-        if (playerCol && myCollider)
-            Physics2D.IgnoreCollision(playerCol, myCollider, true);
+        // 충돌 무시 로직 제거됨 (플레이어가 통과 못함)
 
-        // 안전장치: 애니메이션 이벤트가 씹히거나 없을 때를 대비해 일정 시간 후 공격 상태 해제
         Invoke(nameof(EndAttack), 1.0f);
     }
 
-    // [신규] 애니메이션 이벤트에서 호출할 데미지 함수
+    // ------------------------------------------------------------------------
+    // [핵심 변경] 데미지 판정을 '몸통 중심(transform.position)'으로 변경
+    // ------------------------------------------------------------------------
     public void DealDamage()
     {
-        if (attackPoint == null) return;
-
-        // 1. 범위 내 모든 콜라이더 감지
-        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+        // AttackPoint 위치가 아니라, 내 몸(transform.position) 주변을 검사합니다.
+        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(transform.position, attackRange);
 
         foreach (Collider2D col in hitObjects)
         {
-            // 2. 태그 확인 (레이어 무시)
             if (col.CompareTag("Player"))
             {
-                // Debug.Log($"{name}이(가) 플레이어 공격! 데미지: {damage}");
                 col.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
             }
         }
     }
+    // ------------------------------------------------------------------------
 
     void EndAttack()
     {
         isAttacking = false;
         animator.SetBool("IsAttacking", false);
-
-        Collider2D playerCol = player.GetComponent<Collider2D>();
-        if (playerCol && myCollider)
-            Physics2D.IgnoreCollision(playerCol, myCollider, false);
     }
 
-    // === 체력 및 사망 처리 ===
     public void TakeDamage(int dmg)
     {
         if (isDead) return;
-
         currentHealth -= dmg;
 
         if (gameObject.activeInHierarchy)
@@ -221,14 +200,8 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
             flashCoroutine = StartCoroutine(HitFlashRoutine());
         }
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            animator.SetTrigger("Hit");
-        }
+        if (currentHealth <= 0) Die();
+        else animator.SetTrigger("Hit");
     }
 
     protected virtual IEnumerator HitFlashRoutine()
@@ -246,7 +219,6 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-
         StopAllCoroutines();
         if (sr != null) sr.material.color = Color.white;
 
@@ -258,64 +230,63 @@ public class EnemyController_2D : MonoBehaviour, IDamageable
         rb.simulated = false;
         myCollider.enabled = false;
 
-        if (dropItemPrefab != null)
-            Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
+        GiveCardToPlayer();
+        DropItem();
     }
 
-    public void DestroyEnemy()
+    protected void GiveCardToPlayer()
     {
-        Destroy(gameObject);
+        if (player == null) return;
+        Player playerScript = player.GetComponent<Player>();
+        if (playerScript == null) return;
+
+        if (Random.value > cardDropChance) return;
+
+        int pickedNumber = GetWeightedRandomNumber(maxCardNumber);
+        CardData newCard = new CardData(enemySuit, pickedNumber);
+        playerScript.AddCardToCollection(newCard);
+
+        Debug.Log($"[적 처치] {enemySuit} {pickedNumber} 획득");
     }
 
-    public void DropItem()
+    int GetWeightedRandomNumber(int maxNum)
     {
-        if (dropItemPrefab != null)
-            Instantiate(dropItemPrefab, transform.position, Quaternion.identity);
+        int totalWeight = 0;
+        for (int i = 1; i <= maxNum; i++) totalWeight += (maxNum - i + 1);
+        int randomValue = Random.Range(0, totalWeight);
+        for (int i = 1; i <= maxNum; i++)
+        {
+            int weight = (maxNum - i + 1);
+            if (randomValue < weight) return i;
+            randomValue -= weight;
+        }
+        return 1;
     }
 
-    public void BeginKnockback(Vector2 direction, float force)
-    {
-        if (isBoss || isDead) return;
-        rb.AddForce(direction * force, ForceMode2D.Impulse);
-    }
+    public void DestroyEnemy() { Destroy(gameObject); }
+    public void DropItem() { if (dropItemPrefab != null) Instantiate(dropItemPrefab, transform.position, Quaternion.identity); }
+    public void BeginKnockback(Vector2 direction, float force) { if (!isBoss && !isDead && !isFrozen) StartCoroutine(KnockbackRoutine(direction, force)); }
+    private IEnumerator KnockbackRoutine(Vector2 direction, float force) { isKnockbacked = true; isAttacking = false; animator.SetBool("IsAttacking", false); direction.y = 0; direction.Normalize(); rb.velocity = Vector2.zero; rb.AddForce(direction * Mathf.Max(force, 30f), ForceMode2D.Impulse); yield return new WaitForSeconds(0.4f); rb.velocity = Vector2.zero; isKnockbacked = false; }
+    public void FreezeEnemy(float duration) { if (!isBoss && !isDead) StartCoroutine(FreezeRoutine(duration)); }
+    private IEnumerator FreezeRoutine(float duration) { isFrozen = true; bool temp = rb.isKinematic; rb.velocity = Vector2.zero; rb.isKinematic = true; if (animator) animator.speed = 0f; yield return new WaitForSeconds(duration); if (rb) rb.isKinematic = temp; if (animator) animator.speed = 1f; isFrozen = false; }
+    public void TakePercentDamage(float percent) { if (isDead) return; int dmg = Mathf.RoundToInt(maxHealth * percent); if (dmg < 1) dmg = 1; TakeDamage(dmg); }
+    public void Heal(int amount) { if (isDead) return; currentHealth = Mathf.Min(currentHealth + amount, maxHealth); }
 
-    public void TakePercentDamage(float percent)
-    {
-        if (isDead) return;
-        int dmg = Mathf.RoundToInt(maxHealth * percent);
-        if (dmg < 1) dmg = 1;
-        TakeDamage(dmg);
-    }
-
-    public void FreezeEnemy(float duration)
-    {
-        if (isBoss || isDead) return;
-        StartCoroutine(FreezeRoutine(duration));
-    }
-
-    private IEnumerator FreezeRoutine(float duration)
-    {
-        float originalSpeed = moveSpeed;
-        moveSpeed = 0f;
-        if (animator != null) animator.speed = 0f;
-
-        yield return new WaitForSeconds(duration);
-
-        moveSpeed = originalSpeed;
-        if (animator != null) animator.speed = 1f;
-    }
-
+    // [수정] Gizmos: 공격 범위(빨강)를 몸통 기준으로 그림
     void OnDrawGizmosSelected()
     {
-        // 추적 범위 (노란색)
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
 
-        // 공격 범위 (빨간색)
+        // 실제 데미지 판정 범위 (몸통 기준)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // (참고용) AttackPoint 위치 표시 (파란 점)
         if (attackPoint != null)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(attackPoint.position, 0.1f);
         }
     }
 }

@@ -5,240 +5,313 @@ using System.Collections.Generic;
 public class StaffSkillManager : MonoBehaviour
 {
     private Player player;
-    private AudioSource audioSource; 
+    private Animator playerAnim;
+    private AudioSource audioSource;
 
-    [Header("스킬 설정")]
-    public LayerMask enemyLayer; // 적 레이어 지정 필수
+    [Header("스킬 공통 설정")]
+    public LayerMask enemyLayer;
+    public LayerMask groundLayer;
 
+    [Header("스프라이트 설정 (중요)")]
+    [Tooltip("플레이어 캐릭터의 원본 그림이 왼쪽을 보고 있다면 체크하세요.")]
+    public bool defaultSpriteFaceLeft = true;
+
+    // ========================================================================
+    // [Lv2: 마력 폭발]
+    // ========================================================================
     [Header("Lv2: 마력 폭발")]
     public int explosionManaCost = 15;
-    public GameObject explosionProjectilePrefab; //Projectile 스크립트가 붙은 프리팹 연결
-    public float explosionKnockback = 15f;       //넉백 강도 설정
+    public int explosionDamage = 20;
+    public float explosionRadius = 3.0f;
+    public float explosionKnockback = 15f;
+    public AudioClip explosionSound;
+    public float explosionHitTiming = 0.2f;
 
+    // ========================================================================
+    // [Lv3: 마나 가드]
+    // ========================================================================
     [Header("Lv3: 마나 가드")]
     public float manaGuardDuration = 10f;
     public float manaGuardCostPerSec = 1f;
-    public GameObject guardShieldEffect; // 플레이어 주변 쉴드 이펙트
+    public GameObject guardShieldEffect;
     private Coroutine manaGuardCoroutine = null;
 
-    [Header("Lv4: 레이저")]
+    // ========================================================================
+    // [Lv4: 레이저 설정]
+    // ========================================================================
+    [Header("Lv4: 레이저 설정")]
     public int laserManaCost = 30;
     public int laserDamage = 50;
-    public float laserDuration = 0.3f;
-    public float laserRange = 12f;
-    public float laserWidth = 1f;
+    public float laserMaxRange = 12f;
+    public float laserDuration = 0.5f;
+    public float laserGrowSpeed = 50f;
+    public float laserCastDelay = 0.2f;
+    public float laserThickness = 1.0f;
+    public Vector2 laserOffset = new Vector2(0.5f, 0.2f);
     public AudioClip laserSound;
-    public LineRenderer laserLine; // 컴포넌트 필요
+    public GameObject laserPrefab;
+    private Vector2 debugBoxCenter;
+    private Vector2 debugBoxSize;
 
+    // ========================================================================
+    // [Lv5: 시간 정지]
+    // ========================================================================
     [Header("Lv5: 시간 정지")]
     public int timeStopManaCost = 60;
     public float timeStopDuration = 10f;
     private bool isTimeStopped = false;
-    public float fadeDuration = 1f;      
-    public AudioClip timeStopSound;         
+    public float fadeDuration = 1f;
+    public AudioClip timeStopSound;
     public CanvasGroup timeStopOverlay;
     public GameObject TimeStopEffect;
+
+    // 애니메이션 해시
+    private static readonly int AnimTimeStop = Animator.StringToHash("TimeStop");
+    private static readonly int AnimLaserShot = Animator.StringToHash("LaserShot");
+    private static readonly int AnimExplosion = Animator.StringToHash("Explosion");
+
+    // (사용 안 함, 호환성 유지용)
+    public LineRenderer laserLine;
+    public GameObject explosionProjectilePrefab;
 
     void Start()
     {
         player = GetComponent<Player>();
-
-        // 레이저 초기화
-        if (laserLine == null)
-        {
-            laserLine = gameObject.AddComponent<LineRenderer>();
-            laserLine.startWidth = laserWidth;
-            laserLine.endWidth = laserWidth;
-            laserLine.material = new Material(Shader.Find("Sprites/Default"));
-            laserLine.startColor = Color.cyan;
-            laserLine.endColor = Color.blue;
-            laserLine.enabled = false;
-        }
-
+        playerAnim = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) 
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+
+        //if (timeStopOverlay != null) timeStopOverlay.SetActive(false);
+        if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
+        if (laserLine != null) laserLine.enabled = false;
 
         if (timeStopOverlay != null)
         {
             timeStopOverlay.alpha = 0f;
             timeStopOverlay.gameObject.SetActive(true); // 오브젝트는 켜둬야 함
         }
-
-        if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
     }
 
     void Update()
     {
-        // 지팡이 계열 무기를 들고 있을 때만 스킬 사용 가능 체크 (옵션)
-        if (player.equippedWeapon == null || player.equippedWeapon.weaponType != WeaponType.Ranged) return;
+        // 무기 조건이 맞지 않으면 (무기 교체 등) 마나 가드를 강제 종료하고 리턴
+        if (player.EquippedWeapon == null || player.EquippedWeapon.weaponType != WeaponType.Ranged)
+        {
+            if (player.isManaGuardOn) TurnOffManaGuard();
+            return;
+        }
 
         CheckSkillInput();
 
         if (player.isManaGuardOn)
         {
-            player.mana -= manaGuardCostPerSec *Time.deltaTime ;
-
+            player.mana -= manaGuardCostPerSec * Time.deltaTime;
             if (player.mana <= 0)
             {
-                player.mana = 0; 
-                player.isManaGuardOn = false; 
-                if (manaGuardCoroutine != null)
-                {
-                    StopCoroutine(manaGuardCoroutine);
-                    manaGuardCoroutine = null;
-                }
+                player.mana = 0;
+                TurnOffManaGuard(); // 마나 부족 시 종료
             }
-        }
-
-        // 마나 가드 상태 시각적 표현 유지 (플레이어 위치 따라가기 등)
-        if (player.isManaGuardOn && guardShieldEffect != null)
-        {
-            guardShieldEffect.SetActive(true);
-        }
-        else if (!player.isManaGuardOn && guardShieldEffect != null)
-        {
-            guardShieldEffect.SetActive(false);
         }
     }
 
     void CheckSkillInput()
     {
-        if (player.EquippedWeapon == null || player.EquippedWeapon.weaponType != WeaponType.Ranged)
+        int level = player.EquippedWeapon.weaponLevel;
+
+        if (level >= 2 && Input.GetKeyDown(KeyCode.Alpha1))
         {
-            return; 
+            if (TryConsumeMana(explosionManaCost)) StartCoroutine(CastExplosionSequence());
         }
 
-        if (player.EquippedWeapon == null) return;
-
-
-        int currentWeaponLevel = player.EquippedWeapon.weaponLevel;
-
-
-
-        if (currentWeaponLevel >= 2 && Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (TryConsumeMana(explosionManaCost)) CastExplosion();
-        }
-
-        if (currentWeaponLevel >= 3 && Input.GetKeyDown(KeyCode.Alpha2))
+        if (level >= 3 && Input.GetKeyDown(KeyCode.Alpha2))
         {
             ToggleManaGuard();
         }
 
-        if (currentWeaponLevel >= 4 && Input.GetKeyDown(KeyCode.Alpha3))
+        if (level >= 4 && Input.GetKeyDown(KeyCode.Alpha3))
         {
-            if (TryConsumeMana(laserManaCost)) StartCoroutine(CastLaser());
+            if (TryConsumeMana(laserManaCost)) StartCoroutine(CastLaserSequence());
         }
 
-        if (currentWeaponLevel >= 5 && Input.GetKeyDown(KeyCode.Alpha4))
+        if (level >= 5 && Input.GetKeyDown(KeyCode.Alpha4))
         {
-            if (!isTimeStopped && TryConsumeMana(timeStopManaCost))
-                StartCoroutine(CastTimeStop());
+            if (!isTimeStopped && TryConsumeMana(timeStopManaCost)) StartCoroutine(CastTimeStop());
         }
     }
 
     bool TryConsumeMana(int cost)
     {
-        if (player.mana >= cost)
-        {
-            player.mana -= cost;
-            Debug.Log($"마나 소모: -{cost} (남은 마나: {player.mana})");
-            return true;
-        }
-        else
-        {
-            Debug.Log("마나가 부족합니다!");
-            return false;
-        }
+        if (player.mana >= cost) { player.mana -= cost; return true; }
+        return false;
     }
 
-    // 1. 마력 폭발 (Knockback)
-    void CastExplosion()
+    // ========================================================================
+    // [Lv2: 마력 폭발]
+    // ========================================================================
+    IEnumerator CastExplosionSequence()
     {
-        if (explosionProjectilePrefab == null) return;
+        Vector3 lockedScale = player.transform.localScale;
 
-        Vector3 firePos = player.firePoint != null ? player.firePoint.position : transform.position;
-        GameObject projObj = Instantiate(explosionProjectilePrefab, firePos, Quaternion.identity);
-
-        // Projectile 스크립트 가져오기
-        Projectile projectile = projObj.GetComponent<Projectile>();
-
-        if (projectile != null)
+        if (player != null)
         {
-            // 방향 결정
-            Vector2 dir = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-            projectile.Setup(dir, explosionKnockback);
+            player.isSkillActive = true;
+            player.VelocityZero();
         }
 
+        if (playerAnim != null) playerAnim.SetTrigger(AnimExplosion);
+        if (audioSource != null && explosionSound != null) audioSource.PlayOneShot(explosionSound);
+
+        float elapsed = 0f;
+        bool hasExploded = false;
+
+        while (elapsed < 0.4f)
+        {
+            elapsed += Time.deltaTime;
+
+            if (player != null) player.transform.localScale = lockedScale;
+
+            if (!hasExploded && elapsed >= explosionHitTiming)
+            {
+                hasExploded = true;
+                Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer);
+                foreach (Collider2D hit in hits)
+                {
+                    IDamageable target = hit.GetComponent<IDamageable>();
+
+                    if (target != null)
+                    {
+                        target.TakeDamage(explosionDamage);
+
+                        EnemyController_2D enemy = hit.GetComponent<EnemyController_2D>();
+                        if (enemy != null)
+                        {
+                            float pushDirX = (enemy.transform.position.x > transform.position.x) ? 1f : -1f;
+                            Vector2 knockbackDir = new Vector2(pushDirX, 0.5f).normalized;
+                            enemy.BeginKnockback(knockbackDir, explosionKnockback);
+                        }
+                    }
+                }
+            }
+            yield return null;
+        }
+
+        if (player != null) player.isSkillActive = false;
     }
 
-    // 2. 마나 가드 (토글 및 10초 시간 제한)
+    // ========================================================================
+    // [Lv3: 마나 가드] (수정됨)
+    // ========================================================================
     void ToggleManaGuard()
     {
-        if (player.isManaGuardOn == false) 
+        if (player.isManaGuardOn == false)
         {
             player.isManaGuardOn = true;
 
-            if (manaGuardCoroutine != null) StopCoroutine(manaGuardCoroutine);
+            // 켤 때 확실하게 이펙트 활성화
+            if (guardShieldEffect != null) guardShieldEffect.SetActive(true);
 
+            if (manaGuardCoroutine != null) StopCoroutine(manaGuardCoroutine);
             manaGuardCoroutine = StartCoroutine(ManaGuardTimer());
         }
-        else 
+        else
         {
-            player.isManaGuardOn = false;
-            if (manaGuardCoroutine != null)
-            {
-                StopCoroutine(manaGuardCoroutine);
-                manaGuardCoroutine = null;
-            }
+            TurnOffManaGuard();
+        }
+    }
+
+    void TurnOffManaGuard()
+    {
+        player.isManaGuardOn = false;
+
+        // 끌 때 확실하게 이펙트 비활성화
+        if (guardShieldEffect != null) guardShieldEffect.SetActive(false);
+
+        if (manaGuardCoroutine != null)
+        {
+            StopCoroutine(manaGuardCoroutine);
+            manaGuardCoroutine = null;
         }
     }
 
     IEnumerator ManaGuardTimer()
     {
         yield return new WaitForSeconds(manaGuardDuration);
-
-        if (player.isManaGuardOn)
-        {
-            player.isManaGuardOn = false;
-            manaGuardCoroutine = null;
-        }
+        TurnOffManaGuard();
     }
 
-    // 3. 레이저 (Raycast)
-    IEnumerator CastLaser()
+    // ========================================================================
+    // [Lv4: 레이저 로직]
+    // ========================================================================
+    IEnumerator CastLaserSequence()
     {
-        if (audioSource != null && laserSound != null)
+        Vector3 lockedScale = player.transform.localScale;
+        float facingDir = Mathf.Sign(player.transform.localScale.x);
+        Vector2 direction = new Vector2(facingDir, 0);
+
+        if (player != null)
         {
-            audioSource.PlayOneShot(laserSound);
-        }
-        laserLine.enabled = true;
-
-        // 플레이어가 보는 방향 (Player 스크립트의 isRight 변수 활용은 private이라 transform.localScale로 판단)
-        Vector2 dir = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-        Vector3 startPos = player.firePoint != null ? player.firePoint.position : transform.position;
-
-        // 레이캐스트
-        RaycastHit2D[] hits = Physics2D.RaycastAll(startPos, dir, laserRange, enemyLayer);
-
-        // 라인 그리기
-        laserLine.SetPosition(0, startPos);
-        laserLine.SetPosition(1, startPos + (Vector3)(dir * laserRange));
-
-        foreach (var hit in hits)
-        {
-            // 적 소멸 또는 큰 데미지
-            Debug.Log(hit.collider.name + " 레이저 적중!");
-            Destroy(hit.collider.gameObject); // 적 소멸
+            player.isSkillActive = true;
+            player.VelocityZero();
         }
 
-        yield return new WaitForSeconds(laserDuration);
-        laserLine.enabled = false;
+        if (playerAnim != null) playerAnim.SetTrigger(AnimLaserShot);
+        if (audioSource != null && laserSound != null) audioSource.PlayOneShot(laserSound);
+
+        yield return new WaitForSeconds(laserCastDelay);
+
+        Vector3 spawnPos = player.transform.position + new Vector3(laserOffset.x * facingDir, laserOffset.y, 0);
+
+        if (laserPrefab != null)
+        {
+            GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
+
+            if (facingDir < 0) laser.transform.rotation = Quaternion.Euler(0, 180, 0);
+            else laser.transform.rotation = Quaternion.identity;
+
+            float targetDistance = laserMaxRange;
+            RaycastHit2D hit = Physics2D.Raycast(spawnPos, direction, laserMaxRange, groundLayer);
+            if (hit.collider != null) targetDistance = hit.distance;
+
+            float currentLength = 0f;
+            while (currentLength < targetDistance)
+            {
+                currentLength += laserGrowSpeed * Time.deltaTime;
+                if (currentLength > targetDistance) currentLength = targetDistance;
+                laser.transform.localScale = new Vector3(currentLength, laserThickness, 1);
+
+                if (player != null) player.transform.localScale = lockedScale;
+
+                yield return null;
+            }
+
+            Vector2 boxCenter = (Vector2)spawnPos + (direction * (targetDistance / 2));
+            Vector2 boxSize = new Vector2(targetDistance, laserThickness);
+            debugBoxCenter = boxCenter; debugBoxSize = boxSize;
+
+            Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, enemyLayer);
+            foreach (Collider2D col in hits)
+            {
+                IDamageable target = col.GetComponent<IDamageable>();
+                if (target != null) target.TakeDamage(laserDamage);
+            }
+
+            float elapsed = 0f;
+            while (elapsed < laserDuration)
+            {
+                elapsed += Time.deltaTime;
+                if (player != null) player.transform.localScale = lockedScale;
+                yield return null;
+            }
+
+            Destroy(laser);
+        }
+
+        if (player != null) player.isSkillActive = false;
     }
 
+    // ========================================================================
+    // [Lv5: 시간 정지]
+    // ========================================================================
     IEnumerator CastTimeStop()
     {
         if (isTimeStopped) yield break; // 중복 실행 방지
@@ -273,6 +346,16 @@ public class StaffSkillManager : MonoBehaviour
         //GameObject[] enemyBullets = GameObject.FindGameObjectsWithTag("EnemyProjectile");
         //foreach (var bullet in enemyBullets) { ... }
 
+        CloverProjectile[] enemyBullets = FindObjectsOfType<CloverProjectile>();
+        foreach (var bullet in enemyBullets)
+        {
+            if (bullet != null)
+            {
+                // 방금 만든 함수 호출
+                bullet.FreezeEnemyBullet(timeStopDuration);
+            }
+        }
+
         yield return new WaitForSeconds(timeStopDuration);
 
 
@@ -282,12 +365,24 @@ public class StaffSkillManager : MonoBehaviour
         isTimeStopped = false;
     }
 
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(debugBoxCenter, debugBoxSize);
+
+        if (player != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(player.transform.position, explosionRadius);
+        }
+    }
+
     IEnumerator FadeOverlay(bool fadeIn, float duration)
     {
         if (timeStopOverlay == null) yield break;
 
         float startAlpha = fadeIn ? 0f : timeStopOverlay.alpha;
-        float endAlpha = fadeIn ? 1f : 0f; 
+        float endAlpha = fadeIn ? 1f : 0f;
         float time = 0f;
 
         while (time < duration)
@@ -300,4 +395,5 @@ public class StaffSkillManager : MonoBehaviour
 
         timeStopOverlay.alpha = endAlpha;
     }
+
 }

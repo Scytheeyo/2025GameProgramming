@@ -1,81 +1,203 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MinimapController : MonoBehaviour
 {
-    [Header("Settings")]
-    public GameObject roomPrefab;       // 위에서 만든 RoomCell 프리팹
-    public Transform mapContainer;      // 시계 안의 MinimapContainer
-    public float cellDistance = 35f;    // 방과 방 사이의 간격 (프리팹 크기 + 여백)
+    public static MinimapController instance;
 
-    [Header("Icons")]
-    public Sprite playerIconSprite;     // (선택) 플레이어 아이콘
+    [Header("필수 연결")]
+    public MapGenerator mapGenerator;
+    public GameObject roomUIPrefab;
+    public Transform mapContainer;
 
-    // 생성된 미니맵 UI들을 저장할 딕셔너리 (좌표 : UI오브젝트)
-    private Dictionary<Vector2Int, MinimapRoomUI> generatedRooms = new Dictionary<Vector2Int, MinimapRoomUI>();
-    private Vector2Int currentPos;
+    [Header("설정")]
+    public float gridSpacing = 100f;
 
-    // 초기화: 맵 데이터를 받아서 UI를 쫙 깔아주는 함수
-    // MapData는 실제 게임의 맵 생성 로직에서 쓰는 데이터 구조체여야 합니다.
-    public void InitializeMinimap(List<Vector2Int> allRoomCoords)
+    private Dictionary<Room, Vector2Int> roomToCoord = new Dictionary<Room, Vector2Int>();
+    private Dictionary<Vector2Int, MinimapRoomUI> coordToUI = new Dictionary<Vector2Int, MinimapRoomUI>();
+    private Vector2Int currentPlayerCoord = Vector2Int.zero;
+
+    void Awake()
     {
-        // 기존 맵 삭제
-        foreach (Transform child in mapContainer) Destroy(child.gameObject);
-        generatedRooms.Clear();
+        if (instance == null) instance = this;
+    }
 
-        // 맵 생성
-        foreach (Vector2Int coord in allRoomCoords)
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void Start()
+    {
+        FindAndInitMapGenerator();
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FindAndInitMapGenerator();
+    }
+
+    void FindAndInitMapGenerator()
+    {
+        if (mapGenerator == null)
         {
-            GameObject newRoom = Instantiate(roomPrefab, mapContainer);
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
 
-            // 위치 잡기 (0,0을 기준으로 간격만큼 벌림)
-            newRoom.transform.localPosition = new Vector3(coord.x * cellDistance, coord.y * cellDistance, 0);
+        CancelInvoke(nameof(GenerateMinimap));
+        Invoke(nameof(GenerateMinimap), 0.2f);
+    }
 
-            MinimapRoomUI uiScript = newRoom.GetComponent<MinimapRoomUI>();
-            if (uiScript == null) uiScript = newRoom.AddComponent<MinimapRoomUI>(); // 스크립트가 없다면 붙여줌
+    public void GenerateMinimap()
+    {
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
 
-            generatedRooms.Add(coord, uiScript);
+        if (mapGenerator == null || mapGenerator.room1_Start == null) return;
 
-            // 처음엔 안개(Fog)에 가려져 안보이게 처리하려면 여기서 SetActive(false) 혹은 투명도 조절
-            uiScript.SetVisiblity(false);
+        foreach (Transform child in mapContainer) Destroy(child.gameObject);
+        roomToCoord.Clear();
+        coordToUI.Clear();
+
+        CalculateCoordinates(mapGenerator.room1_Start);
+
+        foreach (var pair in roomToCoord)
+        {
+            Room room = pair.Key;
+            Vector2Int coord = pair.Value;
+
+            GameObject uiObj = Instantiate(roomUIPrefab, mapContainer);
+            uiObj.name = $"RoomUI_{coord.x}_{coord.y}";
+            uiObj.transform.localPosition = new Vector3(coord.x * gridSpacing, coord.y * gridSpacing, 0);
+
+            MinimapRoomUI uiScript = uiObj.GetComponent<MinimapRoomUI>();
+            if (uiScript != null)
+            {
+                uiScript.InitState();
+
+                if (room == mapGenerator.room10_End) uiScript.SetRoomType(1);
+                else if (mapGenerator.typeC_Rooms.Contains(room)) uiScript.SetRoomType(2);
+                else uiScript.SetRoomType(0);
+
+                coordToUI.Add(coord, uiScript);
+            }
+        }
+
+        UpdateBridges();
+        OnPlayerEnterRoom(mapGenerator.room1_Start);
+    }
+
+    void CalculateCoordinates(Room startRoom)
+    {
+        Queue<(Room room, Vector2Int pos)> queue = new Queue<(Room, Vector2Int)>();
+
+        roomToCoord.Add(startRoom, Vector2Int.zero);
+        queue.Enqueue((startRoom, Vector2Int.zero));
+
+        HashSet<Room> visited = new HashSet<Room> { startRoom };
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            Room curRoom = current.room;
+            Vector2Int curPos = current.pos;
+
+            for (int i = 0; i < curRoom.exitDoors.Count; i++)
+            {
+                Door door = curRoom.exitDoors[i];
+                if (door == null || door.nextStage == null) continue;
+
+                Room nextRoom = door.nextStage.GetComponent<Room>();
+                if (visited.Contains(nextRoom)) continue;
+
+                Vector2Int nextPos = curPos;
+
+                if (nextRoom == mapGenerator.room9_PreEnd)
+                {
+                    nextPos = new Vector2Int(0, curPos.y + 1);
+                }
+                else if (mapGenerator.typeA_Rooms.Count > 0 && curRoom == mapGenerator.typeA_Rooms[0])
+                {
+                    if (i == 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y);
+                    else nextPos = new Vector2Int(curPos.x + 1, curPos.y);
+                }
+                else
+                {
+                    if (i == 0)
+                    {
+                        nextPos = new Vector2Int(curPos.x, curPos.y + 1);
+                    }
+                    else
+                    {
+                        if (curPos.x < 0) nextPos = new Vector2Int(curPos.x - 1, curPos.y);
+                        else nextPos = new Vector2Int(curPos.x + 1, curPos.y);
+                    }
+                }
+
+                if (!roomToCoord.ContainsKey(nextRoom))
+                {
+                    roomToCoord.Add(nextRoom, nextPos);
+                    visited.Add(nextRoom);
+                    queue.Enqueue((nextRoom, nextPos));
+                }
+            }
         }
     }
 
-    // 플레이어가 방을 이동했을 때 호출
-    public void UpdatePlayerPosition(Vector2Int newCoord)
+    void UpdateBridges()
     {
-        // 1. 이전 위치의 플레이어 마커 끄기
-        if (generatedRooms.ContainsKey(currentPos))
+        foreach (var pair in coordToUI)
         {
-            generatedRooms[currentPos].SetPlayerIcon(false);
+            Vector2Int pos = pair.Key;
+            MinimapRoomUI ui = pair.Value;
+            bool up = coordToUI.ContainsKey(pos + Vector2Int.up);
+            bool down = coordToUI.ContainsKey(pos + Vector2Int.down);
+            bool left = coordToUI.ContainsKey(pos + Vector2Int.left);
+            bool right = coordToUI.ContainsKey(pos + Vector2Int.right);
+            ui.SetBridges(up, down, left, right);
+        }
+    }
+
+    public void OnPlayerEnterRoom(Room room)
+    {
+        if (room == null || !roomToCoord.ContainsKey(room)) return;
+
+        if (coordToUI.ContainsKey(currentPlayerCoord))
+        {
+            coordToUI[currentPlayerCoord].SetPlayerIcon(false);
         }
 
-        // 2. 새 위치 갱신
-        currentPos = newCoord;
+        currentPlayerCoord = roomToCoord[room];
+        MinimapRoomUI currentUI = coordToUI[currentPlayerCoord];
 
-        // 3. 새 위치의 플레이어 마커 켜기 & 방 밝히기 (Visited 처리)
-        if (generatedRooms.ContainsKey(currentPos))
+        currentUI.SetVisited();
+        currentUI.SetPlayerIcon(true);
+
+        RevealNeighbor(currentPlayerCoord + Vector2Int.up);
+        RevealNeighbor(currentPlayerCoord + Vector2Int.down);
+        RevealNeighbor(currentPlayerCoord + Vector2Int.left);
+        RevealNeighbor(currentPlayerCoord + Vector2Int.right);
+
+        if (mapContainer != null)
         {
-            generatedRooms[currentPos].SetPlayerIcon(true);
-            generatedRooms[currentPos].SetVisiblity(true);
-
-            // (옵션) 인접한 방도 살짝 보여주기 (아이작 스타일)
-            RevealNeighbor(currentPos + Vector2Int.up);
-            RevealNeighbor(currentPos + Vector2Int.down);
-            RevealNeighbor(currentPos + Vector2Int.left);
-            RevealNeighbor(currentPos + Vector2Int.right);
+            mapContainer.localPosition = -new Vector3(currentPlayerCoord.x * gridSpacing, currentPlayerCoord.y * gridSpacing, 0);
         }
-
-        // 4. (중요) 미니맵 전체를 이동시켜서 현재 플레이어가 시계 중앙에 오도록 함
-        mapContainer.localPosition = new Vector3(-currentPos.x * cellDistance, -currentPos.y * cellDistance, 0);
     }
 
     void RevealNeighbor(Vector2Int coord)
     {
-        if (generatedRooms.ContainsKey(coord))
+        if (coordToUI.ContainsKey(coord))
         {
-            generatedRooms[coord].SetVisiblity(true); // 혹은 "가봤던 방"과는 다르게 희미하게 표시
+            coordToUI[coord].SetNeighbor();
         }
     }
 }

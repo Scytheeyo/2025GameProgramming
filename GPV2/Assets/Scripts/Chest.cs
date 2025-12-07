@@ -13,10 +13,59 @@ public class Chest : MonoBehaviour
     public GameObject[] weaponPool; // 무기 풀 (인스펙터 할당용)
     public GameObject[] ItemPool; // 아이템 풀 (인스펙터 할당용)
 
+    // --- [추가 1] 보스 감지 및 활성화 제어 변수 ---
+    private GameObject bossObject;
+    private bool isWaitingForBoss = false;
+    private Collider2D chestCollider;
+    private SpriteRenderer chestRenderer; // 만약 자식에 이미지가 있다면 GetComponentsInChildren 등 수정 필요
+
     void Start()
     {
         player = FindObjectOfType<Player>();
         animator = this.GetComponent<Animator>();
+
+        // 컴포넌트 가져오기
+        chestCollider = GetComponent<Collider2D>();
+        chestRenderer = GetComponent<SpriteRenderer>();
+
+        // --- [추가 2] 시작 시 보스 존재 여부 확인 ---
+        bossObject = GameObject.FindGameObjectWithTag("Boss");
+
+        if (bossObject != null)
+        {
+            // 보스가 있다면 숨김 모드로 시작
+            isWaitingForBoss = true;
+            SetChestVisibility(false);
+        }
+        else
+        {
+            // 보스가 없다면 바로 활성화
+            SetChestVisibility(true);
+        }
+    }
+
+    void Update()
+    {
+        // 보스를 기다리는 중일 때만 체크
+        if (isWaitingForBoss)
+        {
+            // 보스 오브젝트가 사라졌는지(null) 확인
+            if (bossObject == null)
+            {
+                isWaitingForBoss = false;
+                SetChestVisibility(true); // 상자 등장!
+
+                // (선택사항) 등장 효과음이나 이펙트를 여기에 추가할 수 있습니다.
+                Debug.Log("보스 처치 확인! 상자가 활성화됩니다.");
+            }
+        }
+    }
+
+    // 상자의 모습과 충돌체를 끄고 켜는 함수
+    private void SetChestVisibility(bool isVisible)
+    {
+        if (chestRenderer != null) chestRenderer.enabled = isVisible;
+        if (chestCollider != null) chestCollider.enabled = isVisible;
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -27,6 +76,7 @@ public class Chest : MonoBehaviour
             if (player.Interaction && !choicePanel.activeSelf)
             {
                 animator.SetBool("Open", true);
+                player.Interaction = false;
             }
         }
     }
@@ -45,9 +95,19 @@ public class Chest : MonoBehaviour
         {
             int randomIndex = Random.Range(0, weaponPool.Length);
             GameObject selectedWeaponPrefab = weaponPool[randomIndex];
-            string weaponName = selectedWeaponPrefab.name;
+
+            GameObject weaponInstance = Instantiate(selectedWeaponPrefab);
+            weaponInstance.name = selectedWeaponPrefab.name;
+            string weaponName = weaponInstance.name;
+            Weapon newWeapon = weaponInstance.GetComponent<Weapon>();
+
+            if (newWeapon != null)
+            {
+                player.EquipWeapon(newWeapon);
+            }
+
             Sprite weaponSprite = null;
-            SpriteRenderer sr = selectedWeaponPrefab.GetComponent<SpriteRenderer>();
+            SpriteRenderer sr = selectedWeaponPrefab.GetComponent<SpriteRenderer>(); 
 
             if (sr != null)
             {
@@ -58,10 +118,9 @@ public class Chest : MonoBehaviour
                 sr = selectedWeaponPrefab.GetComponentInChildren<SpriteRenderer>();
                 if (sr != null) weaponSprite = sr.sprite;
             }
-
             player.AddItemToInventory(weaponName, 1, weaponSprite);
 
-            Debug.Log($"상자에서 획득: {weaponName}");
+            Debug.Log($"상자에서 획득 및 장착: {weaponName}");
         }
 
         CloseChestUI();

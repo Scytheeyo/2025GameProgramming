@@ -1,53 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1081269191008207675
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1081269191008207674}
-  - component: {fileID: 1081269191008207673}
-  m_Layer: 9
-  m_Name: AttackPoint
-  m_TagString: Enemy
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1081269191008207674
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081269191008207675}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.023, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1081269191953349660}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &1081269191008207673
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081269191008207675}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.067475215, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.079552814
 --- !u!1 &1081269191953349662
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,7 +14,7 @@ GameObject:
   - component: {fileID: 1081269191953349649}
   - component: {fileID: 1081269191953349650}
   - component: {fileID: 1081269191953349648}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -80,8 +32,7 @@ Transform:
   m_LocalPosition: {x: 0.452, y: -0.004, z: 0}
   m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1081269191008207674}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -123,8 +74,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1266883339
-  m_SortingLayer: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 7f00389700a6e9b49890bc7f4f398691, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -222,12 +173,15 @@ MonoBehaviour:
   isBoss: 0
   moveSpeed: 3
   chaseRange: 10
-  attackRange: 1
+  attackRange: 2
   attackCooldown: 1
   damage: 10
   hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
   flashDuration: 0.1
   player: {fileID: 0}
-  attackPoint: {fileID: 1081269191008207674}
+  attackPoint: {fileID: 0}
   dropItemPrefab: {fileID: 0}
+  enemySuit: 0
+  cardDropChance: 1
+  maxCardNumber: 13
   isDead: 0

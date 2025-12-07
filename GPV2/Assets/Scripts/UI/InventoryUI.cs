@@ -13,6 +13,9 @@ public class InventoryUI : MonoBehaviour
     [Header("Slot Parent")]
     public Transform scrollContent;
 
+    [Header("Equip Slot References")]
+    public Image weaponSlotImage;
+
     [Header("Left Panel UI (Details)")]
     public Image selectedItemIcon;
     public TextMeshProUGUI selectedItemName;
@@ -54,6 +57,7 @@ public class InventoryUI : MonoBehaviour
         // 인벤토리 창이 열릴 때마다 화면을 새로 고침
         RefreshInventoryUI();
         RefreshEffectTexts();
+        RefreshEquippedWeaponUI();
     }
 
     // ★★★ [핵심] 아이템을 슬롯에 그리는 함수 ★★★
@@ -241,16 +245,47 @@ public class InventoryUI : MonoBehaviour
 
     string GetPrettyName(string tag)
     {
-        if (tag == "RedPotion") return "체력 물약";
-        if (tag == "BluePotion") return "마나 물약";
+        if (tag == "RedPotion") return "치유의 물약";
+        if (tag == "BluePotion") return "마나의 물약";
+
+        if (tag == "normalSword") return "수습 기사의 철검";
+
+        if (tag == "Wand5") return "<color=#AA88FF>대마법사의 지팡이</color>";
+
+        if (tag == "LegendSword") return "<color=#FFBB00>고대 영웅의 검</color>";
+
         return tag;
     }
 
     string GetItemDescription(string tag)
     {
-        if (tag == "RedPotion") return "체력을 20 회복합니다.\n(더블 클릭하여 사용)";
-        if (tag == "BluePotion") return "마나를 20 회복합니다.\n(더블 클릭하여 사용)";
-        return "";
+
+        if (tag == "RedPotion")
+            return "붉은 활력이 담긴 물약입니다. 마시면 상처가 아물고 기운이 솟아납니다.\n\n" +
+                   "<color=#FF5555>♥ 체력 20 회복</color>\n" +
+                   "<size=80%><color=#AAAAAA>(더블 클릭하여 사용)</color></size>";
+
+        if (tag == "BluePotion")
+            return "응축된 마력이 담긴 신비한 물약입니다. 정신을 맑게 해줍니다.\n\n" +
+                   "<color=#5555FF>♣ 마나 20 회복</color>\n" +
+                   "<size=80%><color=#AAAAAA>(더블 클릭하여 사용)</color></size>";
+
+        if (tag == "normalSword")
+            return "왕국 병사들에게 지급되는 표준 검입니다. 날이 잘 서 있어 다루기 쉽습니다.\n\n" +
+                   "Type: <color=white>근접 무기</color>\n" +
+                   "<size=80%><color=#FFFF55>(더블 클릭하여 장착)</color></size>";
+
+        if (tag == "Wand5")
+            return "강력한 마력이 깃든 나무로 깎았습니다. 지팡이 끝에서 마력을 방출합니다.\n\n" +
+                   "Type: <color=#AA88FF>원거리 무기 (마법)</color>\n" +
+                   "<size=80%><color=#FFFF55>(더블 클릭하여 장착)</color></size>";
+
+        if (tag == "LegendSword")
+            return "전설 속의 영웅이 사용했다는 검입니다. 뿜어져 나오는 압도적인 기운이 적을 제압합니다.\n\n" +
+                   "Type: <color=#FFBB00>근접 무기 (전설)</color>\n" +
+                   "<size=80%><color=#FFFF55>(더블 클릭하여 장착)</color></size>";
+
+        return "알 수 없는 아이템입니다.";
     }
 
     public void CloseWindow()
@@ -269,5 +304,49 @@ public class InventoryUI : MonoBehaviour
     {
         gameObject.SetActive(false);
         if (player != null) player.UpdateGamePauseState();
+    }
+    public void RefreshEquippedWeaponUI()
+    {
+        if (player == null || weaponSlotImage == null) return;
+
+        // 플레이어가 무기를 들고 있는지 확인
+        if (player.equippedWeapon != null)
+        {
+            // 1. 무기 이름 가져오기 ((Clone) 제거)
+            string weaponName = player.equippedWeapon.gameObject.name.Replace("(Clone)", "").Trim();
+
+            // 2. 이미 알고 있는 스프라이트인지 확인 후 적용
+            if (player.knownItemSprites.ContainsKey(weaponName))
+            {
+                weaponSlotImage.sprite = player.knownItemSprites[weaponName];
+
+                // 색상을 하얗게(투명도 없음) 설정 (중요: 빈 슬롯일 때 투명하게 했다면 다시 켜야 함)
+                weaponSlotImage.color = Color.white;
+                weaponSlotImage.enabled = true;
+            }
+            else
+            {
+                // 스프라이트 정보가 없으면, 현재 들고 있는 무기 오브젝트에서 직접 가져오기
+                SpriteRenderer sr = player.equippedWeapon.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    weaponSlotImage.sprite = sr.sprite;
+                    weaponSlotImage.color = Color.white;
+                    weaponSlotImage.enabled = true;
+                }
+            }
+        }
+        else
+        {
+            // 장착된 무기가 없으면?
+            // 방법 A: 이미지를 끈다 (아예 안 보임)
+            // weaponSlotImage.enabled = false; 
+
+            // 방법 B: 투명하게 만든다 (배경 틀은 보이고 아이콘만 숨김) - 추천
+            weaponSlotImage.sprite = null;
+            Color c = weaponSlotImage.color;
+            c.a = 0f; // 완전 투명
+            weaponSlotImage.color = c;
+        }
     }
 }

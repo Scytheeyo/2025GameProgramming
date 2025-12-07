@@ -182,6 +182,9 @@ MonoBehaviour:
   player: {fileID: 0}
   attackPoint: {fileID: 8428736246263011788}
   dropItemPrefab: {fileID: 0}
+  enemySuit: 3
+  cardDropChance: 1
+  maxCardNumber: 13
   isDead: 0
   projectilePrefab: {fileID: 4612317195019768454, guid: 421830e161d7a0e4ba7d0b557f39dfca, type: 3}
   shootCooldown: 2
