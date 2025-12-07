@@ -3791,6 +3791,7 @@ MonoBehaviour:
   - {fileID: 5186045291578548377}
   exitDoors:
   - {fileID: 5186045291578548377}
+  roomID: 0
 --- !u!114 &208753554
 MonoBehaviour:
   m_ObjectHideFlags: 0
