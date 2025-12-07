@@ -1595,7 +1595,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.6799998, y: 2.1600003, z: -10}
+  m_LocalPosition: {x: 2.3945975, y: 2.1599984, z: -10}
   m_LocalScale: {x: 3, y: 3, z: 53}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3248,6 +3248,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb04cc79d70a984aa42f79d8a8804cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2141519829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2141519831}
+  - component: {fileID: 2141519830}
+  m_Layer: 0
+  m_Name: ImTester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2141519830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141519829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07427cee1fe2c924b9d0b64f54fe747e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+  isBoss: 0
+  moveSpeed: 3
+  chaseRange: 10
+  attackRange: 1
+  attackCooldown: 1
+  damage: 10
+  hitColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  flashDuration: 0.1
+  player: {fileID: 0}
+  attackPoint: {fileID: 0}
+  dropItemPrefab: {fileID: 0}
+  enemySuit: 0
+  cardDropChance: 1
+  maxCardNumber: 13
+  isDead: 0
+--- !u!4 &2141519831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141519829}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.6078734, y: 1.2835598, z: -8.43305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 22
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2146087981
 GameObject:
   m_ObjectHideFlags: 0
