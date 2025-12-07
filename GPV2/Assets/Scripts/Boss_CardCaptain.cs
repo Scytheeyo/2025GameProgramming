@@ -3,32 +3,32 @@ using System.Collections;
 
 public class Boss_CardCaptain : MonoBehaviour, IDamageable
 {
-    [Header("±âº» ¼³Á¤")]
+    [Header("ï¿½âº» ï¿½ï¿½ï¿½ï¿½")]
     public float moveSpeed = 2.5f;
     public float chaseRange = 10f;
     public float attackRange = 1.2f;
     public int maxHealth = 300;
     public int currentHealth;
 
-    [Header("°ø°İ·Â ¼³Á¤")] // [½Å±Ô] µ¥¹ÌÁö Á¶Àı¿ë º¯¼ö
-    public int attackDamage = 15; // ¿©±â¼­ µ¥¹ÌÁö ¼öÄ¡¸¦ Á¶Á¤ÇÏ¼¼¿ä!
+    [Header("ï¿½ï¿½ï¿½İ·ï¿½ ï¿½ï¿½ï¿½ï¿½")] // [ï¿½Å±ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public int attackDamage = 15; // ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½!
 
-    [Header("ÇÇ°İ È¿°ú ¼³Á¤")]
+    [Header("ï¿½Ç°ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public Color hitColor = new Color(1f, 0.4f, 0.4f);
     public float flashDuration = 0.1f;
 
-    [Header("3´Ü ÄŞº¸ °ø°İ")]
+    [Header("3ï¿½ï¿½ ï¿½Şºï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public float attackCooldown = 2.0f;
     private float lastAttackTime = -999f;
     private int attackComboIndex = 0;
 
-    [Header("¼ÒÈ¯ ÆĞÅÏ")]
+    [Header("ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½")]
     public float summonCooldown = 20f;
     private float lastSummonTime = -999f;
     public GameObject[] minionPrefabs;
     public Transform[] summonPoints;
 
-    [Header("¿¬°á")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     public Transform attackPoint;
     public Transform player;
 
@@ -51,7 +51,14 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) player = p.transform;
+            if (p != null)
+            {
+                player = p.transform.Find("PlayerObject");
+            }
+            else
+            {
+                Debug.LogError("ì”¬ì— 'Player' íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
+            }
         }
 
         if (attackPoint == null) attackPoint = transform;
@@ -88,7 +95,7 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
             MoveTowardsPlayer();
         }
 
-        // Å×½ºÆ®¿ë (KÅ° ´©¸£¸é ÀÚÇØ)
+        // ï¿½×½ï¿½Æ®ï¿½ï¿½ (KÅ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
@@ -201,27 +208,27 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     }
 
     // ====================================================
-    // [¼öÁ¤] ÇÃ·¹ÀÌ¾î µ¥¹ÌÁö Àû¿ë ÇÔ¼ö (¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®¿ë)
+    // [ï¿½ï¿½ï¿½ï¿½] ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ (ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½)
     // ====================================================
     public void DealDamage()
     {
-        // 1. ¹İ°æ ³» ¸ğµç Äİ¶óÀÌ´õ °¨Áö (·¹ÀÌ¾î »ó°ü¾øÀÌ ÀÏ´Ü ´Ù °¡Á®¿È)
+        // 1. ï¿½İ°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½İ¶ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
         foreach (Collider2D col in hitObjects)
         {
-            // 2. ÅÂ±×°¡ "Player"ÀÎÁö Á÷Á¢ È®ÀÎ
+            // 2. ï¿½Â±×°ï¿½ "Player"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (col.CompareTag("Player"))
             {
-                Debug.Log($"ÇÃ·¹ÀÌ¾î({col.name}) °¨ÁöµÊ! µ¥¹ÌÁö {attackDamage} Àû¿ë ½Ãµµ.");
+                Debug.Log($"ï¿½Ã·ï¿½ï¿½Ì¾ï¿½({col.name}) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {attackDamage} ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½.");
 
-                // [¹æ¹ı A] ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®¸¦ Ã£¾Æ¼­ TakeDamage ½ÇÇà (ÃßÃµ)
-                // ¸¸¾à ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ® ÀÌ¸§ÀÌ PlayerController¶ó¸é ¾Æ·¡ ÁÖ¼®À» ÇØÁ¦ÇÏ°í ¾²¼¼¿ä.
+                // [ï¿½ï¿½ï¿½ A] ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½Æ¼ï¿½ TakeDamage ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½Ãµ)
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½Ì¸ï¿½ï¿½ï¿½ PlayerControllerï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Ö¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
                 // PlayerController pc = col.GetComponent<PlayerController>();
                 // if (pc != null) pc.TakeDamage(attackDamage);
 
-                // [¹æ¹ı B] ½ºÅ©¸³Æ® ÀÌ¸§À» ¸ô¶óµµ ÇÔ¼ö ÀÌ¸§¸¸ ¸ÂÀ¸¸é ½ÇÇà (¹ü¿ëÀû)
-                // ÇÃ·¹ÀÌ¾î ½ºÅ©¸³Æ®¿¡ 'public void TakeDamage(int damage)' ÇÔ¼ö°¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+                // [ï¿½ï¿½ï¿½ B] ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+                // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ 'public void TakeDamage(int damage)' ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
                 col.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             }
         }

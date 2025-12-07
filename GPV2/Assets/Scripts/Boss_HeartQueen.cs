@@ -3,41 +3,41 @@ using System.Collections;
 
 public class Boss_HeartQueen : MonoBehaviour
 {
-    [Header("±âº» ¼³Á¤")]
+    [Header("ï¿½âº» ï¿½ï¿½ï¿½ï¿½")]
     public float moveSpeed = 3f;
     public float chaseRange = 8f;
     public float attackRange = 1.0f;
     public int maxHealth = 500;
     public int currentHealth;
 
-    [Header("ÇÇ°İ È¿°ú ¼³Á¤")]
+    [Header("ï¿½Ç°ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public Color hitColor = new Color(1f, 0.4f, 0.4f);
     public float flashDuration = 0.1f;
 
-    [Header("ÀÏ¹İ °ø°İ")]
-    public int attackDamage = 20; // [½Å±Ô] ÀÏ¹İ °ø°İ µ¥¹ÌÁö
+    [Header("ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public int attackDamage = 20; // [ï¿½Å±ï¿½] ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public float attackCooldown = 1.5f;
     private float lastAttackTime = -999f;
     private int attackComboIndex = 0;
 
-    [Header("¼ÒÈ¯ ÆĞÅÏ")]
+    [Header("ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½")]
     public float summonCooldown = 30f;
     private float lastSummonTime = -999f;
     public GameObject[] minionPrefabs;
     public Transform[] summonPoints;
 
-    [Header("µ¹Áø °ø°İ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public float dashSpeed = 15f;
     public float reloadDelay = 3.0f;
     private float lastDashEndTime = -999f;
     [SerializeField] private bool isDashReady = false;
 
-    [Header("Á¡ÇÁ Âï±â (ÇÊ»ì±â)")]
-    public int jumpDamage = 30; // Á¡ÇÁ °ø°İ µ¥¹ÌÁö
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½Ê»ï¿½ï¿½)")]
+    public int jumpDamage = 30; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public float jumpHeight = 15f;
     private int nextJumpHealth;
 
-    [Header("¿¬°á")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     public Transform attackPoint;
     public Transform player;
     public GameObject landEffectPrefab;
@@ -65,7 +65,14 @@ public class Boss_HeartQueen : MonoBehaviour
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) player = p.transform;
+            if (p != null)
+            {
+                player = p.transform.Find("PlayerObject");
+            }
+            else
+            {
+                Debug.LogError("ì”¬ì— 'Player' íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
+            }
         }
         if (attackPoint == null) attackPoint = transform;
 
@@ -74,13 +81,13 @@ public class Boss_HeartQueen : MonoBehaviour
 
     void Update()
     {
-        // Å×½ºÆ®¿ë Å°
+        // ï¿½×½ï¿½Æ®ï¿½ï¿½ Å°
         if (Input.GetKeyDown(KeyCode.J) && !isActing) StartCoroutine(JumpSmashRoutine());
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
 
         if (player == null) return;
 
-        // 1. Çàµ¿ ÁßÀÌ¸é Á¤Áö
+        // 1. ï¿½àµ¿ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isActing)
         {
             if (!isDashing) rb.velocity = Vector2.zero;
@@ -88,11 +95,11 @@ public class Boss_HeartQueen : MonoBehaviour
             return;
         }
 
-        // 2. °Å¸® °è»ê
+        // 2. ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½
         float distToPlayer = Vector2.Distance(attackPoint.position, player.position);
         float distFromBody = Vector2.Distance(transform.position, player.position);
 
-        // --- ÀåÀü ·ÎÁ÷ ---
+        // --- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ---
         if (distFromBody <= chaseRange)
         {
             if (Time.time >= lastDashEndTime + reloadDelay)
@@ -101,14 +108,14 @@ public class Boss_HeartQueen : MonoBehaviour
             }
         }
 
-        // [1¼øÀ§] ¼ÒÈ¯ ÆĞÅÏ
+        // [1ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½
         if (Time.time >= lastSummonTime + summonCooldown)
         {
             StartCoroutine(SummonRoutine());
             return;
         }
 
-        // [2¼øÀ§] Çàµ¿ °áÁ¤
+        // [2ï¿½ï¿½ï¿½ï¿½] ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½
         if (distToPlayer <= attackRange)
         {
             StopMovement();
@@ -132,7 +139,7 @@ public class Boss_HeartQueen : MonoBehaviour
 
     public void TakeDamage(int dmg)
     {
-        // Á¡ÇÁ Áß(Kinematic)ÀÏ ¶© ¹«Àû
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½(Kinematic)ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (rb.bodyType == RigidbodyType2D.Kinematic) return;
 
         currentHealth -= dmg;
@@ -147,7 +154,7 @@ public class Boss_HeartQueen : MonoBehaviour
             animator.SetTrigger("Hit");
         }
 
-        // Á¡ÇÁ ÆĞÅÏ ¹ßµ¿ Ã¼Å©
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ßµï¿½ Ã¼Å©
         if (currentHealth <= nextJumpHealth)
         {
             nextJumpHealth -= 100;
@@ -185,7 +192,7 @@ public class Boss_HeartQueen : MonoBehaviour
 
                 Instantiate(minionPrefabs[i % minionPrefabs.Length], point.position, Quaternion.identity);
             }
-            Debug.Log("¿©¿Õ: ³ª¿Í¶ó Ä«µåº´»çµé!");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½Í¶ï¿½ Ä«ï¿½åº´ï¿½ï¿½ï¿½!");
         }
 
         lastSummonTime = Time.time;
@@ -220,7 +227,7 @@ public class Boss_HeartQueen : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = new Vector3(transform.position.x, targetY, transform.position.z);
 
-        // À§·Î »ó½Â
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         while (elapsed < 0.5f)
         {
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / 0.5f);
@@ -229,7 +236,7 @@ public class Boss_HeartQueen : MonoBehaviour
         }
         transform.position = endPos;
 
-        // °øÁß ´ë±â
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         yield return new WaitForSeconds(3.0f);
 
         if (player != null)
@@ -240,7 +247,7 @@ public class Boss_HeartQueen : MonoBehaviour
             transform.position = skyPos;
             animator.SetTrigger("Fall");
 
-            // ³«ÇÏ
+            // ï¿½ï¿½ï¿½ï¿½
             elapsed = 0f;
             while (elapsed < 0.2f)
             {
@@ -254,13 +261,13 @@ public class Boss_HeartQueen : MonoBehaviour
         if (landEffectPrefab != null)
             Instantiate(landEffectPrefab, transform.position, Quaternion.identity);
 
-        // [¼öÁ¤µÊ] Âï±â µ¥¹ÌÁö Àû¿ë (·¹ÀÌ¾î ¹«½Ã, ÅÂ±× È®ÀÎ)
+        // [ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Â±ï¿½ È®ï¿½ï¿½)
         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(transform.position, 2.5f);
         foreach (Collider2D p in hitPlayers)
         {
             if (p.CompareTag("Player"))
             {
-                Debug.Log($"¿©¿Õ Á¡ÇÁ °ø°İ! µ¥¹ÌÁö: {jumpDamage}");
+                Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: {jumpDamage}");
                 p.SendMessage("TakeDamage", jumpDamage, SendMessageOptions.DontRequireReceiver);
             }
         }
@@ -303,19 +310,19 @@ public class Boss_HeartQueen : MonoBehaviour
     }
 
     // ====================================================
-    // [½Å±Ô] ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®¿ë ÀÏ¹İ °ø°İ ÇÔ¼ö
+    // [ï¿½Å±ï¿½] ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     // ====================================================
     public void DealDamage()
     {
-        // 1. °ø°İ ¹üÀ§ ³» ¸ğµç ¹°Ã¼ °¨Áö
+        // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
         Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
         foreach (Collider2D col in hitObjects)
         {
-            // 2. ÅÂ±×°¡ PlayerÀÎÁö È®ÀÎ (·¹ÀÌ¾î »ó°ü X)
+            // 2. ï¿½Â±×°ï¿½ Playerï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ X)
             if (col.CompareTag("Player"))
             {
-                Debug.Log($"¿©¿Õ ÀÏ¹İ °ø°İ! µ¥¹ÌÁö: {attackDamage}");
+                Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: {attackDamage}");
                 col.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             }
         }
