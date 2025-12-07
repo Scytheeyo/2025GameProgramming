@@ -220,20 +220,24 @@ public class Player : MonoBehaviour
 
         if (isCharging)
         {
-            fire1HoldTime += Time.deltaTime;
-            float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
+            if(equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2)
+            {
+                fire1HoldTime += Time.deltaTime;
+                float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-            if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2 && chargeEffectPrefab != null && effectiveTime < 2f)
-            {
-                chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
-                chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
+                if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2 && chargeEffectPrefab != null && effectiveTime < 2f)
+                {
+                    chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
+                    chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
+                }
+                if (chargeEffectInstance != null && effectiveTime >= 2f)
+                {
+                    Destroy(chargeEffectInstance); chargeEffectInstance = null;
+                    chargedEffectInstance = Instantiate(chargedEffectPrefab, transform.position, Quaternion.identity, transform);
+                    chargedEffectInstance.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+                }
             }
-            if (chargeEffectInstance != null && effectiveTime >= 2f)
-            {
-                Destroy(chargeEffectInstance); chargeEffectInstance = null;
-                chargedEffectInstance = Instantiate(chargedEffectPrefab, transform.position, Quaternion.identity, transform);
-                chargedEffectInstance.transform.localPosition = new Vector3(0f, 0.5f, 0f);
-            }
+            
         }
 
         if (Input.GetButtonUp("Fire1"))
