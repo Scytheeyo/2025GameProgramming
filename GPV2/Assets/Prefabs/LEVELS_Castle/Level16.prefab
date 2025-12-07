@@ -3827,6 +3827,10 @@ PrefabInstance:
       propertyPath: weaponPool.Array.data[3]
       value: 
       objectReference: {fileID: 8455175751847013663, guid: 882554c4a062de945bff508d8023e58c, type: 3}
+    - target: {fileID: 2191019866367144310, guid: 9206732c01c776043bc6535842629516, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9206732c01c776043bc6535842629516, type: 3}
 --- !u!114 &5885467399168489356 stripped

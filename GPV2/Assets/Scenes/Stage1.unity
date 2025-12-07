@@ -479,6 +479,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LegendSword
       objectReference: {fileID: 0}
+    - target: {fileID: 4399605849035345117, guid: 66f4e3c92ffedb74abcc7f2094fedd92, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66f4e3c92ffedb74abcc7f2094fedd92, type: 3}
 --- !u!4 &144197192 stripped
@@ -2139,6 +2143,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChesierCat
       objectReference: {fileID: 0}
+    - target: {fileID: 907468451843598895, guid: 99647a9f93fa5ee408952d6fa589c444, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99647a9f93fa5ee408952d6fa589c444, type: 3}
 --- !u!1001 &897300098
@@ -2806,6 +2814,10 @@ PrefabInstance:
     - target: {fileID: 8455175751847013663, guid: 882554c4a062de945bff508d8023e58c, type: 3}
       propertyPath: m_Name
       value: Wand5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8455175751847013663, guid: 882554c4a062de945bff508d8023e58c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8455175751847013730, guid: 882554c4a062de945bff508d8023e58c, type: 3}
       propertyPath: m_RootOrder
@@ -12467,7 +12479,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864424, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8428736245585864426, guid: d2e59c1a08141d44a82aa67a745735cf, type: 3}
       propertyPath: m_RootOrder
@@ -12973,7 +12985,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5117330593268302136, guid: 6dcc7dae29173de4fbc6258600dcf269, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5117330593268302138, guid: 6dcc7dae29173de4fbc6258600dcf269, type: 3}
       propertyPath: m_RootOrder
@@ -13180,11 +13192,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3155708751086376876, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.69
+      value: -7.38
       objectReference: {fileID: 0}
     - target: {fileID: 3155708751086376876, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.41
+      value: -2.83
       objectReference: {fileID: 0}
     - target: {fileID: 6790762535341586647, guid: fffb2e1df76e7d6459d72bfc603b7b12, type: 3}
       propertyPath: m_Name
