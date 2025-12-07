@@ -36,15 +36,13 @@ public class Weapon : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy")|| other.CompareTag("Boss"))
         {
             if (ownerPlayer == null) return;
 
             int finalDamage = Mathf.RoundToInt(damage * ownerPlayer.currentAttackMultiplier);
 
-            Debug.Log(other.name + "에게 " + finalDamage + " 데미지!");
-
-            EnemyController_2D enemy = other.GetComponent<EnemyController_2D>();
+            IDamageable enemy = other.GetComponent<IDamageable>();
             if (enemy != null)
             {
                 enemy.TakeDamage(finalDamage);

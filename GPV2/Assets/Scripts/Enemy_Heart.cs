@@ -12,6 +12,7 @@ public class Enemy_Heart : EnemyController_2D
 
     protected override void Update()
     {
+        if (isFrozen) return;
         if (isDead) return;
 
         // 1. 힐 중이면 이동 로직 실행 안 함 (멈춰있어야 함)

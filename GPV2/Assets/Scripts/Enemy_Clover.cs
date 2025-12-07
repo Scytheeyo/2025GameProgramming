@@ -11,6 +11,7 @@ public class Enemy_Clover : EnemyController_2D
 
     protected override void Update()
     {
+        if (isFrozen) return;
         // 1. 죽었거나, 공격 중(마법 시전 중)이면 아무것도 안 함
         if (isDead || player == null || isAttacking) return;
 
@@ -54,9 +55,27 @@ public class Enemy_Clover : EnemyController_2D
         // (원하시면 Trigger로 유지해도 되지만, isAttacking 상태 표현엔 Bool이 유리)
         animator?.SetBool("IsAttacking", true);
 
+
+        float timer = 0f;
+        while (timer < castTime)
+        {
+            // 얼어있지 않을 때만 타이머가 흐름
+            if (!isFrozen)
+            {
+                timer += Time.deltaTime;
+            }
+            // 얼어있으면 timer가 안 오르므로 무한 대기 -> 즉, 공격이 지연됨
+            yield return null;
+        }
+
+        // 혹시 타이머가 끝나는 찰나에 얼었을 수 있으므로 한 번 더 체크
+        while (isFrozen)
+        {
+            yield return null;
+        }
         // ★ [대기]: 애니메이션이 끝날 때까지 기다림
         // 인스펙터에서 'Cast Time'을 애니메이션 길이와 똑같이 맞춰주세요!
-        yield return new WaitForSeconds(castTime);
+        //yield return new WaitForSeconds(castTime);
 
         // === [투사체 발사] ===
         Fire();
@@ -64,6 +83,8 @@ public class Enemy_Clover : EnemyController_2D
         // === [공격 종료] ===
         animator?.SetBool("IsAttacking", false); // 애니메이션 끄기
         isAttacking = false;           // 상태 해제 (다시 행동 가능)
+
+        lastShootTime = Time.time;
     }
 
     void Fire()
@@ -92,5 +113,36 @@ public class Enemy_Clover : EnemyController_2D
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, chaseRange);
+    }
+
+    IEnumerator FreezeRoutine(float duration)
+    {
+        isFrozen = true;
+
+        // 이동 정지
+        Vector2 savedVelocity = rb.velocity;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true; // 밀림 방지
+
+        // ★ 중요: 애니메이션 멈춤 (공격 모션 중간에 딱 멈추게 함)
+        float savedAnimSpeed = 0f;
+        if (animator != null)
+        {
+            savedAnimSpeed = animator.speed;
+            animator.speed = 0;
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        // 상태 복구
+        isFrozen = false;
+        rb.isKinematic = false;
+        rb.velocity = savedVelocity;
+
+        // 애니메이션 재개
+        if (animator != null)
+        {
+            animator.speed = savedAnimSpeed;
+        }
     }
 }

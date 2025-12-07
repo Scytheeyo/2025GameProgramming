@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    public static Player instance;
+
+    // [핵심] 스킬 매니저에서 제어하는 변수
+    [HideInInspector] public bool isSkillActive = false;
 
     [Header("이동 및 점프")]
     public float moveSpeed = 5f;
@@ -16,7 +21,7 @@ public class Player : MonoBehaviour
     private bool isGrounded = false;
     public bool isRight = true;
 
-    [Header("점프 시너지 (Player_Ver 통합)")]
+    [Header("점프 시너지")]
     public int maxJumpCount = 1;
     public int currentJumpCount = 0;
     public float jumpMultiplier = 1.0f;
@@ -32,15 +37,13 @@ public class Player : MonoBehaviour
     public float fireRate = 0.1f;
     private float nextFireTime = 0f;
 
-    [Header("상태 및 스탯 (시너지 적용)")]
+    [Header("상태 및 스탯")]
     public int baseMaxHealth = 100;
     public int maxHealth;
     public int health;
-
     public int baseMaxMana = 100;
     public int maxMana;
     public float mana;
-
     public float baseAttackDamage = 10f;
     public float currentAttackDamage;
     public float baseDefense = 0f;
@@ -58,19 +61,23 @@ public class Player : MonoBehaviour
     public AudioSource DoorOpen;
     public AudioSource normalAttack;
     public Weapon EquippedWeapon { get { return equippedWeapon; } }
+
     [Header("무기 데이터베이스")]
     public List<GameObject> allWeaponPrefabs = new List<GameObject>();
 
-    [Header("전투 스킬 (Player1)")]
+    [Header("전투 스킬")]
     public bool isManaGuardOn = false;
     private bool isSwinging = false;
     private bool isCharging = false;
     private float fire1HoldTime = 0f;
     public float chargehold = 2f;
     public float currentAttackMultiplier = 1.0f;
+
+    // [중요] 강한 공격 이펙트
     public GameObject strongAttackEffectPrefab;
     public float strongAttackRadius = 2.0f;
     public LayerMask enemyLayer;
+
     public GameObject chargeEffectPrefab;
     public GameObject chargedEffectPrefab;
     public AudioSource StrongAttack;
@@ -78,7 +85,14 @@ public class Player : MonoBehaviour
     private GameObject chargedEffectInstance = null;
     private SpriteRenderer sr;
 
-    [Header("덱 시너지 효과 (Player_Ver 통합)")]
+    [Header("강한 공격 세부 설정")]
+    [Tooltip("체크하면 공격 이펙트의 생성 방향과 이미지를 반대로 뒤집습니다.")]
+    public bool reverseStrongAttackDir = false;
+
+    [Tooltip("플레이어 몸체 중심에서 얼마나 떨어진 곳에 생성할지 설정 (X: 앞쪽 거리, Y: 높이)")]
+    public Vector2 strongAttackOffset = new Vector2(1.5f, -0.8f);
+
+    [Header("덱 시너지 효과")]
     public bool hasResurrection = false;
     public bool isResurrectionUsed = false;
     public float cooldownReduction = 0f;
@@ -99,40 +113,90 @@ public class Player : MonoBehaviour
     public GameObject optionWindow;
     private Animator optionUIAnimator;
 
+    // ---------------------------------------------------------
+    // 애니메이터 파라미터 해시값 캐싱
+    // ---------------------------------------------------------
+    private static readonly int AnimIsMoving = Animator.StringToHash("isMoving");
+    private static readonly int AnimIsGrounded = Animator.StringToHash("isGrounded");
+    private static readonly int AnimDoJump = Animator.StringToHash("doJump");
+    private static readonly int AnimDoLand = Animator.StringToHash("doLand");
+    private static readonly int AnimDoAttack1 = Animator.StringToHash("doAttack1");
+    private static readonly int AnimDoAttack2 = Animator.StringToHash("doAttack2");
+    private static readonly int AnimDoShoot = Animator.StringToHash("doShoot");
+    private static readonly int AnimDoStrongAttack = Animator.StringToHash("doStrongAttack");
+
+    // 스킬 관련 파라미터
+    private static readonly int AnimCharge = Animator.StringToHash("Charge");
+    private static readonly int AnimSlash = Animator.StringToHash("Slash");
+    private static readonly int AnimRecovery = Animator.StringToHash("Recovery");
+    private static readonly int AnimSwordAura = Animator.StringToHash("SwordAura");
+    private static readonly int AnimGuardBreak = Animator.StringToHash("GuardBreak");
+    private static readonly int AnimTimeStop = Animator.StringToHash("TimeStop");
+    private static readonly int AnimLaserShot = Animator.StringToHash("LaserShot");
+    private static readonly int AnimExplosion = Animator.StringToHash("Explosion");
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         attackHitbox.SetActive(false);
-
         sr = GetComponentInChildren<SpriteRenderer>();
-        if (sr == null) Debug.LogError("Player의 SpriteRenderer를 찾을 수 없습니다!");
 
-        if (cardListWindow != null)
-        {
-            cardListAnimator = cardListWindow.GetComponent<Animator>();
-            cardListWindow.SetActive(false);
-        }
-        if (optionWindow != null)
-        {
-            optionUIAnimator = optionWindow.GetComponent<Animator>();
-            optionWindow.SetActive(false);
-        }
+        if (cardListWindow != null) { cardListAnimator = cardListWindow.GetComponent<Animator>(); cardListWindow.SetActive(false); }
+        if (optionWindow != null) { optionUIAnimator = optionWindow.GetComponent<Animator>(); optionWindow.SetActive(false); }
 
         RecalculateStats();
         health = maxHealth;
         mana = maxMana;
     }
 
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameObject startPoint = GameObject.Find("StartPoint");
+
+        if (startPoint != null)
+        {
+            transform.position = startPoint.transform.position;
+        }
+    }
+
     void Update()
     {
         if (isDead) return;
+
+        if (isSkillActive)
+        {
+            anim.SetBool(AnimIsMoving, false);
+            return;
+        }
 
         HandleUIInput();
 
         if (IsUIOpen() || IsPointerOverUI())
         {
-            anim.SetBool("isMoving", false);
+            anim.SetBool(AnimIsMoving, false);
             return;
         }
 
@@ -142,15 +206,12 @@ public class Player : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            if (isGrounded || currentJumpCount < maxJumpCount)
-            {
-                DoJump();
-            }
+            if (isGrounded || currentJumpCount < maxJumpCount) DoJump();
         }
 
         if (Input.GetButtonDown("Fire1"))
         {
-            if (!isSwinging && equippedWeapon != null)
+            if (equippedWeapon != null)
             {
                 isCharging = true;
                 fire1HoldTime = 0f;
@@ -162,18 +223,14 @@ public class Player : MonoBehaviour
             fire1HoldTime += Time.deltaTime;
             float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
-            if (effectiveTime >= 0.5f && chargeEffectInstance == null)
+            if (effectiveTime >= 0.5f && chargeEffectInstance == null && equippedWeapon.weaponLevel >= 2 && chargeEffectPrefab != null && effectiveTime < 2f)
             {
-                if (chargeEffectPrefab != null && effectiveTime < 2f)
-                {
-                    chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
-                    chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-                }
+                chargeEffectInstance = Instantiate(chargeEffectPrefab, transform.position, Quaternion.identity, transform);
+                chargeEffectInstance.transform.localPosition = new Vector3(0f, 0.2f, 0f);
             }
             if (chargeEffectInstance != null && effectiveTime >= 2f)
             {
-                Destroy(chargeEffectInstance);
-                chargeEffectInstance = null;
+                Destroy(chargeEffectInstance); chargeEffectInstance = null;
                 chargedEffectInstance = Instantiate(chargedEffectPrefab, transform.position, Quaternion.identity, transform);
                 chargedEffectInstance.transform.localPosition = new Vector3(0f, 0.5f, 0f);
             }
@@ -184,25 +241,68 @@ public class Player : MonoBehaviour
             if (isCharging)
             {
                 isCharging = false;
-                
+                // (이펙트 제거 로직 생략...)
                 if (chargeEffectInstance != null) { Destroy(chargeEffectInstance); chargeEffectInstance = null; }
                 if (chargedEffectInstance != null) { Destroy(chargedEffectInstance); chargedEffectInstance = null; }
 
-                if (!isSwinging && equippedWeapon != null)
+                if (equippedWeapon != null)
                 {
                     float effectiveTime = fire1HoldTime * (1f + cooldownReduction);
 
+                    // 강공격 로직
                     if (equippedWeapon.weaponType == WeaponType.Melee && equippedWeapon.weaponLevel >= 2 && effectiveTime >= chargehold)
                     {
-                        currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
-                        CastStrongAttack(); 
-                        currentAttackMultiplier = 1.0f;
+                        if (!isSwinging)
+                        {
+                            currentAttackMultiplier = equippedWeapon.strongAttackMultiplier;
+                            StartStrongAttack(); // 강공격은 별도 코루틴에서 처리하므로 여기서는 ActivateHitbox 호출 안 함
+                            currentAttackMultiplier = 1.0f;
+                        }
                     }
                     else
                     {
-                        normalAttack.Play();
-                        currentAttackMultiplier = 1.0f;
-                        StartCoroutine(SwingWeapon());
+                        // [기본 공격 및 콤보 로직]
+                        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+                        bool isAttackTriggered = false;
+
+                        if (stateInfo.IsName("Alice_Attack1"))
+                        {
+                            Debug.Log("Combo: Attack 1 -> Attack 2");
+                            anim.SetTrigger(AnimDoAttack2);
+                            StopCoroutine("SwingWeapon");
+                            StartCoroutine(SwingWeapon());
+                            isAttackTriggered = true;
+                        }
+                        else if (!isSwinging && !stateInfo.IsName("Alice_Attack2"))
+                        {
+                            Debug.Log("Normal Attack: Attack 1");
+                            normalAttack.Play();
+                            currentAttackMultiplier = 1.0f;
+                            anim.SetTrigger(AnimDoAttack1);
+                            StartCoroutine(SwingWeapon());
+                            isAttackTriggered = true;
+                        }
+
+                        // [핵심 추가] 공격이 발동됐다면 데미지 계산 후 히트박스 켜기
+                        if (isAttackTriggered)
+                        {
+                            // 1. 현재 스탯 기반 데미지 계산
+                            float weaponDmg = (equippedWeapon != null) ? equippedWeapon.damage : 0f;
+                            float baseDmg = weaponDmg + currentAttackDamage; // 기본공격력 + 무기공격력 + 카드스탯
+                            if (hasDoubleStrike) baseDmg *= 2.0f; // 시너지 효과
+
+                            int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
+
+                            // 2. AttackDamage 스크립트에 데미지 전달
+                            AttackDamage hitScript = attackHitbox.GetComponent<AttackDamage>();
+                            if (hitScript != null)
+                            {
+                                hitScript.UpdateDamage(finalDamage);
+                            }
+
+                            // 3. 히트박스 활성화
+                            Invoke("ActivateHitbox", 0.5f);
+                        }
                     }
                 }
             }
@@ -210,38 +310,29 @@ public class Player : MonoBehaviour
 
         if (Input.GetButtonDown("Fire2") && Time.time >= nextFireTime && HasRangedWeaponReady())
         {
-            float rate = Mathf.Max(0.0001f, GetCurrentFireRate());
-            rate = rate / (1f - cooldownReduction);
-
-            nextFireTime = Time.time + (1f / rate);
-            Shoot();
+            float rate = Mathf.Max(0.0001f, GetCurrentFireRate()) / (1f - cooldownReduction);
+            nextFireTime = Time.time + (1f / rate); Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.Z) && hasUltimate)
-        {
-            CastUltimate();
-        }
+        if (Input.GetKeyDown(KeyCode.Z) && hasUltimate) CastUltimate();
 
-        anim.SetBool("isMoving", hMove != 0);
-        anim.SetBool("isGrounded", isGrounded);
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            if (isAtEvent) Interaction = true;
-        }
+        anim.SetBool(AnimIsMoving, hMove != 0);
+        anim.SetBool(AnimIsGrounded, isGrounded);
+        if (Input.GetKeyDown(KeyCode.W) && isAtEvent) Interaction = true;
     }
 
     void FixedUpdate()
     {
-        if (isDead || IsUIOpen())
+        if (isDead || IsUIOpen() || isSkillActive)
         {
-            rb.velocity = Vector2.zero;
+            if (!isSkillActive) rb.velocity = Vector2.zero;
             return;
         }
 
         rb.velocity = new Vector2(hMove * moveSpeed, rb.velocity.y);
         Flip(hMove);
     }
+
     void HandleUIInput()
     {
         if (Input.GetKeyDown(KeyCode.I))
@@ -312,7 +403,11 @@ public class Player : MonoBehaviour
     {
         if (anim != null)
         {
-            anim.ResetTrigger("doAttack");
+            anim.ResetTrigger(AnimDoAttack1);
+            anim.ResetTrigger(AnimDoAttack2);
+            anim.ResetTrigger(AnimDoShoot);
+            anim.ResetTrigger(AnimDoStrongAttack);
+            anim.ResetTrigger(AnimCharge);
         }
         isCharging = false;
         isSwinging = false;
@@ -443,8 +538,8 @@ public class Player : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(new Vector2(0, finalJumpForce), ForceMode2D.Impulse);
 
-        // anim.SetTrigger("doJump"); // 필요 시 주석 해제
-        // anim.SetBool("isGrounded", false);
+        anim.SetTrigger(AnimDoJump);
+
         isGrounded = false;
         currentJumpCount++;
     }
@@ -465,6 +560,7 @@ public class Player : MonoBehaviour
             }
         }
     }
+
     public void PerformSkillSwing()
     {
         if (!isSwinging && equippedWeapon != null)
@@ -480,6 +576,8 @@ public class Player : MonoBehaviour
 
         GameObject prefab = GetCurrentProjectilePrefab();
         if (prefab == null) return;
+
+        anim.SetTrigger(AnimDoShoot);
 
         GameObject projectileObject = Instantiate(prefab, firePoint.position, Quaternion.identity);
         Vector2 shootDirection = isRight ? Vector2.right : Vector2.left;
@@ -501,7 +599,7 @@ public class Player : MonoBehaviour
         attackHitbox.SetActive(false);
     }
 
-    private void EquipWeapon(Weapon w)
+    public void EquipWeapon(Weapon w)
     {
         if (equippedWeapon != null) Destroy(equippedWeapon.gameObject);
 
@@ -509,7 +607,11 @@ public class Player : MonoBehaviour
         if (w != null) w.SetOwner(this);
 
         w.transform.SetParent(swordSlot);
-
+        SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.enabled = false;
+        }
         if (w.weaponType == WeaponType.Ranged)
             w.transform.localPosition = new Vector3(0.35f, 0.1f, 0f);
         else
@@ -558,32 +660,6 @@ public class Player : MonoBehaviour
         currentAttackMultiplier = 1.0f;
     }
 
-    void CastStrongAttack()
-    {
-        StrongAttack.Play();
-        if (strongAttackEffectPrefab == null) return;
-
-        Vector3 spawnPosition = firePoint.position;
-        Vector3 effectScale = Vector3.one;
-        if (!isRight) effectScale.x = -1;
-
-        GameObject effectInstance = Instantiate(strongAttackEffectPrefab, spawnPosition, Quaternion.identity);
-        effectInstance.transform.localScale = effectScale;
-
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPosition, strongAttackRadius, enemyLayer);
-
-        float baseDmg = equippedWeapon.damage + currentAttackDamage;
-        if (hasDoubleStrike) baseDmg *= 2.0f;
-
-        int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
-
-        foreach (Collider2D enemyCollider in hitEnemies)
-        {
-            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
-            if (enemy != null) enemy.TakeDamage(finalDamage);
-        }
-    }
-
     private void Flip(float h)
     {
         if ((h < 0 && isRight) || (h > 0 && !isRight))
@@ -595,18 +671,73 @@ public class Player : MonoBehaviour
         }
     }
 
+    void StartStrongAttack() { StartCoroutine(StrongAttackSequence()); }
+
+    IEnumerator StrongAttackSequence()
+    {
+        isSwinging = true;
+        anim.SetTrigger(AnimDoStrongAttack);
+        if (StrongAttack != null) StrongAttack.Play();
+
+        yield return new WaitForSeconds(0.15f);
+
+        float facingDir = transform.localScale.x > 0 ? 1f : -1f;
+        if (reverseStrongAttackDir) facingDir *= -1;
+
+        Vector3 spawnPos = transform.position + new Vector3(strongAttackOffset.x * facingDir, strongAttackOffset.y, 0);
+
+        if (strongAttackEffectPrefab != null)
+        {
+            GameObject effectInstance = Instantiate(strongAttackEffectPrefab, spawnPos, Quaternion.identity);
+            Vector3 scale = effectInstance.transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * facingDir;
+            effectInstance.transform.localScale = scale;
+            Destroy(effectInstance, 0.5f);
+        }
+
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(spawnPos, strongAttackRadius, enemyLayer);
+        float baseDmg = equippedWeapon.damage + currentAttackDamage;
+        if (hasDoubleStrike) baseDmg *= 2.0f;
+        int finalDamage = Mathf.RoundToInt(baseDmg * currentAttackMultiplier);
+
+        foreach (Collider2D enemyCollider in hitEnemies)
+        {
+            IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target != null)
+            {
+                target.TakeDamage(finalDamage);
+            }
+            else
+            {
+                var enemy = enemyCollider.GetComponent<EnemyController_2D>();
+                if (enemy != null) enemy.SendMessage("TakeDamage", finalDamage, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        yield return new WaitForSeconds(attackDelay);
+        isSwinging = false;
+        currentAttackMultiplier = 1.0f;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
         {
-            isGrounded = true;
-            currentJumpCount = 0;
+            if (collision.GetContact(0).normal.y > 0.7f)
+            {
+                isGrounded = true;
+                currentJumpCount = 0;
+                anim.SetTrigger(AnimDoLand);
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Enemy"))
+        {
+            isGrounded = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -617,24 +748,13 @@ public class Player : MonoBehaviour
         {
             Weapon w = other.GetComponent<Weapon>();
 
-            // 인벤토리에 무기 추가
             string weaponName = w.gameObject.name.Replace("(Clone)", "").Trim();
             SpriteRenderer sr = w.GetComponent<SpriteRenderer>();
-
-            if (sr != null && !knownItemSprites.ContainsKey(weaponName))
-            {
-                knownItemSprites.Add(weaponName, sr.sprite);
-            }
-            if (!inventory.ContainsKey(weaponName))
-            {
-                AddItemToInventory(weaponName, 1);
-            }
-            // 여기까지 무기 추가 코드
+            AddItemToInventory(weaponName, 1, sr != null ? sr.sprite : null);
 
             if (w != null && w != equippedWeapon) EquipWeapon(w);
         }
-
-        if (other.tag == "RedPotion" || other.tag == "BluePotion")
+        else if (other.tag == "RedPotion" || other.tag == "BluePotion")
         {
             string itemTag = other.tag;
             if (itemTag == "RedPotion") TakeRedPotion();
@@ -658,20 +778,17 @@ public class Player : MonoBehaviour
     void OnTriggerStay2D(Collider2D other)
     {
         Door doorComponent = other.GetComponent<Door>();
-
-        if (isAtEvent && Interaction)
+        if (isAtEvent && Interaction && other.CompareTag("Door"))
         {
-            if (other.CompareTag("Door"))
-            {
-                Interaction = false;
-                if (doorComponent != null) doorComponent.InitiateTransition();
-            }
+            Interaction = false;
+            if (doorComponent != null) doorComponent.InitiateTransition();
         }
     }
 
     public void TakeDamage(int damage)
     {
         if (isDead) return;
+
         int finalDamage = Mathf.Max(1, damage - (int)currentDefense);
 
         if (isManaGuardOn && mana > 0)
@@ -679,7 +796,7 @@ public class Player : MonoBehaviour
             if (mana >= finalDamage)
             {
                 mana -= finalDamage;
-                Debug.Log($"마나 가드 방어! (소모 마나: {finalDamage})");
+                Debug.Log($"마나 가드 방어!");
                 return;
             }
             else
@@ -702,7 +819,7 @@ public class Player : MonoBehaviour
             {
                 health = maxHealth / 2;
                 isResurrectionUsed = true;
-                Debug.Log("Resurrected by Straight Synergy!");
+                Debug.Log("Resurrected!");
             }
             else
             {
@@ -715,7 +832,6 @@ public class Player : MonoBehaviour
     void Die()
     {
         isDead = true;
-        // anim.SetTrigger("doDie");
         Debug.Log("플레이어 사망");
     }
 
@@ -766,10 +882,26 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void AddItemToInventory(string itemName, int amount)
+    public void AddItemToInventory(string itemName, int amount, Sprite itemSprite = null)
     {
-        if (inventory.ContainsKey(itemName)) inventory[itemName] += amount;
-        else inventory.Add(itemName, amount);
+        if (itemSprite != null && !knownItemSprites.ContainsKey(itemName))
+        {
+            knownItemSprites.Add(itemName, itemSprite);
+        }
+
+        if (inventory.ContainsKey(itemName))
+        {
+            inventory[itemName] += amount;
+        }
+        else
+        {
+            inventory.Add(itemName, amount);
+        }
+
+        if (inventoryUIManager != null)
+        {
+            inventoryUIManager.RefreshInventoryUI();
+        }
     }
 
     public void UpdateGamePauseState()
@@ -846,4 +978,17 @@ public class Player : MonoBehaviour
             Debug.Log(newCard.suit + " " + newCard.number + " 카드는 이미 보유 중이라 무시합니다.");
         }
     }
+
+    // --------------------------------------------------------------------------------
+    // 스킬 매니저나 외부 스크립트에서 호출할 애니메이션 트리거 메서드들
+    // --------------------------------------------------------------------------------
+
+    public void TriggerSlash() { anim.SetTrigger(AnimSlash); }
+    public void TriggerCharge() { anim.SetTrigger(AnimCharge); }
+    public void TriggerRecovery() { anim.SetTrigger(AnimRecovery); }
+    public void TriggerSwordAura() { anim.SetTrigger(AnimSwordAura); }
+    public void TriggerGuardBreak() { anim.SetTrigger(AnimGuardBreak); }
+    public void TriggerTimeStop() { anim.SetTrigger(AnimTimeStop); }
+    public void TriggerLaserShot() { anim.SetTrigger(AnimLaserShot); }
+    public void TriggerExplosion() { anim.SetTrigger(AnimExplosion); }
 }

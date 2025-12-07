@@ -268,9 +268,9 @@ public class CardListUI : MonoBehaviour
         switch (card.suit)
         {
             case CardSuit.Heart: finalIndex = 0 + numberIndex; break;
-            case CardSuit.Diamond: finalIndex = 15 + numberIndex; break;
-            case CardSuit.Spade: finalIndex = 28 + numberIndex; break;
-            case CardSuit.Clover: finalIndex = 41 + numberIndex; break;
+            case CardSuit.Diamond: finalIndex = 13 + numberIndex; break;
+            case CardSuit.Spade: finalIndex = 26 + numberIndex; break;
+            case CardSuit.Clover: finalIndex = 39 + numberIndex; break;
         }
 
         if (allCardSprites.Length > finalIndex) return allCardSprites[finalIndex];
