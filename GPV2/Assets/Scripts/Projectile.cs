@@ -39,12 +39,12 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // 적과 충돌했는지 확인
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy")|| collision.CompareTag("Boss"))
         {
-            EnemyController_2D enemy = collision.GetComponent<EnemyController_2D>();
+            IDamageable enemy = collision.GetComponent<IDamageable>();
 
             // 만약 Collider가 자식에 있다면 부모에서 스크립트 찾기
-            if (enemy == null) enemy = collision.GetComponentInParent<EnemyController_2D>();
+            if (enemy == null) enemy = collision.GetComponentInParent<IDamageable>();
 
             if (enemy != null)
             {

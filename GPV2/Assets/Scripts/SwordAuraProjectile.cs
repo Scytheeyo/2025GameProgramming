@@ -39,12 +39,12 @@ public class SwordAuraProjectile : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // 1. 적 태그 확인
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy") || collision.CompareTag("Boss"))
         {
-            EnemyController_2D enemy = collision.GetComponent<EnemyController_2D>();
-            if (enemy != null)
+            IDamageable target = collision.GetComponent<IDamageable>();
+            if (target != null)
             {
-                enemy.TakeDamage(damage);
+                target.TakeDamage(damage);
             }
             Hit(); // 타격 처리 함수 호출
         }
