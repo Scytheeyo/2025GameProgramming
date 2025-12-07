@@ -13271,9 +13271,17 @@ PrefabInstance:
       propertyPath: targetEntrance
       value: 
       objectReference: {fileID: 662061027}
+    - target: {fileID: 7857805280082370231, guid: 4c06f61953037934d98c7c5352d897c1, type: 3}
+      propertyPath: m_ColliderPaths.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7857805280809705749, guid: 4c06f61953037934d98c7c5352d897c1, type: 3}
       propertyPath: m_Name
       value: Level6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7857805280809705749, guid: 4c06f61953037934d98c7c5352d897c1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7857805280809705750, guid: 4c06f61953037934d98c7c5352d897c1, type: 3}
       propertyPath: m_RootOrder
