@@ -110,13 +110,14 @@ public class SwordSkillManager : MonoBehaviour
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            EnemyController_2D enemy = enemyCollider.GetComponent<EnemyController_2D>();
-            if (enemy != null)
+            
+            IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target != null)
             {
-                enemy.TakeDamage(Mathf.RoundToInt(30 * 1.5f));
+                target.TakeDamage(Mathf.RoundToInt(30 * 1.5f));
                 if (guardBreakHitEffectPrefab != null)
                 {
-                    Vector3 hitPos = enemy.transform.position + new Vector3(0, 0.5f, 0);
+                    Vector3 hitPos = enemyCollider.transform.position + new Vector3(0, 0.5f, 0);
                     GameObject effect = Instantiate(guardBreakHitEffectPrefab, hitPos, Quaternion.identity);
                     Destroy(effect, 0.5f);
                 }

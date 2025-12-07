@@ -703,14 +703,14 @@ public class Player : MonoBehaviour
         foreach (Collider2D enemyCollider in hitEnemies)
         {
             IDamageable target = enemyCollider.GetComponent<IDamageable>();
+            if (target == null)
+            {
+                target = enemyCollider.GetComponentInParent<IDamageable>();
+            }
+
             if (target != null)
             {
                 target.TakeDamage(finalDamage);
-            }
-            else
-            {
-                var enemy = enemyCollider.GetComponent<EnemyController_2D>();
-                if (enemy != null) enemy.SendMessage("TakeDamage", finalDamage, SendMessageOptions.DontRequireReceiver);
             }
         }
 

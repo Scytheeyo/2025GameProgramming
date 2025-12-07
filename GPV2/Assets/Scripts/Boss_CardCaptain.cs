@@ -3,32 +3,32 @@ using System.Collections;
 
 public class Boss_CardCaptain : MonoBehaviour, IDamageable
 {
-    [Header("ï¿½âº» ï¿½ï¿½ï¿½ï¿½")]
+    [Header("±âº» ¼³Á¤")]
     public float moveSpeed = 2.5f;
     public float chaseRange = 10f;
     public float attackRange = 1.2f;
     public int maxHealth = 300;
     public int currentHealth;
 
-    [Header("ï¿½ï¿½ï¿½Ý·ï¿½ ï¿½ï¿½ï¿½ï¿½")] // [ï¿½Å±ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    public int attackDamage = 15; // ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½!
+    [Header("°ø°Ý·Â ¼³Á¤")]
+    public int attackDamage = 15;
 
-    [Header("ï¿½Ç°ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("ÇÇ°Ý È¿°ú ¼³Á¤")]
     public Color hitColor = new Color(1f, 0.4f, 0.4f);
     public float flashDuration = 0.1f;
 
-    [Header("3ï¿½ï¿½ ï¿½Þºï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("3´Ü ÄÞº¸ °ø°Ý")]
     public float attackCooldown = 2.0f;
     private float lastAttackTime = -999f;
     private int attackComboIndex = 0;
 
-    [Header("ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("¼ÒÈ¯ ÆÐÅÏ")]
     public float summonCooldown = 20f;
     private float lastSummonTime = -999f;
     public GameObject[] minionPrefabs;
     public Transform[] summonPoints;
 
-    [Header("ï¿½ï¿½ï¿½ï¿½")]
+    [Header("¿¬°á")]
     public Transform attackPoint;
     public Transform player;
 
@@ -37,8 +37,21 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     private Collider2D myCollider;
     private SpriteRenderer sr;
 
+    // Çàµ¿ ÁßÀÎÁö Ã¼Å©ÇÏ´Â º¯¼ö (ÀÌ°Ô true¸é ÀÌµ¿ ¾È ÇÔ)
     private bool isActing = false;
 
+    void OnEnable()
+    {
+        isActing = false;
+        if (rb != null) rb.velocity = Vector2.zero;
+    }
+
+    public void TakePercentDamage(float percent)
+    {
+        int dmg = Mathf.RoundToInt(maxHealth * percent);
+        if (dmg < 1) dmg = 1;
+        TakeDamage(dmg);
+    }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -48,18 +61,33 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
 
         currentHealth = maxHealth;
 
-        if (player == null)
+        // =======================================================
+        // [ÇÙ½É ¼öÁ¤] Player ÅÂ±×¸¦ Ã£Àº µÚ -> ±× ¾ÈÀÇ ÀÚ½Ä "PlayerObject"¸¦ Ã£¾Æ ¿¬°á
+        // =======================================================
+        GameObject mainPlayer = GameObject.FindGameObjectWithTag("Player");
+
+        if (mainPlayer != null)
         {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
+            // ¸ÞÀÎ ÇÃ·¹ÀÌ¾î ¾È¿¡¼­ "PlayerObject"¶ó´Â ÀÌ¸§ÀÇ ÀÚ½ÄÀ» Ã£½À´Ï´Ù.
+            // (ÀÌ¸§ÀÌ ¶ç¾î¾²±â ¾øÀÌ Á¤È®È÷ ÀÏÄ¡ÇØ¾ß ÇÕ´Ï´Ù!)
+            Transform targetChild = mainPlayer.transform.Find("PlayerObject");
+
+            if (targetChild != null)
             {
-                player = p.transform.Find("PlayerObject");
+                player = targetChild; // ÀÚ½ÄÀ» Å¸°ÙÀ¸·Î ¼³Á¤
             }
             else
             {
-                Debug.LogError("ì”¬ì— 'Player' íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤!");
+                // ÀÚ½ÄÀÌ ¾øÀ¸¸é ¿¡·¯¸¦ ¶ç¿ì°í ÀÓ½Ã·Î º»Ã¼¸¦ Å¸°ÙÀ¸·Î Àâ½À´Ï´Ù.
+                Debug.LogError("CardCaptain: Player ÅÂ±×´Â Ã£¾ÒÀ¸³ª ÀÚ½Ä 'PlayerObject'°¡ ¾ø½À´Ï´Ù!");
+                player = mainPlayer.transform;
             }
         }
+        else
+        {
+            Debug.LogError("CardCaptain: 'Player' ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ®¸¦ ¾Æ¿¹ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+        }
+        // =======================================================
 
         if (attackPoint == null) attackPoint = transform;
     }
@@ -68,6 +96,7 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     {
         if (player == null) return;
 
+        // Çàµ¿(°ø°Ý/¼ÒÈ¯) ÁßÀÌ¸é ¿òÁ÷ÀÌÁö ¾ÊÀ½
         if (isActing)
         {
             rb.velocity = Vector2.zero;
@@ -76,26 +105,35 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
 
         float distToPlayer = Vector2.Distance(attackPoint.position, player.position);
 
+        // 1. ¼ÒÈ¯ ÆÐÅÏ (ÄðÅ¸ÀÓ µÇ¸é ÃÖ¿ì¼± ½ÇÇà)
         if (Time.time >= lastSummonTime + summonCooldown)
         {
             StartCoroutine(SummonRoutine());
             return;
         }
 
+        // 2. °ø°Ý ¹üÀ§ ¾È¿¡ ÀÖÀ½ -> °ø°Ý ½Ãµµ
         if (distToPlayer <= attackRange)
         {
-            StopMovement();
+            StopMovement(); // °ø°Ý ¹üÀ§´Ï±î ÀÏ´Ü ¸ØÃã
+
+            // °ø°Ý ÄðÅ¸ÀÓÀÌ µÆÀ¸¸é °ø°Ý ½ÃÀÛ
             if (Time.time >= lastAttackTime + attackCooldown)
             {
                 StartCoroutine(AttackRoutine());
             }
         }
-        else
+        // 3. °ø°Ý ¹üÀ§ ¹Û -> Ãß°Ý
+        else if (distToPlayer <= chaseRange)
         {
             MoveTowardsPlayer();
         }
+        else
+        {
+            StopMovement(); // Ãß°Ý ¹üÀ§ ¹ÛÀÌ¸é ´ë±â
+        }
 
-        // ï¿½×½ï¿½Æ®ï¿½ï¿½ (KÅ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        // Å×½ºÆ®¿ë ÀÚÇØ Å°
         if (Input.GetKeyDown(KeyCode.K)) TakeDamage(10);
     }
 
@@ -103,14 +141,10 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     {
         currentHealth -= dmg;
 
+        // ¾Ö´Ï¸ÞÀÌ¼Ç ¾øÀÌ »ö±ò¸¸ ±ôºýÀÓ
         if (gameObject.activeInHierarchy)
         {
             StartCoroutine(HitFlashRoutine());
-        }
-
-        if (!isActing)
-        {
-            animator.SetTrigger("Hit");
         }
 
         if (currentHealth <= 0) Die();
@@ -118,9 +152,12 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
 
     IEnumerator HitFlashRoutine()
     {
-        sr.color = hitColor;
-        yield return new WaitForSeconds(flashDuration);
-        sr.color = Color.white;
+        if (sr != null)
+        {
+            sr.color = hitColor;
+            yield return new WaitForSeconds(flashDuration);
+            sr.color = Color.white;
+        }
     }
 
     IEnumerator AttackRoutine()
@@ -129,24 +166,48 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
         StopMovement();
         LookAtPlayer();
 
-        if (attackComboIndex == 0) { animator.SetTrigger("Attack1"); attackComboIndex = 1; }
-        else if (attackComboIndex == 1) { animator.SetTrigger("Attack2"); attackComboIndex = 2; }
-        else { animator.SetTrigger("Attack3"); attackComboIndex = 0; }
-
-        lastAttackTime = Time.time;
-        yield return new WaitForSeconds(1.0f);
-
+        // [ÇÙ½É ¼öÁ¤] °ø°Ý ½ÃÀÛ Àü¿¡ ±âÁ¸¿¡ ÄÑÁ®ÀÖ´ø Æ®¸®°Å¸¦ ½Ï ´Ù ²ü´Ï´Ù.
+        // ÀÌ°Ô ¾øÀ¸¸é Æ®¸®°Å°¡ ½×¿©¼­ ¾Ö´Ï¸ÞÀÌ¼ÇÀÌ ²¿ÀÌ°í ÀÌµ¿µµ ¸øÇÏ°Ô µË´Ï´Ù.
         animator.ResetTrigger("Attack1");
         animator.ResetTrigger("Attack2");
         animator.ResetTrigger("Attack3");
 
-        isActing = false;
+        // ÄÞº¸ ¼ø¼­´ë·Î Æ®¸®°Å ÄÑ±â
+        if (attackComboIndex == 0)
+        {
+            animator.SetTrigger("Attack1");
+            attackComboIndex = 1;
+        }
+        else if (attackComboIndex == 1)
+        {
+            animator.SetTrigger("Attack2");
+            attackComboIndex = 2;
+        }
+        else
+        {
+            animator.SetTrigger("Attack3");
+            attackComboIndex = 0;
+        }
+
+        lastAttackTime = Time.time;
+
+        // ¾Ö´Ï¸ÞÀÌ¼ÇÀÌ Àç»ýµÉ ½Ã°£À» ÁÝ´Ï´Ù.
+        // ÁÖÀÇ: ¾Ö´Ï¸ÞÀÌ¼Ç Å¬¸³ ±æÀÌ°¡ 1ÃÊº¸´Ù ±æ¸é ÀÌ ½Ã°£À» ´Ã·Á¾ß ÇÕ´Ï´Ù.
+        yield return new WaitForSeconds(1.0f);
+
+        // [¾ÈÀüÀåÄ¡] ³¡³ª°í ³ª¼­µµ È¤½Ã ÄÑÁ®ÀÖÀ» Æ®¸®°Å¸¦ ´Ù½Ã ²ü´Ï´Ù.
+        animator.ResetTrigger("Attack1");
+        animator.ResetTrigger("Attack2");
+        animator.ResetTrigger("Attack3");
+
+        isActing = false; // Çàµ¿ Á¾·á -> ÀÌÁ¦ ´Ù½Ã Update¿¡¼­ ÀÌµ¿ °¡´É
     }
 
     IEnumerator SummonRoutine()
     {
         isActing = true;
         StopMovement();
+
         animator.SetBool("IsSummoning", true);
 
         yield return new WaitForSeconds(1.0f);
@@ -167,6 +228,7 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
 
         lastSummonTime = Time.time;
         animator.SetBool("IsSummoning", false);
+
         yield return new WaitForSeconds(0.5f);
 
         isActing = false;
@@ -174,8 +236,10 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
 
     void MoveTowardsPlayer()
     {
+        // ÀÌµ¿ ¾Ö´Ï¸ÞÀÌ¼Ç ÄÑ±â
         animator.SetFloat("Speed", 1);
         LookAtPlayer();
+
         float dirX = Mathf.Sign(player.position.x - transform.position.x);
         rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
     }
@@ -183,6 +247,7 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     void StopMovement()
     {
         rb.velocity = Vector2.zero;
+        // ÀÌµ¿ ¾Ö´Ï¸ÞÀÌ¼Ç ²ô±â
         animator.SetFloat("Speed", 0);
     }
 
@@ -198,7 +263,7 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
     public void Die()
     {
         StopAllCoroutines();
-        sr.color = Color.white;
+        if (sr != null) sr.color = Color.white;
 
         isActing = true;
         animator.SetTrigger("Die");
@@ -207,28 +272,14 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
         Destroy(gameObject, 2.0f);
     }
 
-    // ====================================================
-    // [ï¿½ï¿½ï¿½ï¿½] ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ (ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½)
-    // ====================================================
     public void DealDamage()
     {
-        // 1. ï¿½Ý°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         Collider2D[] hitObjects = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
         foreach (Collider2D col in hitObjects)
         {
-            // 2. ï¿½Â±×°ï¿½ "Player"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (col.CompareTag("Player"))
             {
-                Debug.Log($"ï¿½Ã·ï¿½ï¿½Ì¾ï¿½({col.name}) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {attackDamage} ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½.");
-
-                // [ï¿½ï¿½ï¿½ A] ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½Æ¼ï¿½ TakeDamage ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½Ãµ)
-                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½Ì¸ï¿½ï¿½ï¿½ PlayerControllerï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Ö¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
-                // PlayerController pc = col.GetComponent<PlayerController>();
-                // if (pc != null) pc.TakeDamage(attackDamage);
-
-                // [ï¿½ï¿½ï¿½ B] ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
-                // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ 'public void TakeDamage(int damage)' ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
                 col.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
             }
         }
@@ -244,11 +295,5 @@ public class Boss_CardCaptain : MonoBehaviour, IDamageable
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
-    }
-    public void TakePercentDamage(float percent)
-    {
-        int dmg = Mathf.RoundToInt(maxHealth * percent);
-        if (dmg < 1) dmg = 1;
-        TakeDamage(dmg);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyController_2D : MonoBehaviour
+public class EnemyController_2D : MonoBehaviour, IDamageable
 {
     [Header("Stats")]
     public int maxHealth = 100;

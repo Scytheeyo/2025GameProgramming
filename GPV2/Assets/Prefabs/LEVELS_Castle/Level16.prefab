@@ -3215,6 +3215,7 @@ MonoBehaviour:
   - {fileID: 6369373159312417194}
   exitDoors:
   - {fileID: 6369373159312417194}
+  roomID: 0
 --- !u!1 &2918221650414326296
 GameObject:
   m_ObjectHideFlags: 0
@@ -3752,11 +3753,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2191019866367144203, guid: 9206732c01c776043bc6535842629516, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.71
+      value: -2.97
       objectReference: {fileID: 0}
     - target: {fileID: 2191019866367144203, guid: 9206732c01c776043bc6535842629516, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.39
+      value: -5.25
       objectReference: {fileID: 0}
     - target: {fileID: 2191019866367144203, guid: 9206732c01c776043bc6535842629516, type: 3}
       propertyPath: m_LocalPosition.z
